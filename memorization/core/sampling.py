@@ -40,7 +40,8 @@ def create_target_paths(project_path):
 
 def unpack_dataset(unpacked_dataset_path):
     """
-    Unpacks the .xz files in openwebtext
+    Unpacks the .xz files in openwebtext. The files are actually folders containing multiple .txt files.
+    The files are unpacked inside the directory.
     """
     for filename in progressBar(os.listdir(unpacked_dataset_path), prefix='Progress', suffix='Complete'):
         # Iterate through .xz files
