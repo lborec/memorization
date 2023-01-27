@@ -32,7 +32,7 @@ def parse_args():
                                help='Path of the memorization project. E.g., /Users/luka/memorization.',
                                required=True)
     sample_parser.add_argument('--dataset_path', type=str,
-                               help='Path of the openwebtext dataset.',
+                               help='Path of the unpacked openwebtext dataset.',
                                required=True)
     sample_parser.set_defaults(func=sample_subcommand)
 

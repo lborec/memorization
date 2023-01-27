@@ -13,13 +13,18 @@ def sample_entrypoint(cmd):
     project_path = cmd.project_path
     assert os.path.exists(project_path), "Provided project path doesn't exist. Check again."
 
-    # Assert that the openwebtext has been unpacked
-    dataset_path = cmd.dataset_path
-    assert os.path.exists(dataset_path), f"{dataset_path} doesn't exist. Make sure to download and unpack the openwebtext there."
-
     # Unpack dataset
+    dataset_path = cmd.dataset_path
+    assert os.path.exists(dataset_path), "Provided dataset path doesn't exist. Check again."
     print("...Unpacking the dataset...")
     # unpack_dataset(dataset_path)
+
+    # delete this blocK?
+    # Assert that the openwebtext has been unpacked
+    # dataset_path = cmd.dataset_path
+    # assert os.path.exists(dataset_path), f"{dataset_path} doesn't exist. Make sure to download and unpack the openwebtext there."
+
+
 
     # # Create dirs and stuff
     sampled_dataset_path, duplicates_path = create_target_paths(project_path)
@@ -30,7 +35,7 @@ def sample_entrypoint(cmd):
 
     # Generate duplicates
     print("..Generating duplicates...")
-    generate_duplicates(sampled_dataset_path)
+    # generate_duplicates(sampled_dataset_path)
 
     # Generate duplicate statistics
     # generate_duplicate_stats()

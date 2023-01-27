@@ -53,8 +53,8 @@ def unpack_dataset(unpacked_dataset_path):
                     os.mkdir(new_folder_path)
                 # Extract into  folder
                 tar.extractall(new_folder_path)
-                # Remove .xz file
-                os.remove(filepath)
+                # # Remove .xz file
+                # os.remove(filepath)
 
 
 def sample_dataset(dataset_path, sampled_dataset_path, sample_ratio=0.25):
