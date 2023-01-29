@@ -30,8 +30,8 @@ def sample_entrypoint(cmd):
 
     # # Randomly sample a portion of the dataset (40 GB is too much)
     print("...Sampling from the original dataset...")
-    sample_dataset(dataset_path, train_path, sample_ratio=0.0001, split="train")
-    sample_dataset(dataset_path, valid_path, sample_ratio=0.0001, split="valid")
+    sample_dataset(dataset_path, train_path, sample_ratio=0.25, split="train")
+    sample_dataset(dataset_path, valid_path, sample_ratio=0.10, split="valid")
 
     # Generate duplicates
     print("..Generating duplicates...")
