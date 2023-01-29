@@ -10,6 +10,7 @@ from transformers import Trainer, TrainingArguments, GPT2LMHeadModel, GPT2Tokeni
     DataCollatorForLanguageModeling, GPTNeoForCausalLM
 from datasets import load_dataset
 
+ALLOWED_MODELS = ["lstm", "transformer"]
 CONTEXT_LENGTH = 512
 
 args = TrainingArguments(
@@ -31,26 +32,30 @@ args = TrainingArguments(
 
 
 def load_model(model_type, tokenizer):
-    gpt2_100_from_pretrained = AutoConfig.from_pretrained(
-        "gpt2",
-        vocab_size=len(tokenizer),
-        n_ctx=512,
-        bos_token_id=tokenizer.bos_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-        n_embd=512,
-        n_head=16,
-        n_layer=24
-    )
-    if model_type == "lstm":
-        pass
-    elif model_type == 'gpt2-100':
-        model = GPT2LMHeadModel(gpt2_100_from_pretrained)
-    elif model_type == "gpt2-250":
-        model = GPT2LMHeadModel(gpt2_250_config)
-    elif model_type == "gpt2-500":
-        model = GPT2LMHeadModel(gpt2_500_config)
-    elif model_type == "gpt-neo-125M":
+    assert model_type.lower() in ALLOWED_MODELS, f"Allowed models are: {ALLOWED_MODELS}"
+
+    # gpt2_100_from_pretrained = AutoConfig.from_pretrained(
+    #     "gpt2",
+    #     vocab_size=len(tokenizer),
+    #     n_ctx=512,
+    #     bos_token_id=tokenizer.bos_token_id,
+    #     eos_token_id=tokenizer.eos_token_id,
+    #     n_embd=512,
+    #     n_head=16,
+    #     n_layer=24
+    # )
+    # if model_type == "lstm":
+    #     pass
+    # elif model_type == 'gpt2-100':
+    #     model = GPT2LMHeadModel(gpt2_100_from_pretrained)
+    # elif model_type == "gpt2-250":
+    #     model = GPT2LMHeadModel(gpt2_250_config)
+    # elif model_type == "gpt2-500":
+    #     model = GPT2LMHeadModel(gpt2_500_config)
+    if model_type == "gpt-neo-125M":
         model = GPTNeoForCausalLM.from_pretrained("EleutherAI/gpt-neo-125M")
+    elif model_type == "gpt-neo-350M":
+        model = GPTNeoForCausalLM.from_pretrained("EleutherAI/gpt-neo-350M")
 
     model.resize_token_embeddings(len(tokenizer))
 
@@ -59,13 +64,10 @@ def load_model(model_type, tokenizer):
 
     return model
 
-
-# import GPTNeoForCausalLM
-# set model_name as "EleutherAI/gpt-neo-2.7B" (choose from any of the available sized models)
-# use GPTNeoForCausalLM in place of GPT2LMHeadModelwhen loading the model.
-
 def train_transformer():
-    train_dataset = load_dataset("text", data_dir="memorization/dataset/sampled_dataset", sample_by="document")
+    train_dataset = load_dataset("text",
+                                 data_dir="memorization/dataset/sampled_dataset",
+                                 sample_by="document")
     tokenizer = load_tokenizer()
 
     def tokenize(element):
