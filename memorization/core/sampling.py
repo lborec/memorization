@@ -70,20 +70,17 @@ def sample_dataset(dataset_path, sampled_dataset_path, sample_ratio=0.25, split=
     """
     This functions samples the original openwebtext and stores it to the target folder.
     """
-    print(f"Beginning sampling for the {'split'} split...")
+    print(f"Beginning sampling for the '{split}' split...")
     # Get a list of all folders from the original dataset and prune out non-folder items
     all_folders_in_dataset = os.listdir(dataset_path)
     all_folders_in_dataset = [folder for folder in all_folders_in_dataset if
                               os.path.isdir(os.path.join(dataset_path, folder))]
 
     # If sampling for the validation split, remove folders that are in the train split
-    if split != "train":
+    if split in ["train", "valid"]:
         with open("memorization/dataset/stats/train_folders.txt", "r") as f:
             train_folders = [line.strip() for line in f.readlines()]
         all_folders_in_dataset = [folder for folder in all_folders_in_dataset if folder not in train_folders]
-
-    # List to keep sampled folders
-    sampled_folders = []
 
     # Get the indices of the folders that we will sample for the new dataset
     dataset_length = len(all_folders_in_dataset)
@@ -93,14 +90,12 @@ def sample_dataset(dataset_path, sampled_dataset_path, sample_ratio=0.25, split=
 
     # Move the chosen files from dataset_path to sampled_dataset_path
     for folder in progressBar(folders_to_keep, prefix='Progress', suffix='Complete'):
-        sampled_folders.append(folder)
+        with open(f"memorization/dataset/stats/{split}_folders.txt", "a") as f:
+            f.write(f"{folder}\n")
         source_filepath = os.path.join(dataset_path, folder)
         destination_filepath = os.path.join(sampled_dataset_path, folder)
         shutil.copytree(source_filepath, destination_filepath)
 
-    # Save the list of folders to .txt
-    with open(f"memorization/dataset/stats/{split}_folders.txt", "w") as f:
-        f.writelines("%s\n" % item for item in sampled_folders)
 
 def generate_duplicates(sampled_dataset_path):
     """
