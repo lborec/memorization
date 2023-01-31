@@ -91,12 +91,12 @@ def sample_dataset(dataset_path, sampled_dataset_path, sample_ratio=0.25, split=
     # folders_to_keep = [all_folders_in_dataset[ind] for ind in indices_to_keep]
 
     dataset_length = len(all_folders_in_dataset)
-    done_folders = math.floor(0.59 * dataset_length)
-    remaining = math.floor(0.41 * dataset_length)
+    done_folders = math.floor(0.59 * (0.25*dataset_length))
+    remaining = math.floor(0.41 * (0.25*dataset_length))
     num_files_to_keep = remaining
     indices_to_keep = random.sample(range(dataset_length), num_files_to_keep)
     folders_to_keep = [all_folders_in_dataset[ind] for ind in indices_to_keep]
-    
+
     # Move the chosen files from dataset_path to sampled_dataset_path
     for folder in progressBar(folders_to_keep, prefix='Progress', suffix='Complete'):
         with open(f"memorization/dataset/stats/{split}_folders.txt", "a") as f:
