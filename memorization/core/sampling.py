@@ -77,17 +77,26 @@ def sample_dataset(dataset_path, sampled_dataset_path, sample_ratio=0.25, split=
                               os.path.isdir(os.path.join(dataset_path, folder))]
 
     # If sampling for the validation split, remove folders that are in the train split
-    if split in ["train", "valid"]:
+    if split == "train": # later: != "train"
+        print("Pruning folders...")
         with open("memorization/dataset/stats/train_folders.txt", "r") as f:
             train_folders = [line.strip() for line in f.readlines()]
         all_folders_in_dataset = [folder for folder in all_folders_in_dataset if folder not in train_folders]
+        print("Folders pruned!")
 
-    # Get the indices of the folders that we will sample for the new dataset
+    # # Get the indices of the folders that we will sample for the new dataset
+    # dataset_length = len(all_folders_in_dataset)
+    # num_files_to_keep = math.floor(dataset_length * sample_ratio)
+    # indices_to_keep = random.sample(range(dataset_length), num_files_to_keep)
+    # folders_to_keep = [all_folders_in_dataset[ind] for ind in indices_to_keep]
+
     dataset_length = len(all_folders_in_dataset)
-    num_files_to_keep = math.floor(dataset_length * sample_ratio)
+    done_folders = math.floor(0.59 * dataset_length)
+    remaining = math.floor(0.41 * dataset_length)
+    num_files_to_keep = remaining
     indices_to_keep = random.sample(range(dataset_length), num_files_to_keep)
     folders_to_keep = [all_folders_in_dataset[ind] for ind in indices_to_keep]
-
+    
     # Move the chosen files from dataset_path to sampled_dataset_path
     for folder in progressBar(folders_to_keep, prefix='Progress', suffix='Complete'):
         with open(f"memorization/dataset/stats/{split}_folders.txt", "a") as f:
