@@ -77,24 +77,16 @@ def sample_dataset(dataset_path, sampled_dataset_path, sample_ratio=0.25, split=
                               os.path.isdir(os.path.join(dataset_path, folder))]
     len_all_folders_in_dataset = len(all_folders_in_dataset)
     # If sampling for the validation split, remove folders that are in the train split
-    if split == "train": # later: != "train"
+    if split == "train":  # later: != "train"
         print(f"Pruning folders... currently {len_all_folders_in_dataset} folders.")
         with open("memorization/dataset/stats/train_folders.txt", "r") as f:
             train_folders = [line.strip() for line in f.readlines()]
         all_folders_in_dataset = [folder for folder in all_folders_in_dataset if folder not in train_folders]
         print(f"Folders pruned! Currently {len(all_folders_in_dataset)} folders.")
 
-    # # Get the indices of the folders that we will sample for the new dataset
-    # dataset_length = len(all_folders_in_dataset)
-    # num_files_to_keep = math.floor(dataset_length * sample_ratio)
-    # indices_to_keep = random.sample(range(dataset_length), num_files_to_keep)
-    # folders_to_keep = [all_folders_in_dataset[ind] for ind in indices_to_keep]
-
-    dataset_length = len(all_folders_in_dataset)
-    done_folders = math.floor(0.59 * (0.25*len_all_folders_in_dataset))
-    remaining = math.floor(0.41 * (0.25*len_all_folders_in_dataset))
-    num_files_to_keep = remaining
-    indices_to_keep = random.sample(range(dataset_length), num_files_to_keep)
+    # Get the indices of the folders that we will sample for the new dataset
+    num_files_to_keep = math.floor(len_all_folders_in_dataset * sample_ratio)
+    indices_to_keep = random.sample(range(len_all_folders_in_dataset), num_files_to_keep)
     folders_to_keep = [all_folders_in_dataset[ind] for ind in indices_to_keep]
 
     # Move the chosen files from dataset_path to sampled_dataset_path
@@ -120,7 +112,7 @@ def generate_duplicates(sampled_dataset_path):
         folder_path = os.path.join(sampled_dataset_path, folder)
         all_files = os.listdir(folder_path)
         length = len(all_files)
-        sample_indices = np.random.exponential(scale=0.5, size=length)
+        sample_indices = np.random.exponential(size=length)
         num_duplicates = np.ceil(sample_indices).astype(int)
         for index, num in enumerate(num_duplicates):
             if num > 1:

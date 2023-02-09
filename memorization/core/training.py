@@ -53,21 +53,22 @@ def train_transformer(model_type):
     model.resize_token_embeddings(len(tokenizer))
 
     current_timestamp = datetime.now().timestamp()
+    current_timestamp = datetime.fromtimestamp(current_timestamp).strftime("%Y-%m-%d-%Hh%Mm%Ss")
 
     args = TrainingArguments(
-        output_dir="trained",
-        per_device_train_batch_size=1,
-        per_device_eval_batch_size=1,
+        output_dir=f"trained/{model_type}",
+        per_device_train_batch_size=2,
+        per_device_eval_batch_size=2,
         evaluation_strategy="steps",
-        eval_steps=5_000,
-        logging_steps=5_000,
+        eval_steps=10,
+        logging_steps=10,
         gradient_accumulation_steps=8,
         num_train_epochs=1,
         weight_decay=0.1,
         warmup_steps=1_000,
         lr_scheduler_type="cosine",
         learning_rate=5e-4,
-        save_steps=5_000,
+        save_steps=10,
         report_to="wandb",
         run_name=f"{model_type}_{current_timestamp}"
         # fp16=True
