@@ -49,6 +49,7 @@ def train_transformer(model_type):
     dataset = load_dataset(
         "text", data_dir="memorization/dataset/sampled_dataset", sample_by="document"
     )
+
     print("Loading tokenizer...")
     tokenizer = load_tokenizer()
 

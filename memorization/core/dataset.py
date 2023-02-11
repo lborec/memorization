@@ -15,9 +15,9 @@ def load_tokenizer():
     return tokenizer
 
 
-webtxt_dataset = load_dataset(
-    "text", data_dir="memorization/dataset/sampled_dataset", sample_by="document"
-)
+# webtxt_dataset = load_dataset(
+#     "text", data_dir="memorization/dataset/sampled_dataset", sample_by="document"
+# )
 
 # class WebTxtDataset(Dataset):
 #     def __init__(self, tokenizer, root_dir="memorization/dataset/sampled_dataset"):
