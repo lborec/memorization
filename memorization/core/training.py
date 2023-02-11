@@ -45,10 +45,11 @@ def load_model(model_type):
 
 
 def train_transformer(model_type):
+    print("Loading dataset...")
     dataset = load_dataset(
         "text", data_dir="memorization/dataset/sampled_dataset", sample_by="document"
     )
-
+    print("Loading tokenizer...")
     tokenizer = load_tokenizer()
 
     def tokenize(element):
@@ -61,10 +62,12 @@ def train_transformer(model_type):
         outputs["input_ids"][-1] = tokenizer.eos_token_id
         return {"input_ids": outputs["input_ids"]}
 
+    print("Tokenizing dataset...")
     dataset_tokenized = dataset.map(tokenize, batched=False)
 
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
+    print("Loading model...")
     model = load_model(model_type)
     model.resize_token_embeddings(len(tokenizer))
 
@@ -103,5 +106,6 @@ def train_transformer(model_type):
         eval_dataset=dataset_tokenized["validation"],
     )
 
+    print("Beginning training...")
     trainer.train()
     trainer.save_pretrained(modeldir)
