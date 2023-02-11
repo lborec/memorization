@@ -11,12 +11,15 @@ def sample_entrypoint(cmd):
     """
     # Assert that project path exists
     project_path = cmd.project_path
-    assert os.path.exists(project_path), "Provided project path doesn't exist. Check again."
+    assert os.path.exists(
+        project_path
+    ), "Provided project path doesn't exist. Check again."
 
     # Assert that the openwebtext has been unpacked
     dataset_path = cmd.dataset_path
     assert os.path.exists(
-        dataset_path), f"{dataset_path} doesn't exist. Make sure to download and unpack the openwebtext there."
+        dataset_path
+    ), f"{dataset_path} doesn't exist. Make sure to download and unpack the openwebtext there."
 
     # Unpack dataset
     # dataset_path = cmd.dataset_path

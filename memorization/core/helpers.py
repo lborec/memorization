@@ -1,4 +1,6 @@
-def progressBar(iterable, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
+def progressBar(
+    iterable, prefix="", suffix="", decimals=1, length=100, fill="█", printEnd="\r"
+):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -14,10 +16,12 @@ def progressBar(iterable, prefix='', suffix='', decimals=1, length=100, fill='�
 
     # Progress Bar Printing Function
     def printProgressBar(iteration):
-        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        percent = ("{0:." + str(decimals) + "f}").format(
+            100 * (iteration / float(total))
+        )
         filledLength = int(length * iteration // total)
-        bar = fill * filledLength + '-' * (length - filledLength)
-        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
+        bar = fill * filledLength + "-" * (length - filledLength)
+        print(f"\r{prefix} |{bar}| {percent}% {suffix}", end=printEnd)
 
     # Initial Call
     printProgressBar(0)

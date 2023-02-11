@@ -16,7 +16,9 @@ def create_target_paths(project_path):
     This function does bookkeeping related to the target folder where the sampled openwebtext will be stored.
     """
     # Create {project_path}/memorization/dataset/sampled_dataset
-    sampled_dataset_path = os.path.join(project_path, "memorization/dataset/sampled_dataset")
+    sampled_dataset_path = os.path.join(
+        project_path, "memorization/dataset/sampled_dataset"
+    )
 
     # Create folder if it doesn't exist
     if not os.path.exists(sampled_dataset_path):
@@ -36,7 +38,9 @@ def create_target_paths(project_path):
     # Create folder if it doesn't exist
     if not os.path.exists(duplicates_path):
         os.makedirs(duplicates_path)
-        print(f"JSON files containing duplicates and their counts will be stored at {duplicates_path}")
+        print(
+            f"JSON files containing duplicates and their counts will be stored at {duplicates_path}"
+        )
 
     # Create subfolders where different length subsets will be stored, e.g. len = 50, 100, 150...
     for length in SAMPLING_TOKEN_LENGTHS:
@@ -51,11 +55,13 @@ def unpack_dataset(unpacked_dataset_path):
     Unpacks the .xz files in openwebtext. The files are actually folders containing multiple .txt files.
     The files are unpacked inside the directory.
     """
-    for filename in progressBar(os.listdir(unpacked_dataset_path), prefix='Progress', suffix='Complete'):
+    for filename in progressBar(
+        os.listdir(unpacked_dataset_path), prefix="Progress", suffix="Complete"
+    ):
         # Iterate through .xz files
         if filename.endswith(".xz"):
             filepath = os.path.join(unpacked_dataset_path, filename)
-            with tarfile.open(fileobj=filepath, mode='r:xz') as tar:
+            with tarfile.open(fileobj=filepath, mode="r:xz") as tar:
                 # Create a new folder
                 new_folder_path = os.path.join(unpacked_dataset_path, filename[:-3])
                 if not os.path.exists(new_folder_path):
@@ -66,31 +72,40 @@ def unpack_dataset(unpacked_dataset_path):
                 # os.remove(filepath)
 
 
-def sample_dataset(dataset_path, sampled_dataset_path, sample_ratio=0.25, split="train"):
+def sample_dataset(
+    dataset_path, sampled_dataset_path, sample_ratio=0.25, split="train"
+):
     """
     This functions samples the original openwebtext and stores it to the target folder.
     """
     print(f"Beginning sampling for the '{split}' split...")
     # Get a list of all folders from the original dataset and prune out non-folder items
     all_folders_in_dataset = os.listdir(dataset_path)
-    all_folders_in_dataset = [folder for folder in all_folders_in_dataset if
-                              os.path.isdir(os.path.join(dataset_path, folder))]
+    all_folders_in_dataset = [
+        folder
+        for folder in all_folders_in_dataset
+        if os.path.isdir(os.path.join(dataset_path, folder))
+    ]
     len_all_folders_in_dataset = len(all_folders_in_dataset)
     # If sampling for the validation split, remove folders that are in the train split
     if split == "train":  # later: != "train"
         print(f"Pruning folders... currently {len_all_folders_in_dataset} folders.")
         with open("memorization/dataset/stats/train_folders.txt", "r") as f:
             train_folders = [line.strip() for line in f.readlines()]
-        all_folders_in_dataset = [folder for folder in all_folders_in_dataset if folder not in train_folders]
+        all_folders_in_dataset = [
+            folder for folder in all_folders_in_dataset if folder not in train_folders
+        ]
         print(f"Folders pruned! Currently {len(all_folders_in_dataset)} folders.")
 
     # Get the indices of the folders that we will sample for the new dataset
     num_files_to_keep = math.floor(len_all_folders_in_dataset * sample_ratio)
-    indices_to_keep = random.sample(range(len_all_folders_in_dataset), num_files_to_keep)
+    indices_to_keep = random.sample(
+        range(len_all_folders_in_dataset), num_files_to_keep
+    )
     folders_to_keep = [all_folders_in_dataset[ind] for ind in indices_to_keep]
 
     # Move the chosen files from dataset_path to sampled_dataset_path
-    for folder in progressBar(folders_to_keep, prefix='Progress', suffix='Complete'):
+    for folder in progressBar(folders_to_keep, prefix="Progress", suffix="Complete"):
         with open(f"memorization/dataset/stats/{split}_folders.txt", "a") as f:
             f.write(f"{folder}\n")
         source_filepath = os.path.join(dataset_path, folder)
@@ -107,8 +122,12 @@ def generate_duplicates(sampled_dataset_path):
          (["text_1", "text_2", "text_2". "text_3"])
     """
     all_folders = os.listdir(sampled_dataset_path)
-    all_folders = [folder for folder in all_folders if os.path.isdir(os.path.join(sampled_dataset_path, folder))]
-    for folder in progressBar(all_folders, prefix='Progress', suffix='Complete'):
+    all_folders = [
+        folder
+        for folder in all_folders
+        if os.path.isdir(os.path.join(sampled_dataset_path, folder))
+    ]
+    for folder in progressBar(all_folders, prefix="Progress", suffix="Complete"):
         folder_path = os.path.join(sampled_dataset_path, folder)
         all_files = os.listdir(folder_path)
         length = len(all_files)

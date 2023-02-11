@@ -6,21 +6,37 @@ from memorization.models import lstm, transformer
 from memorization.configs.lstm import LSTM_CONFIG
 from torch.utils.data import Dataset, DataLoader
 from memorization.configs.gpt2 import *
-from transformers import Trainer, TrainingArguments, GPT2LMHeadModel, GPT2Tokenizer, AutoConfig, AutoTokenizer, \
-    DataCollatorForLanguageModeling, GPTNeoForCausalLM
+from transformers import (
+    Trainer,
+    TrainingArguments,
+    GPT2LMHeadModel,
+    GPT2Tokenizer,
+    AutoConfig,
+    AutoTokenizer,
+    DataCollatorForLanguageModeling,
+    GPTNeoForCausalLM,
+)
 from datasets import load_dataset
 
 ALLOWED_MODELS = ["gpt-neo-125M", "gpt-neo-350M"]
 CONTEXT_LENGTH = 512
 
 
+def load_tokenizer():
+    # Load the GPT tokenizer
+    tokenizer = GPT2Tokenizer.from_pretrained(
+        "gpt2",
+        bos_token="<|startoftext|>",
+        eos_token="<|endoftext|>",
+        pad_token="<|pad|>",
+    )
+    return tokenizer
+
+
 def load_model(model_type):
     assert model_type in ALLOWED_MODELS, f"Allowed models are: {ALLOWED_MODELS}"
 
-    if model_type == "gpt-neo-125M":
-        model = GPTNeoForCausalLM.from_pretrained("EleutherAI/gpt-neo-125M")
-    elif model_type == "gpt-neo-350M":
-        model = GPTNeoForCausalLM.from_pretrained("EleutherAI/gpt-neo-350M")
+    model = GPTNeoForCausalLM.from_pretrained(f"EleutherAI/{model_type}")  # .cuda()
 
     total_params = sum(p.numel() for p in model.parameters())
     print(f"Model size: {total_params / 1000 ** 2:.1f}M parameters")
@@ -29,9 +45,9 @@ def load_model(model_type):
 
 
 def train_transformer(model_type):
-    dataset = load_dataset("text",
-                           data_dir="memorization/dataset/sampled_dataset",
-                           sample_by="document")
+    dataset = load_dataset(
+        "text", data_dir="memorization/dataset/sampled_dataset", sample_by="document"
+    )
 
     tokenizer = load_tokenizer()
 
@@ -42,8 +58,8 @@ def train_transformer(model_type):
             truncation=True,
             max_length=CONTEXT_LENGTH,
         )
-        outputs['input_ids'][-1] = tokenizer.eos_token_id
-        return {"input_ids": outputs['input_ids']}
+        outputs["input_ids"][-1] = tokenizer.eos_token_id
+        return {"input_ids": outputs["input_ids"]}
 
     dataset_tokenized = dataset.map(tokenize, batched=False)
 
@@ -53,15 +69,19 @@ def train_transformer(model_type):
     model.resize_token_embeddings(len(tokenizer))
 
     current_timestamp = datetime.now().timestamp()
-    current_timestamp = datetime.fromtimestamp(current_timestamp).strftime("%Y-%m-%d-%Hh%Mm%Ss")
+    current_timestamp = datetime.fromtimestamp(current_timestamp).strftime(
+        "%Y-%m-%d-%Hh%Mm%Ss"
+    )
+
+    modeldir = f"trained/{model_type}"
 
     args = TrainingArguments(
-        output_dir=f"trained/{model_type}",
-        per_device_train_batch_size=2,
-        per_device_eval_batch_size=2,
+        output_dir=modeldir,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=16,
         evaluation_strategy="steps",
-        eval_steps=10,
-        logging_steps=10,
+        eval_steps=1000,
+        logging_steps=1000,
         gradient_accumulation_steps=8,
         num_train_epochs=1,
         weight_decay=0.1,
@@ -70,8 +90,8 @@ def train_transformer(model_type):
         learning_rate=5e-4,
         save_steps=10,
         report_to="wandb",
-        run_name=f"{model_type}_{current_timestamp}"
-        # fp16=True
+        run_name=f"{model_type}_{current_timestamp}",
+        fp16=True,
     )
 
     trainer = Trainer(
@@ -79,8 +99,9 @@ def train_transformer(model_type):
         tokenizer=tokenizer,
         args=args,
         data_collator=data_collator,
-        train_dataset=dataset_tokenized['train'],
-        eval_dataset=dataset_tokenized['validation']
+        train_dataset=dataset_tokenized["train"],
+        eval_dataset=dataset_tokenized["validation"],
     )
 
     trainer.train()
+    trainer.save_pretrained(modeldir)

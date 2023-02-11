@@ -4,9 +4,17 @@ from memorization.models import lstm, transformer
 from memorization.configs.lstm import LSTM_CONFIG
 from torch.utils.data import Dataset, DataLoader
 from memorization.configs.gpt2 import *
-from transformers import Trainer, TrainingArguments, GPT2Model, GPT2LMHeadModel, GPT2Tokenizer, AutoConfig, \
-    AutoTokenizer, \
-    DataCollatorForLanguageModeling, GPT2Config
+from transformers import (
+    Trainer,
+    TrainingArguments,
+    GPT2Model,
+    GPT2LMHeadModel,
+    GPT2Tokenizer,
+    AutoConfig,
+    AutoTokenizer,
+    DataCollatorForLanguageModeling,
+    GPT2Config,
+)
 from datasets import load_dataset
 
 CONTEXT_LENGTH = 512

@@ -6,15 +6,18 @@ from transformers import GPT2Tokenizer
 
 def load_tokenizer():
     # Load the GPT tokenizer
-    tokenizer = GPT2Tokenizer.from_pretrained('gpt2',
-                                              bos_token='<|startoftext|>',
-                                              eos_token='<|endoftext|>',
-                                              pad_token='<|pad|>')
+    tokenizer = GPT2Tokenizer.from_pretrained(
+        "gpt2",
+        bos_token="<|startoftext|>",
+        eos_token="<|endoftext|>",
+        pad_token="<|pad|>",
+    )
     return tokenizer
 
 
-webtxt_dataset = load_dataset("text", data_dir="memorization/dataset/sampled_dataset",
-                              sample_by="document")
+webtxt_dataset = load_dataset(
+    "text", data_dir="memorization/dataset/sampled_dataset", sample_by="document"
+)
 
 # class WebTxtDataset(Dataset):
 #     def __init__(self, tokenizer, root_dir="memorization/dataset/sampled_dataset"):

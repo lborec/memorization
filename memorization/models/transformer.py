@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 
 print("PyTorch Version: ", torch.__version__)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print('Device:', device)
+print("Device:", device)
 num_gpu = torch.cuda.device_count()
-print('Number of GPUs Available:', num_gpu)
+print("Number of GPUs Available:", num_gpu)
 
 
 def clones(module, N):
@@ -22,7 +22,7 @@ def clones(module, N):
 
 def subsequent_mask(size):
     attn_shape = (1, size, size)
-    subsequent_mask = np.triu(np.ones(attn_shape), k=1).astype('uint8')
+    subsequent_mask = np.triu(np.ones(attn_shape), k=1).astype("uint8")
     return torch.from_numpy(subsequent_mask) == 0
 
 
@@ -52,17 +52,19 @@ class PositionalEncoding(nn.Module):
         # Compute the positional encodings once in log space.
         pe = torch.zeros(max_len, d_model)
         # Few changes to force position/div_term to float
-        position = torch.arange(0., max_len).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0., d_model, 2) * -(math.log(10000.0) / d_model))
+        position = torch.arange(0.0, max_len).unsqueeze(1)
+        div_term = torch.exp(
+            torch.arange(0.0, d_model, 2) * -(math.log(10000.0) / d_model)
+        )
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
         pe = pe.unsqueeze(0)
         # Make 'pe' to retain it's value during training (like static variable)
-        self.register_buffer('pe', pe)
+        self.register_buffer("pe", pe)
 
     def forward(self, x):
         # Add the sequence information to the input
-        x = x + self.pe[:, :x.size(1)]
+        x = x + self.pe[:, : x.size(1)]
         return self.dropout(x)
 
 
@@ -120,8 +122,7 @@ class EncoderDecoder(nn.Module):
 
     def forward(self, src, tgt, src_mask, tgt_mask):
         "Take in and process masked src and target sequences."
-        return self.decode(self.encode(src, src_mask), src_mask,
-                           tgt, tgt_mask)
+        return self.decode(self.encode(src, src_mask), src_mask, tgt, tgt_mask)
 
     def encode(self, src, src_mask):
         return self.encoder(self.src_embed(src), src_mask)
@@ -249,8 +250,10 @@ class MultiHeadedAttention(nn.Module):
         nbatches = query.size(0)
 
         # 1) Do all the linear projections in batch from d_model => h x d_k
-        query, key, value = [l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
-                             for l, x in zip(self.linears, (query, key, value))]
+        query, key, value = [
+            l(x).view(nbatches, -1, self.h, self.d_k).transpose(1, 2)
+            for l, x in zip(self.linears, (query, key, value))
+        ]
 
         # 2) Apply attention on all the projected vectors in batch.
         x, self.attn = attention(query, key, value, mask=mask, dropout=self.dropout)
@@ -263,24 +266,39 @@ class MultiHeadedAttention(nn.Module):
 class VanillaTransformer(nn.Module):
     def __init__(self, params):
         super(__class__, self).__init__()
-        self.vocab = params["vocab_size"] + 1  # plus one for padding (start- and end-token already incl.)
+        self.vocab = (
+            params["vocab_size"] + 1
+        )  # plus one for padding (start- and end-token already incl.)
         self.d_model = params["embedding_size"]
         self.d_ff = params["hidden_size"]
         self.N = params["num_heads"]
         self.dropout = params["dropout"]
-        self.start_token = torch.as_tensor(params["start_token"], dtype=torch.int64, device="cpu")
-        self.end_token = torch.as_tensor(params["end_token"], dtype=torch.int64, device="cpu")
+        self.start_token = torch.as_tensor(
+            params["start_token"], dtype=torch.int64, device="cpu"
+        )
+        self.end_token = torch.as_tensor(
+            params["end_token"], dtype=torch.int64, device="cpu"
+        )
 
         c = copy.deepcopy
         self.attn = MultiHeadedAttention(self.N, self.d_model)
         self.ff = PositionwiseFeedForward(self.d_model, self.d_ff, self.dropout)
         self.position = PositionalEncoding(self.d_model, self.dropout)
         self.model = EncoderDecoder(
-            Encoder(EncoderLayer(self.d_model, c(self.attn), c(self.ff), self.dropout), self.N),
-            Decoder(DecoderLayer(self.d_model, c(self.attn), c(self.attn), c(self.ff), self.dropout), self.N),
+            Encoder(
+                EncoderLayer(self.d_model, c(self.attn), c(self.ff), self.dropout),
+                self.N,
+            ),
+            Decoder(
+                DecoderLayer(
+                    self.d_model, c(self.attn), c(self.attn), c(self.ff), self.dropout
+                ),
+                self.N,
+            ),
             nn.Sequential(Embeddings(self.d_model, self.vocab), c(self.position)),
             nn.Sequential(Embeddings(self.d_model, self.vocab), c(self.position)),
-            Generator(self.d_model, self.vocab))
+            Generator(self.d_model, self.vocab),
+        )
 
         # This was important from their code.
         # Initialize parameters with Glorot / fan_avg.
