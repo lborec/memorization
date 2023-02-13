@@ -10,8 +10,6 @@ import math, copy, time
 import matplotlib.pyplot as plt
 
 print("PyTorch Version: ", torch.__version__)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print("Device:", device)
 num_gpu = torch.cuda.device_count()
 print("Number of GPUs Available:", num_gpu)
 

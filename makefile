@@ -25,7 +25,7 @@ install:               ## Install project locally in development mode - without 
 
 .PHONY: install-dev
 install-dev:           ## Install project locally in development mode - with dev tools
-	. venv/bin/activate && pip install -e ".[dev]"
+	. venv/bin/activate && pip install -e . -r requirements.txt --upgrade --force-reinstall
 
 ######################### RUN TESTS ####################################
 
