@@ -47,7 +47,7 @@ def load_model(model_type):
 def train_transformer(model_type):
     print("Loading dataset...")
     dataset = load_dataset(
-        "text", data_dir="memorization/dataset/sampled_dataset", sample_by="document"
+        "text", data_dir="memorization/dataset/sampled_dataset/", sample_by="document"
     )
 
     print("Loading tokenizer...")
@@ -64,7 +64,7 @@ def train_transformer(model_type):
         return {"input_ids": outputs["input_ids"]}
 
     print("Tokenizing dataset...")
-    dataset_tokenized = dataset.map(tokenize, batched=False)
+    tokenized = dataset.map(tokenize, batched=False)
 
     data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
@@ -81,18 +81,17 @@ def train_transformer(model_type):
 
     args = TrainingArguments(
         output_dir=modeldir,
-        per_device_train_batch_size=4,
-        per_device_eval_batch_size=4,
+        per_device_train_batch_size=8,
+        per_device_eval_batch_size=8,
         evaluation_strategy="steps",
-        eval_steps=300,
-        logging_steps=300,
-        gradient_accumulation_steps=8,
+        eval_steps=6000,
+        logging_steps=6000,
         num_train_epochs=1,
         weight_decay=0.1,
         warmup_steps=1_000,
         lr_scheduler_type="cosine",
         learning_rate=5e-4,
-        save_steps=1000,
+        save_steps=6000,
         report_to="wandb",
         run_name=f"{model_type}_{current_timestamp}",
         fp16=True,
@@ -103,8 +102,8 @@ def train_transformer(model_type):
         tokenizer=tokenizer,
         args=args,
         data_collator=data_collator,
-        train_dataset=dataset_tokenized["train"],
-        eval_dataset=dataset_tokenized["validation"],
+        train_dataset=tokenized['train'],
+        eval_dataset=tokenized['validation'],
     )
 
     print("Beginning training...")
