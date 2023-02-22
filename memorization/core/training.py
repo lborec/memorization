@@ -108,4 +108,4 @@ def train_transformer(model_type):
 
     print("Beginning training...")
     trainer.train()
-    trainer.save_pretrained(modeldir)
+    trainer.save_model(modeldir)
