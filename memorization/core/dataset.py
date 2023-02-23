@@ -1,12 +1,12 @@
 import os
 from datasets import load_dataset
 from torch.utils.data import Dataset
-from transformers import GPT2Tokenizer
+from transformers import AutoTokenizer
 
 
 def load_tokenizer():
     # Load the GPT tokenizer
-    tokenizer = GPT2Tokenizer.from_pretrained(
+    tokenizer = AutoTokenizer.from_pretrained(
         "gpt2",
         bos_token="<|startoftext|>",
         eos_token="<|endoftext|>",
