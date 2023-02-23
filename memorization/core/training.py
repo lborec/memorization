@@ -35,8 +35,10 @@ def load_tokenizer():
 
 def load_model(model_type):
     assert model_type in ALLOWED_MODELS, f"Allowed models are: {ALLOWED_MODELS}"
-
-    model = GPTNeoForCausalLM.from_pretrained(f"EleutherAI/{model_type}")  # .cuda()
+    if model_type == "gpt-neo-125M":
+        model = GPTNeoForCausalLM.from_pretrained(f"EleutherAI/{model_type}")  # .cuda()
+    elif model_type == "gpt-neo-350M":
+        model = GPTNeoForCausalLM.from_pretrained("xhyi/PT_GPTNEO350_ATG")  # .cuda()
 
     total_params = sum(p.numel() for p in model.parameters())
     print(f"Model size: {total_params / 1000 ** 2:.1f}M parameters")
