@@ -18,8 +18,8 @@ def print_stats(file):
         else:
             num_copies_counts[num_copies] += 1
 
-    for num_copies, count in num_copies_counts.items():
-        print(f'num_copies={num_copies}: {count} objects')
+    for key in sorted(num_copies_counts.keys()):
+        print(f'num_copies={key}: {num_copies_counts[key]} objects')
 
     print("---------------")
 
