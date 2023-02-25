@@ -59,7 +59,7 @@ def unpack_dataset(unpacked_dataset_path):
     The files are unpacked inside the directory.
     """
     for filename in progressBar(
-        os.listdir(unpacked_dataset_path), prefix="Progress", suffix="Complete"
+            os.listdir(unpacked_dataset_path), prefix="Progress", suffix="Complete"
     ):
         # Iterate through .xz files
         if filename.endswith(".xz"):
@@ -76,7 +76,7 @@ def unpack_dataset(unpacked_dataset_path):
 
 
 def sample_dataset(
-    dataset_path, sampled_dataset_path, sample_ratio=0.25, split="train"
+        dataset_path, sampled_dataset_path, sample_ratio=0.25, split="train"
 ):
     """
     This functions samples the original openwebtext and stores it to the target folder.
@@ -196,19 +196,6 @@ def generate_stats(split_path, stats_folder_path):
     # Create buckets
     duplicates, nonduplicates = [], []
 
-    # Load the tokenizer
-    tokenizer = load_tokenizer()
-
-    def tokenize(element):
-        text = "<|endoftext|> " + element["text"] + " <|endoftext|>"
-        outputs = tokenizer(
-            text,
-            truncation=True,
-            max_length=512,
-        )
-        outputs["input_ids"][-1] = tokenizer.eos_token_id
-        return {"input_ids": outputs["input_ids"]}
-
     # Define the regex pattern
     regex = r"(?:_[0-9]+)*\.txt"
 
@@ -234,16 +221,11 @@ def generate_stats(split_path, stats_folder_path):
         for filename, num_copies in counts.items():
             filename_txt = filename + ".txt"
             filepath = os.path.join(folder_path, filename_txt)
-            # Get txt file stats
-            txt = open(filepath, "r").read()
-            tokenized_txt = tokenize({"text": txt})
-            length = len(tokenized_txt["input_ids"])
+
             # Define the data to be included in the JSON file
             data = {
                 "file_path": filepath,
-                "num_copies": num_copies,
-                "length": length,
-                "tokens": tokenized_txt["input_ids"],
+                "num_copies": num_copies
             }
             if num_copies > 1:
                 duplicates.append(data)
@@ -265,17 +247,39 @@ def generate_stats_masterlist(files, save_path, num_files_to_keep=250):
     """
 
     """
+    # Load the tokenizer
+    tokenizer = load_tokenizer()
+
+    def tokenize(element):
+        text = "<|endoftext|> " + element["text"] + " <|endoftext|>"
+        outputs = tokenizer(
+            text,
+            truncation=True,
+            max_length=512,
+        )
+        outputs["input_ids"][-1] = tokenizer.eos_token_id
+        return {"input_ids": outputs["input_ids"]}
+
     pruned_buckets = {}
 
     # Iterate over duplicates and nonduplicates
-    for file in files:
+    for file in progressBar(files, prefix="Progress", suffix="Complete"):
         with open(file) as f:
             data = json.load(f)
 
         buckets = {}
 
-        for obj in data:
+        for obj in progressBar(data, prefix="Progress", suffix="Complete"):
             num_copies = obj["num_copies"]
+
+            # Get txt file stats
+            txt = open(obj["file_path"], "r").read()
+            tokenized_txt = tokenize({"text": txt})
+            length = len(tokenized_txt["input_ids"])
+
+            obj["length"] = length
+            obj["tokens"] = tokenized_txt["input_ids"]
+
             if num_copies not in buckets:
                 buckets[num_copies] = []
             else:
