@@ -195,6 +195,7 @@ def generate_stats(split_path, stats_folder_path):
         for file in files:
             extensionless_filename = re.split(regex, file)
             temp_files.append(extensionless_filename[0])
+        import pdb; pdb.set_trace()
         # Get the duplicate counts
         counts = Counter(temp_files)
         ### Write stats to file
