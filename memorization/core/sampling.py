@@ -179,7 +179,16 @@ def generate_duplicates(sampled_dataset_path):
 
 
 def generate_stats(split_path, stats_folder_path):
-    """ """
+    """
+    Goes through the entire sampled_dataset, and collects statistics for each data sample (txt file).
+    data = {
+                "file_path": filepath,
+                "num_copies": num_copies,
+                "length": length,
+                "tokens": tokenized_txt["input_ids"],
+            }
+    This file is later used to sample data from for the experiments.
+    """
     # Make folders
     if not os.path.exists(stats_folder_path):
         os.makedirs(stats_folder_path)
@@ -211,7 +220,7 @@ def generate_stats(split_path, stats_folder_path):
         if os.path.isdir(os.path.join(split_path, folder))
     ]
     # Iterate over each folder's txt files and write stats
-    for folder in all_folders:
+    for folder in progressBar(all_folders, prefix="Progress", suffix="Complete"):
         folder_path = os.path.join(split_path, folder)
         files = os.listdir(folder_path)
         files = [file for file in files if file.endswith(".txt")]
@@ -253,6 +262,9 @@ def generate_stats(split_path, stats_folder_path):
 
 
 def generate_stats_masterlist(files, save_path, num_files_to_keep=250):
+    """
+
+    """
     pruned_buckets = {}
 
     # Iterate over duplicates and nonduplicates
