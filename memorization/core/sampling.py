@@ -1,11 +1,14 @@
 import os
+import re
 import shutil
 import tarfile
+import json
 import math
 import random
 import numpy as np
+from collections import Counter
 from memorization.core.helpers import progressBar
-from collections import defaultdict
+from memorization.core.dataset import load_tokenizer
 
 SAMPLING_TOKEN_LENGTHS = [150, 200, 250, 300, 350, 400, 450, 500]
 SAMPLING_SUBFOLDER_PREFIX = "length_"
@@ -150,9 +153,77 @@ def generate_duplicates(sampled_dataset_path):
                         f.write(txt)
 
 
-def generate_duplicate_stats():
+def generate_stats(split_path, stats_folder_path):
     """
-    Generates statistics about the duplicates in dataset/duplicates
     """
-    # TODO: Can be implemented anytime
-    pass
+    # Make folders
+    if not os.path.exists(stats_folder_path):
+        os.makedirs(stats_folder_path)
+
+    # Create buckets
+    duplicates, nonduplicates = [], []
+
+    # Load the tokenizer
+    tokenizer = load_tokenizer()
+    def tokenize(element):
+        text = "<|endoftext|> " + element["text"] + " <|endoftext|>"
+        outputs = tokenizer(
+            text,
+            truncation=True,
+            max_length=512,
+        )
+        outputs["input_ids"][-1] = tokenizer.eos_token_id
+        return {"input_ids": outputs["input_ids"]}
+
+    # Define the regex pattern
+    regex = r'(?:_[0-9]+)?\.txt'
+
+    # Get all folders
+    all_folders = os.listdir(split_path)
+    all_folders = [
+        folder
+        for folder in all_folders
+        if os.path.isdir(os.path.join(split_path, folder))
+    ]
+    # import pdb; pdb.set_trace()
+    # Iterate over each folder's txt files and write stats
+    for folder in all_folders:
+        folder_path = os.path.join(split_path, folder)
+        files = os.listdir(folder_path)
+        files = [file for file in files if file.endswith(".txt")]
+        temp_files = []
+        for file in files:
+            extensionless_filename = re.split(regex, file)
+            temp_files.append(extensionless_filename[0])
+        # Get the duplicate counts
+        counts = Counter(temp_files)
+        ### Write stats to file
+        for filename, num_copies in counts.items():
+            filename_txt = filename + ".txt"
+            filepath = os.path.join(folder_path, filename_txt)
+            # Get txt file stats
+            txt = open(filepath, "r").read()
+            tokenized_txt = tokenize({"text":txt})
+            length = len(tokenized_txt["input_ids"])
+            # Define the data to be included in the JSON file
+            data = {
+                "file_path": filepath,
+                "num_copies": num_copies,
+                "length": length
+            }
+            if num_copies > 1:
+                duplicates.append(data)
+            else:
+                nonduplicates.append(data)
+    # Write JSONs
+    with open(f"{stats_folder_path}/duplicates.json", "w") as json_file:
+        json.dump(duplicates, json_file)
+    with open(f"{stats_folder_path}/nonduplicates.json", "w") as json_file:
+        json.dump(nonduplicates, json_file)
+
+
+
+
+
+
+

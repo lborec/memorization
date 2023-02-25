@@ -38,8 +38,13 @@ def sample_entrypoint(cmd):
 
     # Generate duplicates
     print("..Generating duplicates...")
-    generate_duplicates(train_path)
+    # generate_duplicates(train_path)
     # generate_duplicates(valid_path)
 
     # Generate duplicate statistics
-    # generate_duplicate_stats()
+    stats_folder_path = os.path.join(project_path, "memorization/dataset/stats")
+    train_json = os.path.join(stats_folder_path, "train_stats")
+    valid_json = os.path.join(stats_folder_path, "valid_stats")
+
+    generate_stats(train_path, train_json)
+    generate_stats(valid_path, valid_json)
