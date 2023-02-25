@@ -176,7 +176,7 @@ def generate_stats(split_path, stats_folder_path):
         return {"input_ids": outputs["input_ids"]}
 
     # Define the regex pattern
-    regex = r'(?:_[0-9]+)?\.txt'
+    regex = r'(?:_[0-9]+)*\.txt'
 
     # Get all folders
     all_folders = os.listdir(split_path)
@@ -185,7 +185,6 @@ def generate_stats(split_path, stats_folder_path):
         for folder in all_folders
         if os.path.isdir(os.path.join(split_path, folder))
     ]
-    # import pdb; pdb.set_trace()
     # Iterate over each folder's txt files and write stats
     for folder in all_folders:
         folder_path = os.path.join(split_path, folder)
@@ -195,7 +194,6 @@ def generate_stats(split_path, stats_folder_path):
         for file in files:
             extensionless_filename = re.split(regex, file)
             temp_files.append(extensionless_filename[0])
-        import pdb; pdb.set_trace()
         # Get the duplicate counts
         counts = Counter(temp_files)
         ### Write stats to file
