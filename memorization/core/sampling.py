@@ -190,11 +190,11 @@ def generate_stats(split_path, stats_folder_path):
     for folder in all_folders:
         folder_path = os.path.join(split_path, folder)
         files = os.listdir(folder_path)
-        files = [re.split(regex, file)[0] for file in files if file.endswith(".txt")]
+        files = [file for file in files if file.endswith(".txt")]
         temp_files = []
-        # for file in files:
-        #     extensionless_filename = re.split(regex, file)
-        #     temp_files.append(extensionless_filename[0])
+        for file in files:
+            extensionless_filename = re.split(regex, file)
+            temp_files.append(extensionless_filename[0])
         # Get the duplicate counts
         counts = Counter(temp_files)
         ### Write stats to file
