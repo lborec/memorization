@@ -16,10 +16,10 @@ def train_subcommand(args):
     train.train_entrypoint(args)
 
 
-def finetune_subcommand(args):
-    from . import finetune
+def run_experiments_subcommand(args):
+    from . import run_experiments
 
-    finetune.finetune_entrypoint(args)
+    run_experiments.run_experiments_entrypoint(args)
 
 
 # Entry points
@@ -58,14 +58,20 @@ def parse_args():
     train_parser.set_defaults(func=train_subcommand)
 
     # FINETUNE ARGS
-    finetune_parser = subparsers.add_parser("finetune")
-    finetune_parser.add_argument(
-        "--model_version",
+    run_experiments_parser = subparsers.add_parser("run_experiments")
+    run_experiments_parser.add_argument(
+        "--project_path",
         type=str,
-        help="GPT-2 model version to finetune. Choices: small, xl",
+        help="Path of the memorization project. E.g., /Users/luka/memorization.",
         required=True,
     )
-    finetune_parser.set_defaults(func=finetune_subcommand)
+    run_experiments_parser.add_argument(
+        "--model_path",
+        type=str,
+        help="Path to trained model.",
+        required=True,
+    )
+    run_experiments_parser.set_defaults(func=run_experiments_subcommand)
 
     # ~EL FIN~
     return parser.parse_args()

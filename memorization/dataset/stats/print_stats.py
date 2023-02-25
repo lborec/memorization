@@ -1,7 +1,6 @@
 import json
 
-files = ['train_stats/duplicates.json',
-         'train_stats/nonduplicates.json']
+files = ["train_stats/duplicates.json", "train_stats/nonduplicates.json"]
 
 
 def print_stats(file):
@@ -12,14 +11,14 @@ def print_stats(file):
     num_copies_counts = {}
 
     for obj in data:
-        num_copies = obj['num_copies']
+        num_copies = obj["num_copies"]
         if num_copies not in num_copies_counts:
             num_copies_counts[num_copies] = 1
         else:
             num_copies_counts[num_copies] += 1
 
     for key in sorted(num_copies_counts.keys()):
-        print(f'num_copies={key}: {num_copies_counts[key]} objects')
+        print(f"num_copies={key}: {num_copies_counts[key]} objects")
 
     print("---------------")
 

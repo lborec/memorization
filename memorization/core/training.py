@@ -15,12 +15,12 @@ from transformers import (
     AutoTokenizer,
     DataCollatorForLanguageModeling,
     GPTNeoForCausalLM,
-    AutoModelForCausalLM
+    AutoModelForCausalLM,
 )
 from datasets import load_dataset
 
 ALLOWED_MODELS = ["gpt-neo-125M", "gpt-neo-350M"]
-CONTEXT_LENGTH = 512
+# CONTEXT_LENGTH = 512
 
 
 def load_tokenizer():
@@ -61,7 +61,7 @@ def train_transformer(model_type):
         outputs = tokenizer(
             text,
             truncation=True,
-            max_length=CONTEXT_LENGTH,
+            max_length=512,
         )
         outputs["input_ids"][-1] = tokenizer.eos_token_id
         return {"input_ids": outputs["input_ids"]}
@@ -105,8 +105,8 @@ def train_transformer(model_type):
         tokenizer=tokenizer,
         args=args,
         data_collator=data_collator,
-        train_dataset=tokenized['train'],
-        eval_dataset=tokenized['validation'],
+        train_dataset=tokenized["train"],
+        eval_dataset=tokenized["validation"],
     )
 
     print("Beginning training...")

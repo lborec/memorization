@@ -35,22 +35,22 @@ def create_target_paths(project_path):
     if not os.path.exists(valid_path):
         os.makedirs(valid_path)
 
-    # Create {project_path}/memorization/datasetduplicates
-    duplicates_path = os.path.join(project_path, "memorization/dataset/stats")
+    # Create {project_path}/memorization/stats
+    stats_path = os.path.join(project_path, "memorization/dataset/stats")
 
     # Create folder if it doesn't exist
-    if not os.path.exists(duplicates_path):
-        os.makedirs(duplicates_path)
+    if not os.path.exists(stats_path):
+        os.makedirs(stats_path)
         print(
-            f"JSON files containing duplicates and their counts will be stored at {duplicates_path}"
+            f"JSON files containing duplicate statistics will be stored at {stats_path}"
         )
 
-    # Create subfolders where different length subsets will be stored, e.g. len = 50, 100, 150...
-    for length in SAMPLING_TOKEN_LENGTHS:
-        temp_json_path = os.path.join(duplicates_path, f"length_{length}")
-        open(temp_json_path, "w").close()
+    # # Create subfolders where different length subsets will be stored, e.g. len = 50, 100, 150...
+    # for length in SAMPLING_TOKEN_LENGTHS:
+    #     temp_json_path = os.path.join(duplicates_path, f"length_{length}")
+    #     open(temp_json_path, "w").close()
 
-    return [train_path, valid_path], duplicates_path
+    return [train_path, valid_path], stats_path
 
 
 def unpack_dataset(unpacked_dataset_path):
@@ -153,9 +153,33 @@ def generate_duplicates(sampled_dataset_path):
                         f.write(txt)
 
 
+# def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=40, num_objects_copied=250):
+#     # Put all files into a single list
+#     all_folders = os.listdir(sampled_dataset_path)
+#     all_folders = [
+#         folder
+#         for folder in all_folders
+#         if os.path.isdir(os.path.join(sampled_dataset_path, folder))
+#     ]
+#     all_files = []
+#     for folder in all_folders:
+#         folder_path = os.path.join(sampled_dataset_path, folder)
+#         files = os.listdir(folder_path)
+#         for f in files:
+#             filepath = os.path.join(folder_path, f)
+#             all_files.append(filepath)
+#
+#     for i in range(2, copy_up_to): # 2 to 35
+#         for j in range(num_objects_copied): #
+#             import pdb; pdb.set_trace()
+#             random_filepath = all_files.pop(random.randrange(len(all_files)))
+#             txt = open(random_filepath, "r").read()
+#             for n in range(1, i):
+#                 # ... copy from above
+
+
 def generate_stats(split_path, stats_folder_path):
-    """
-    """
+    """ """
     # Make folders
     if not os.path.exists(stats_folder_path):
         os.makedirs(stats_folder_path)
@@ -165,6 +189,7 @@ def generate_stats(split_path, stats_folder_path):
 
     # Load the tokenizer
     tokenizer = load_tokenizer()
+
     def tokenize(element):
         text = "<|endoftext|> " + element["text"] + " <|endoftext|>"
         outputs = tokenizer(
@@ -176,7 +201,7 @@ def generate_stats(split_path, stats_folder_path):
         return {"input_ids": outputs["input_ids"]}
 
     # Define the regex pattern
-    regex = r'(?:_[0-9]+)*\.txt'
+    regex = r"(?:_[0-9]+)*\.txt"
 
     # Get all folders
     all_folders = os.listdir(split_path)
@@ -202,27 +227,54 @@ def generate_stats(split_path, stats_folder_path):
             filepath = os.path.join(folder_path, filename_txt)
             # Get txt file stats
             txt = open(filepath, "r").read()
-            tokenized_txt = tokenize({"text":txt})
+            tokenized_txt = tokenize({"text": txt})
             length = len(tokenized_txt["input_ids"])
             # Define the data to be included in the JSON file
             data = {
                 "file_path": filepath,
                 "num_copies": num_copies,
-                "length": length
+                "length": length,
+                "tokens": tokenized_txt["input_ids"],
             }
             if num_copies > 1:
                 duplicates.append(data)
             else:
                 nonduplicates.append(data)
     # Write JSONs
-    with open(f"{stats_folder_path}/duplicates.json", "w") as json_file:
+    duplicates_json = f"{stats_folder_path}/duplicates.json"
+    nonduplicates_json = f"{stats_folder_path}/nonduplicates.json"
+
+    with open(duplicates_json, "w") as json_file:
         json.dump(duplicates, json_file)
-    with open(f"{stats_folder_path}/nonduplicates.json", "w") as json_file:
+    with open(nonduplicates_json, "w") as json_file:
         json.dump(nonduplicates, json_file)
 
+    return duplicates_json, nonduplicates_json
 
 
+def generate_stats_masterlist(files, save_path, num_files_to_keep=250):
+    pruned_buckets = {}
 
+    # Iterate over duplicates and nonduplicates
+    for file in files:
+        with open(file) as f:
+            data = json.load(f)
 
+        buckets = {}
 
+        for obj in data:
+            num_copies = obj["num_copies"]
+            if num_copies not in buckets:
+                buckets[num_copies] = []
+            else:
+                buckets[num_copies].append(obj)
 
+        for key, values in buckets.items():
+            if len(values) <= num_files_to_keep:
+                pruned_buckets[key] = values
+            else:
+                sampled_values = random.sample(values, 250)
+                pruned_buckets[key] = sampled_values
+
+    with open(f"{save_path}/experiment_masterlist.json", "w") as json_file:
+        json.dump(pruned_buckets, json_file)
