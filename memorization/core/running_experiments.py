@@ -51,44 +51,44 @@ def run_experiments(model, json_file, save_path, method):
         data = json.load(file)
 
     results = []
-    import pdb;pdb.set_trace()
-    for data_point in data.items():
-        # Get the variables
-        file_path = data_point["file_path"]
-        tokens = data_point["tokens"]
-        tokens_torch = torch.tensor(tokens)
-        max_length = data_point["length"]
-        num_copies = data_point["num_copies"]
+    for key in data.items():
+        for data_point in data[key]:
+            # Get the variables
+            file_path = data_point["file_path"]
+            tokens = data_point["tokens"]
+            tokens_torch = torch.tensor(tokens)
+            max_length = data_point["length"]
+            num_copies = data_point["num_copies"]
 
-        # Make the result dict
-        result_dict = {
-            "file_path": file_path,
-            "max_length": max_length,
-            "memorized": False,
-            "num_copies": num_copies,
-        }
+            # Make the result dict
+            result_dict = {
+                "file_path": file_path,
+                "max_length": max_length,
+                "memorized": False,
+                "num_copies": num_copies,
+            }
 
-        # Set loop conditions
-        memorized = False
-        num_tokens = 0
+            # Set loop conditions
+            memorized = False
+            num_tokens = 0
 
-        # Run memorization loop
-        while (memorized == False) and ((num_tokens + 50) < max_length):
-            num_tokens += 50
-            input_tokens = torch.tensor(tokens[:num_tokens]).unsqueeze(0)
-            if method == "greedy_decoding":
-                model_output = model.generate(
-                    input_tokens, num_beams=1, do_sample=False, max_length=max_length
-                )
-            elif method == "nucleus_sampling":
-                pass
-            output_tokens = model_output[0]
-            memorized = check_if_memorized(tokens_torch, output_tokens)
+            # Run memorization loop
+            while (memorized == False) and ((num_tokens + 50) < max_length):
+                num_tokens += 50
+                input_tokens = torch.tensor(tokens[:num_tokens]).unsqueeze(0)
+                if method == "greedy_decoding":
+                    model_output = model.generate(
+                        input_tokens, num_beams=1, do_sample=False, max_length=max_length
+                    )
+                elif method == "nucleus_sampling":
+                    pass
+                output_tokens = model_output[0]
+                memorized = check_if_memorized(tokens_torch, output_tokens)
 
-            if memorized:
-                result_dict["memorized"]: True
-                result_dict["memorized_at"]: num_tokens
-        results.append(result_dict)
+                if memorized:
+                    result_dict["memorized"]: True
+                    result_dict["memorized_at"]: num_tokens
+            results.append(result_dict)
 
     # Write results to JSON file
     current_timestamp = datetime.now().timestamp()
