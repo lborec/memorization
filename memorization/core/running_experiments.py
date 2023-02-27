@@ -57,7 +57,7 @@ def run_experiments(model, json_file, save_path, method):
 
     print("..Starting memorization experiments...")
     keys = data.keys()
-    keys = [str(num) for num in keys]
+    keys = [int(num) for num in keys]
     keys = sorted(keys, reverse=True)
     for key in progressBar(keys, prefix="Progress", suffix="Complete"):
         print("Num counts:", key)
