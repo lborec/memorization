@@ -51,6 +51,7 @@ def run_experiments(model, json_file, save_path, method):
         data = json.load(file)
 
     results = []
+    import pdb;pdb.set_trace()
     for key in data.items():
         for data_point in data[key]:
             # Get the variables
