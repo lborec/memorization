@@ -41,10 +41,11 @@ def tokenize(element, tokenizer):
 
 
 def run_experiments(model, json_file, save_path, method):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # Load model and tokenizer
-    tokenizer = load_tokenizer()
+    tokenizer = load_tokenizer().cuda()
     print("...Loading the model...")
-    model = GPTNeoForCausalLM.from_pretrained("trained/gpt-neo-125M/checkpoint-180000/")
+    model = GPTNeoForCausalLM.from_pretrained("trained/gpt-neo-125M/checkpoint-180000/").to(device)
     model.config.pad_token_id = tokenizer.pad_token_id
 
     # Load experiment data
