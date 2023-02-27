@@ -79,7 +79,7 @@ def run_experiments(model, json_file, save_path, method):
             # Run memorization loop
             while (memorized == False) and ((num_tokens + 50) < max_length):
                 num_tokens += 50
-                input_tokens = torch.tensor(tokens[:num_tokens]).unsqueeze(0)
+                input_tokens = torch.tensor(tokens[:num_tokens]).unsqueeze(0).to(device)
                 if method == "greedy_decoding":
                     model_output = model.generate(
                         input_tokens, num_beams=1, do_sample=False, max_length=max_length
