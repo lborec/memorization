@@ -59,10 +59,10 @@ def run_experiments(model, json_file, save_path, method):
     keys = data.keys()
     keys = [int(num) for num in keys]
     keys = sorted(keys, reverse=True)
-    for key in progressBar(keys, prefix="Progress", suffix="Complete"):
+    for key in keys:
         print("Num counts:", key)
         str_key = str(key)
-        for data_point in progressBar(data[str_key], prefix="Progress", suffix="Complete"):
+        for data_point in data[str_key]:
             # Get the variables
             file_path = data_point["file_path"]
             tokens = data_point["tokens"]
