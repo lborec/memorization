@@ -271,6 +271,8 @@ def generate_stats_masterlist(files, save_path, num_files_to_keep=250):
 
         for obj in progressBar(data, prefix="Progress", suffix="Complete"):
             num_copies = obj["num_copies"]
+            if num_copies != 22:
+                continue
 
             # Get txt file stats
             txt = open(obj["file_path"], "r").read()
