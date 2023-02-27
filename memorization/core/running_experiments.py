@@ -91,6 +91,9 @@ def run_experiments(model, json_file, save_path, method):
                 if memorized:
                     result_dict["memorized"]: True
                     result_dict["memorized_at"]: num_tokens
+                    print("Memorized!")
+                else:
+                    print("Non memorized yet!")
             results.append(result_dict)
 
     # Write results to JSON file
