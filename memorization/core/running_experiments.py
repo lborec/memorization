@@ -56,7 +56,8 @@ def run_experiments(model, json_file, save_path, method):
     # pdb.set_trace()
 
     print("..Starting memorization experiments...")
-    for key in progressBar(data.keys(), prefix="Progress", suffix="Complete"):
+    keys = sorted(data.keys(), reverse=True)
+    for key in progressBar(keys, prefix="Progress", suffix="Complete"):
         print("Num counts:", key)
         for data_point in progressBar(data[key], prefix="Progress", suffix="Complete"):
             # Get the variables
