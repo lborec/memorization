@@ -59,7 +59,7 @@ def run_experiments(model, json_file, save_path, method):
             # Get the variables
             file_path = data_point["file_path"]
             tokens = data_point["tokens"]
-            tokens_torch = torch.tensor(tokens)
+            tokens_torch = torch.tensor(tokens).cuda(device=3)
             max_length = data_point["length"]
             num_copies = data_point["num_copies"]
 
