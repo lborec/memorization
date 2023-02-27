@@ -41,16 +41,19 @@ def tokenize(element, tokenizer):
 
 
 def run_experiments(model, json_file, save_path, method):
-    # Load model
+    # Load model and tokenizer
+    tokenizer = load_tokenizer()
+    print("...Loading the model...")
     model = GPTNeoForCausalLM.from_pretrained("trained/gpt-neo-125M/checkpoint-180000/")
-    # model.config.pad_token_id = tokenizer.pad_token_id
+    model.config.pad_token_id = tokenizer.pad_token_id
 
     # Load experiment data
     with open(json_file) as file:
         data = json.load(file)
 
     results = []
-    
+
+    print("..Starting memorization experiments...")
     for key in progressBar(data.items(), prefix="Progress", suffix="Complete"):
         for data_point in progressBar(key[1], prefix="Progress", suffix="Complete"):
             # Get the variables
