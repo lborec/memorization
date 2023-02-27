@@ -76,6 +76,7 @@ def run_experiments(model, json_file, save_path, method):
             num_tokens = 0
 
             # Run memorization loop
+            import pdb;pdb.set_trace()
             while (memorized == False) and ((num_tokens + 50) < max_length):
                 num_tokens += 50
                 input_tokens = torch.tensor(tokens[:num_tokens]).unsqueeze(0).cuda(device=3)
