@@ -274,10 +274,13 @@ def generate_stats_masterlist(files, save_path, num_files_to_keep=250):
             if num_copies != 22:
                 continue
 
+            print("num copies 22")
             # Get txt file stats
             txt = open(obj["file_path"], "r").read()
             tokenized_txt = tokenize({"text": txt})
             length = len(tokenized_txt["input_ids"])
+            print(txt)
+            print(length)
 
             obj["length"] = length
             obj["tokens"] = tokenized_txt["input_ids"]
