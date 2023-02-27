@@ -1,11 +1,10 @@
 import os
 import math
 import json
-import pdb
-
 import torch
 from datetime import datetime
 from memorization.core.dataset import load_tokenizer
+from memorization.core.helpers import progressBar
 from transformers import (
     Trainer,
     TrainingArguments,
@@ -52,8 +51,8 @@ def run_experiments(model, json_file, save_path, method):
 
     results = []
     import pdb;pdb.set_trace()
-    for key in data.items():
-        for data_point in data[key][1]:
+    for key in progressBar(data.items(), prefix="Progress", suffix="Complete"):
+        for data_point in progressBar(key[1], prefix="Progress", suffix="Complete"):
             # Get the variables
             file_path = data_point["file_path"]
             tokens = data_point["tokens"]
