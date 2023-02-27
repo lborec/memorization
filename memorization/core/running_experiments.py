@@ -51,10 +51,8 @@ def run_experiments(model, json_file, save_path, method):
     with open(json_file) as file:
         data = json.load(file)
 
-    # Run experiments for ALL files locally; for remote we'll need to sample them (unless controlled)
     results = []
-    import pdb;pdb.set_trace()
-    for data_point in data:
+    for data_point in data.items():
         # Get the variables
         file_path = data_point["file_path"]
         tokens = data_point["tokens"]
