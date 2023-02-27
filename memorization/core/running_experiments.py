@@ -1,6 +1,8 @@
 import os
 import math
 import json
+import pdb
+
 import torch
 from datetime import datetime
 from memorization.core.dataset import load_tokenizer
@@ -40,9 +42,6 @@ def tokenize(element, tokenizer):
 
 
 def run_experiments(model, json_file, save_path, method):
-    # Tokenization
-    # tokenizer = load_tokenizer()
-
     # Load model
     model = GPTNeoForCausalLM.from_pretrained("trained/gpt-neo-125M/checkpoint-180000/")
     # model.config.pad_token_id = tokenizer.pad_token_id
@@ -52,6 +51,7 @@ def run_experiments(model, json_file, save_path, method):
         data = json.load(file)
 
     results = []
+    import pdb;pdb.set_trace()
     for data_point in data.items():
         # Get the variables
         file_path = data_point["file_path"]
