@@ -52,7 +52,7 @@ def run_experiments(model, json_file, save_path, method):
 
     results = []
     import pdb;pdb.set_trace()
-    for key in data.keys():
+    for key in data.items():
         for data_point in data[key][1]:
             # Get the variables
             file_path = data_point["file_path"]
