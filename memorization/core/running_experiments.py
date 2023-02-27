@@ -50,7 +50,7 @@ def run_experiments(model, json_file, save_path, method):
         data = json.load(file)
 
     results = []
-    import pdb;pdb.set_trace()
+    
     for key in progressBar(data.items(), prefix="Progress", suffix="Complete"):
         for data_point in progressBar(key[1], prefix="Progress", suffix="Complete"):
             # Get the variables
