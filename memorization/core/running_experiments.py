@@ -39,14 +39,13 @@ def tokenize(element, tokenizer):
     return {"input_ids": outputs["input_ids"]}
 
 
-def run_experiments(model, json_file, save_path):
+def run_experiments(model, json_file, save_path, method):
     # Tokenization
-    tokenizer = load_tokenizer()
+    # tokenizer = load_tokenizer()
 
     # Load model
-    # model = load_trained(model)
-    model = GPTNeoForCausalLM.from_pretrained("EleutherAI/gpt-neo-125M")
-    model.config.pad_token_id = tokenizer.pad_token_id
+    model = GPTNeoForCausalLM.from_pretrained("trained/gpt-neo-125M/checkpoint-180000/")
+    # model.config.pad_token_id = tokenizer.pad_token_id
 
     # Load experiment data
     with open(json_file) as file:
@@ -54,7 +53,7 @@ def run_experiments(model, json_file, save_path):
 
     # Run experiments for ALL files locally; for remote we'll need to sample them (unless controlled)
     results = []
-
+    import pdb;pdb.set_trace()
     for data_point in data:
         # Get the variables
         file_path = data_point["file_path"]
@@ -79,9 +78,12 @@ def run_experiments(model, json_file, save_path):
         while (memorized == False) and ((num_tokens + 50) < max_length):
             num_tokens += 50
             input_tokens = torch.tensor(tokens[:num_tokens]).unsqueeze(0)
-            model_output = model.generate(
-                input_tokens, num_beams=1, do_sample=False, max_length=max_length
-            )
+            if method == "greedy_decoding":
+                model_output = model.generate(
+                    input_tokens, num_beams=1, do_sample=False, max_length=max_length
+                )
+            elif method == "nucleus_sampling":
+                pass
             output_tokens = model_output[0]
             memorized = check_if_memorized(tokens_torch, output_tokens)
 
@@ -95,6 +97,6 @@ def run_experiments(model, json_file, save_path):
     current_timestamp = datetime.fromtimestamp(current_timestamp).strftime(
         "%Y-%m-%d-%Hh%Mm%Ss"
     )
-    json_save_path = os.path.join(save_path, f"results_{current_timestamp}.json")
+    json_save_path = os.path.join(save_path, f"{model}_{current_timestamp}.json")
     with open(json_save_path, "w") as json_file:
         json.dump(results, json_file)
