@@ -56,9 +56,9 @@ def run_experiments(model, json_file, save_path, method):
     pdb.set_trace()
 
     print("..Starting memorization experiments...")
-    for key in progressBar(data.items(), prefix="Progress", suffix="Complete"):
-        print("Num counts:", key[0])
-        for data_point in progressBar(key[1], prefix="Progress", suffix="Complete"):
+    for key in progressBar(data.keys(), prefix="Progress", suffix="Complete"):
+        print("Num counts:", key)
+        for data_point in progressBar(data[key], prefix="Progress", suffix="Complete"):
             # Get the variables
             file_path = data_point["file_path"]
             tokens = data_point["tokens"]
