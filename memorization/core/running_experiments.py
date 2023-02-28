@@ -78,12 +78,9 @@ def run_experiments(model, json_file, save_path, method):
                 "num_copies": num_copies,
             }
 
-            # Set loop conditions
-
-
             # Run memorization loop
-
-            input_tokens = torch.tensor(tokens[:max_length-50]).unsqueeze(0).cuda(device=3)
+            prefix_length = max_length - 50
+            input_tokens = torch.tensor(tokens[:prefix_length]).unsqueeze(0).cuda(device=3)
             if method == "greedy_decoding":
                 model_output = model.generate(
                     input_tokens, num_beams=1, do_sample=False, max_length=max_length

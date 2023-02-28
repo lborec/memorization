@@ -33,8 +33,8 @@ def sample_entrypoint(cmd):
 
     # # Randomly sample a portion of the dataset (40 GB is too much)
     print("...Sampling from the original dataset...")
-    # sample_dataset(dataset_path, train_path, sample_ratio=0.25, split="train")
-    # sample_dataset(dataset_path, valid_path, sample_ratio=0.10, split="valid")
+    # sample_dataset(dataset_path, train_path, sample_ratio=0.05, split="train")
+    # sample_dataset(dataset_path, valid_path, sample_ratio=0.025, split="valid")
 
     # Generate duplicates
     print("..Generating duplicates...")
@@ -43,14 +43,14 @@ def sample_entrypoint(cmd):
     # generate_duplicates_controlled(train_path)
     # generate_duplicates_controlled(valid_path)
 
-    # Generate duplicate statistics
-    print("...Generating stats...")
-    stats_folder_path = os.path.join(project_path, "memorization/dataset/stats")
-    train_json = os.path.join(stats_folder_path, "train_stats")
-    train_duplicates_json, train_nonduplicates_json = generate_stats(
-        train_path, train_json
-    )
-
-    # Generate stats list that's used for the experiments
-    print("...Generating stats masterlist...")
-    generate_stats_masterlist([train_duplicates_json, train_nonduplicates_json], stats_path)
+    # # Generate duplicate statistics
+    # print("...Generating stats...")
+    # stats_folder_path = os.path.join(project_path, "memorization/dataset/stats")
+    # train_json = os.path.join(stats_folder_path, "train_stats")
+    # train_duplicates_json, train_nonduplicates_json = generate_stats(
+    #     train_path, train_json
+    # )
+    #
+    # # Generate stats list that's used for the experiments
+    # print("...Generating stats masterlist...")
+    # generate_stats_masterlist([train_duplicates_json, train_nonduplicates_json], stats_path)
