@@ -153,37 +153,70 @@ def generate_duplicates(sampled_dataset_path):
                         f.write(txt)
 
 
-# def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50, num_objects_copied=300):
-#     # Put all files into a single list
-#     all_folders = os.listdir(sampled_dataset_path)
-#     all_folders = [
-#         folder
-#         for folder in all_folders
-#         if os.path.isdir(os.path.join(sampled_dataset_path, folder))
-#     ]
-#     all_files = []
-#     for folder in all_folders:
-#         folder_path = os.path.join(sampled_dataset_path, folder)
-#         files = os.listdir(folder_path)
-#         for f in files:
-#             filepath = os.path.join(folder_path, f)
-#             all_files.append(filepath)
-#     # Arrange according to length
-#     length_buckets = {}
-#     length_buckets["up_to_100"] =
-#     length_buckets["100_to_200"] =
-#     length_buckets["200_to_300"] =
-#     length_buckets["300_to_400"] =
-#     length_buckets["over_400"] =
-#
-#
-#     for i in range(2, copy_up_to): # 2 to copy_up_to
-#         for j in range(num_objects_copied): #
-#             import pdb; pdb.set_trace()
-#             random_filepath = all_files.pop(random.randrange(len(all_files)))
-#             txt = open(random_filepath, "r").read()
-#             for n in range(1, i):
-#                 # ... copy from above
+def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50, num_objects_copied=300):
+    # Put all files into a single list
+    all_folders = os.listdir(sampled_dataset_path)
+    all_folders = [
+        folder
+        for folder in all_folders
+        if os.path.isdir(os.path.join(sampled_dataset_path, folder))
+    ]
+    all_files = []
+    for folder in all_folders:
+        folder_path = os.path.join(sampled_dataset_path, folder)
+        files = os.listdir(folder_path)
+        for f in files:
+            filepath = os.path.join(folder_path, f)
+            all_files.append(filepath)
+
+    # Arrange files according to length
+    length_buckets = {"up_to_100": [], "100_to_200": [], "200_to_300": [], "300_to_400": [], "over_400": []}
+
+    for file in all_files:
+        f = open(file, "r").read()
+        length = len(f.split())
+        if length < 100:
+            length_buckets["up_to_100"].append(file)
+        elif 100 <= length < 200:
+            length_buckets["100_to_200"].append(file)
+        elif 200 <= length < 300:
+            length_buckets["200_to_300"].append(file)
+        elif 300 <= length < 400:
+            length_buckets["300_to_400"].append(file)
+        elif length >= 400:
+            length_buckets["over_400"].append(file)
+
+    print("up to 100", len(length_buckets['up_to_100']))
+    print("100 to 200", len(length_buckets['100_to_200']))
+    print("200 to 300", len(length_buckets['200_to_300']))
+    print("300 to 400", len(length_buckets['300_to_400']))
+    print("over 400", len(length_buckets['over_400']))
+
+    # for i in range(2, copy_up_to): # 2 to copy_up_to
+    #     data_sample_all_lengths = []
+    #     sample__up_to_100 =  random.sample(length_buckets["up_to_100"], 40)
+    #     length_buckets["up_to_100"] = [x for x in length_buckets["up_to_100"] if x not in sample__up_to_100]
+    #
+    #     sample__100_to_200 = random.sample(length_buckets["100_to_200"], 40)
+    #     length_buckets["100_to_200"] = [x for x in length_buckets["100_to_200"] if x not in sample__100_to_200]
+    #
+    #     sample__200_to_300 = random.sample(length_buckets["200_to_300"], 40)
+    #     length_buckets["200_to_300"] = [x for x in length_buckets["200_to_300"] if x not in sample__200_to_300]
+    #
+    #     sample__300_to_400 = random.sample(length_buckets["300_to_400"], 40)
+    #     length_buckets["300_to_400"] = [x for x in length_buckets["300_to_400"] if x not in sample__300_to_400]
+    #
+    #     sample__over_400 = random.sample(length_buckets["over_400"], 40)
+    #     length_buckets["over_400"] = [x for x in length_buckets["over_400"] if x not in sample__over_400]
+    #
+    #
+    #
+    #     for j in range(num_objects_copied): #
+    #
+    #         random_filepath = all_files.pop(random.randrange(len(all_files)))
+    #         txt = open(random_filepath, "r").read()
+    #         for n in range(1, i):
+    #             # ... copy from above
 
 
 def generate_stats(split_path, stats_folder_path):
