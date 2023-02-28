@@ -91,14 +91,14 @@ def sample_dataset(
     ]
     len_all_folders_in_dataset = len(all_folders_in_dataset)
     # If sampling for the validation split, remove folders that are in the train split
-    if split != "train":
-        print(f"Pruning folders... currently {len_all_folders_in_dataset} folders.")
-        with open("memorization/dataset/stats/train_folders.txt", "r") as f:
-            train_folders = [line.strip() for line in f.readlines()]
-        all_folders_in_dataset = [
-            folder for folder in all_folders_in_dataset if folder not in train_folders
-        ]
-        print(f"Folders pruned! Currently {len(all_folders_in_dataset)} folders.")
+    # if split != "train":
+    #     print(f"Pruning folders... currently {len_all_folders_in_dataset} folders.")
+    #     with open("memorization/dataset/stats/train_folders.txt", "r") as f:
+    #         train_folders = [line.strip() for line in f.readlines()]
+    #     all_folders_in_dataset = [
+    #         folder for folder in all_folders_in_dataset if folder not in train_folders
+    #     ]
+    #     print(f"Folders pruned! Currently {len(all_folders_in_dataset)} folders.")
 
     # Get the indices of the folders that we will sample for the new dataset
     num_files_to_keep = math.floor(len_all_folders_in_dataset * sample_ratio)
@@ -168,6 +168,13 @@ def generate_duplicates(sampled_dataset_path):
 #         for f in files:
 #             filepath = os.path.join(folder_path, f)
 #             all_files.append(filepath)
+#     # Arrange according to length
+#     length_buckets = {}
+#     length_buckets["up_to_100"] =
+#     length_buckets["100_to_200"] =
+#     length_buckets["200_to_300"] =
+#     length_buckets["300_to_400"] =
+#     length_buckets["over_400"] =
 #
 #
 #     for i in range(2, copy_up_to): # 2 to copy_up_to
