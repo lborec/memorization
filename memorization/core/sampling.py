@@ -155,7 +155,7 @@ def generate_duplicates(sampled_dataset_path):
 
 def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50):
     # Put all files into a single list
-    all_folders = os.listdir(sampled_dataset_path)[:100]
+    all_folders = os.listdir(sampled_dataset_path)
     all_folders = [
         folder
         for folder in all_folders
