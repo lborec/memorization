@@ -91,7 +91,7 @@ def sample_dataset(
     ]
     len_all_folders_in_dataset = len(all_folders_in_dataset)
     # If sampling for the validation split, remove folders that are in the train split
-    if split == "train":  # later: != "train"
+    if split != "train":
         print(f"Pruning folders... currently {len_all_folders_in_dataset} folders.")
         with open("memorization/dataset/stats/train_folders.txt", "r") as f:
             train_folders = [line.strip() for line in f.readlines()]
