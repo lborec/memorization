@@ -79,28 +79,26 @@ def run_experiments(model, json_file, save_path, method):
             }
 
             # Set loop conditions
-            memorized = False
-            num_tokens = 0
+
 
             # Run memorization loop
-            while (memorized == False) and ((num_tokens + 50) < max_length):
-                num_tokens += 50
-                input_tokens = torch.tensor(tokens[:num_tokens]).unsqueeze(0).cuda(device=3)
-                if method == "greedy_decoding":
-                    model_output = model.generate(
-                        input_tokens, num_beams=1, do_sample=False, max_length=max_length
-                    )
-                elif method == "nucleus_sampling":
-                    pass
-                output_tokens = model_output[0]
-                memorized = check_if_memorized(tokens_torch, output_tokens)
 
-                if memorized:
-                    result_dict["memorized"]: True
-                    result_dict["memorized_at"]: num_tokens
-                    print("Memorized!")
-                else:
-                    print("Non memorized yet!")
+            input_tokens = torch.tensor(tokens[:max_length-50]).unsqueeze(0).cuda(device=3)
+            if method == "greedy_decoding":
+                model_output = model.generate(
+                    input_tokens, num_beams=1, do_sample=False, max_length=max_length
+                )
+            elif method == "nucleus_sampling":
+                pass
+            output_tokens = model_output[0]
+            memorized = check_if_memorized(tokens_torch, output_tokens)
+
+            if memorized:
+                print(max_length)
+                result_dict["memorized"]: True
+                print("Memorized!")
+            else:
+                print("Non memorized yet!")
             results.append(result_dict)
 
     # Write results to JSON file
