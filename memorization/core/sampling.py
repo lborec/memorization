@@ -170,7 +170,7 @@ def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50):
             all_files.append(filepath)  # "{folder}/{file}.txt"
 
     # Arrange files according to length
-    length_buckets = {"up_to_100": [], "100_to_200": [], "200_to_300": [], "300_to_400": [], "over_400": []}
+    length_buckets = {"up_to_200": [], "200_to_300": [], "300_to_400": [], "over_400": []}
 
     print("...assorting files into buckets...")
     for file in progressBar(all_files, prefix="Progress", suffix="Complete"):
