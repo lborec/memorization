@@ -153,30 +153,30 @@ def generate_duplicates(sampled_dataset_path):
                         f.write(txt)
 
 
-def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50, num_objects_copied=300):
-    # Put all files into a single list
-    all_folders = os.listdir(sampled_dataset_path)
-    all_folders = [
-        folder
-        for folder in all_folders
-        if os.path.isdir(os.path.join(sampled_dataset_path, folder))
-    ]
-    all_files = []
-    for folder in all_folders:
-        folder_path = os.path.join(sampled_dataset_path, folder)
-        files = os.listdir(folder_path)
-        for f in files:
-            filepath = os.path.join(folder_path, f)
-            all_files.append(filepath)
-
-
-    for i in range(2, copy_up_to): # 2 to copy_up_to
-        for j in range(num_objects_copied): #
-            import pdb; pdb.set_trace()
-            random_filepath = all_files.pop(random.randrange(len(all_files)))
-            txt = open(random_filepath, "r").read()
-            for n in range(1, i):
-                # ... copy from above
+# def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50, num_objects_copied=300):
+#     # Put all files into a single list
+#     all_folders = os.listdir(sampled_dataset_path)
+#     all_folders = [
+#         folder
+#         for folder in all_folders
+#         if os.path.isdir(os.path.join(sampled_dataset_path, folder))
+#     ]
+#     all_files = []
+#     for folder in all_folders:
+#         folder_path = os.path.join(sampled_dataset_path, folder)
+#         files = os.listdir(folder_path)
+#         for f in files:
+#             filepath = os.path.join(folder_path, f)
+#             all_files.append(filepath)
+#
+#
+#     for i in range(2, copy_up_to): # 2 to copy_up_to
+#         for j in range(num_objects_copied): #
+#             import pdb; pdb.set_trace()
+#             random_filepath = all_files.pop(random.randrange(len(all_files)))
+#             txt = open(random_filepath, "r").read()
+#             for n in range(1, i):
+#                 # ... copy from above
 
 
 def generate_stats(split_path, stats_folder_path):
