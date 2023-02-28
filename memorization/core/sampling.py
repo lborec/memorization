@@ -153,9 +153,9 @@ def generate_duplicates(sampled_dataset_path):
                         f.write(txt)
 
 
-def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50, num_objects_copied=300):
+def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50):
     # Put all files into a single list
-    all_folders = os.listdir(sampled_dataset_path)
+    all_folders = os.listdir(sampled_dataset_path)[:100]
     all_folders = [
         folder
         for folder in all_folders
@@ -167,18 +167,18 @@ def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50, num_obje
         files = os.listdir(folder_path)
         for f in files:
             filepath = os.path.join(folder_path, f)
-            all_files.append(filepath)
+            all_files.append(filepath)  # "{folder}/{file}.txt"
 
     # Arrange files according to length
     length_buckets = {"up_to_100": [], "100_to_200": [], "200_to_300": [], "300_to_400": [], "over_400": []}
 
-    for file in all_files:
+    print("...assorting files into buckets...")
+    for file in progressBar(all_files, prefix="Progress", suffix="Complete"):
         f = open(file, "r").read()
         length = len(f.split())
-        if length < 100:
-            length_buckets["up_to_100"].append(file)
-        elif 100 <= length < 200:
-            length_buckets["100_to_200"].append(file)
+
+        if length < 200:
+            length_buckets["up_to_200"].append(file)
         elif 200 <= length < 300:
             length_buckets["200_to_300"].append(file)
         elif 300 <= length < 400:
@@ -186,37 +186,41 @@ def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50, num_obje
         elif length >= 400:
             length_buckets["over_400"].append(file)
 
-    print("up to 100", len(length_buckets['up_to_100']))
-    print("100 to 200", len(length_buckets['100_to_200']))
-    print("200 to 300", len(length_buckets['200_to_300']))
-    print("300 to 400", len(length_buckets['300_to_400']))
-    print("over 400", len(length_buckets['over_400']))
+    for i in range(2, copy_up_to):  # 2 to copy_up_to
+        print(f"Generating: {i} copies.")
+        data_sample_all_lengths = []
 
-    # for i in range(2, copy_up_to): # 2 to copy_up_to
-    #     data_sample_all_lengths = []
-    #     sample__up_to_100 =  random.sample(length_buckets["up_to_100"], 40)
-    #     length_buckets["up_to_100"] = [x for x in length_buckets["up_to_100"] if x not in sample__up_to_100]
-    #
-    #     sample__100_to_200 = random.sample(length_buckets["100_to_200"], 40)
-    #     length_buckets["100_to_200"] = [x for x in length_buckets["100_to_200"] if x not in sample__100_to_200]
-    #
-    #     sample__200_to_300 = random.sample(length_buckets["200_to_300"], 40)
-    #     length_buckets["200_to_300"] = [x for x in length_buckets["200_to_300"] if x not in sample__200_to_300]
-    #
-    #     sample__300_to_400 = random.sample(length_buckets["300_to_400"], 40)
-    #     length_buckets["300_to_400"] = [x for x in length_buckets["300_to_400"] if x not in sample__300_to_400]
-    #
-    #     sample__over_400 = random.sample(length_buckets["over_400"], 40)
-    #     length_buckets["over_400"] = [x for x in length_buckets["over_400"] if x not in sample__over_400]
-    #
-    #
-    #
-    #     for j in range(num_objects_copied): #
-    #
-    #         random_filepath = all_files.pop(random.randrange(len(all_files)))
-    #         txt = open(random_filepath, "r").read()
-    #         for n in range(1, i):
-    #             # ... copy from above
+        print("Sampling files from the buckets...")
+        sample__up_to_200 = random.sample(length_buckets["up_to_200"], 70)
+        length_buckets["up_to_200"] = [x for x in length_buckets["up_to_200"] if x not in sample__up_to_200]
+
+        sample__200_to_300 = random.sample(length_buckets["200_to_300"], 70)
+        length_buckets["200_to_300"] = [x for x in length_buckets["200_to_300"] if x not in sample__200_to_300]
+
+        sample__300_to_400 = random.sample(length_buckets["300_to_400"], 70)
+        length_buckets["300_to_400"] = [x for x in length_buckets["300_to_400"] if x not in sample__300_to_400]
+
+        sample__over_400 = random.sample(length_buckets["over_400"], 70)
+        length_buckets["over_400"] = [x for x in length_buckets["over_400"] if x not in sample__over_400]
+
+        for e in sample__up_to_200:
+            data_sample_all_lengths.append(e)
+        for e in sample__200_to_300:
+            data_sample_all_lengths.append(e)
+        for e in sample__300_to_400:
+            data_sample_all_lengths.append(e)
+        for e in sample__over_400:
+            data_sample_all_lengths.append(e)
+
+        print("Writing copied files to disk.")
+        for file_path in data_sample_all_lengths:
+            txt = open(file_path, "r").read()
+            for n in range(1, i + 1):
+                file_name_without_extension = file_path.split(".txt")[0]
+                new_file_name = f"{file_name_without_extension}_{n + 1}.txt"
+                new_file_path = os.path.join(folder_path, new_file_name)
+                with open(new_file_path, "w") as f:
+                    f.write(txt)
 
 
 def generate_stats(split_path, stats_folder_path):
