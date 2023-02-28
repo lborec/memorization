@@ -40,7 +40,7 @@ def sample_entrypoint(cmd):
     print("..Generating duplicates...")
     # generate_duplicates(train_path)
     # generate_duplicates(valid_path)
-    # generate_duplicates_controlled(train_path)
+    generate_duplicates_controlled(train_path)
     # generate_duplicates_controlled(valid_path)
 
     # # Generate duplicate statistics
