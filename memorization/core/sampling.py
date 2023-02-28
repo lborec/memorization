@@ -186,7 +186,7 @@ def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50):
         elif length >= 400:
             length_buckets["over_400"].append(file)
 
-    for i in range(2, copy_up_to):  # 2 to copy_up_to
+    for i in range(2, copy_up_to+1):  # 2 to copy_up_to
         print(f"Generating: {i} copies.")
         data_sample_all_lengths = []
 

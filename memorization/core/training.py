@@ -80,7 +80,7 @@ def train_transformer(model_type):
         "%Y-%m-%d-%Hh%Mm%Ss"
     )
 
-    modeldir = f"trained/{model_type}"
+    modeldir = f"trained/{model_type}-{current_timestamp}"
 
     args = TrainingArguments(
         output_dir=modeldir,
@@ -96,7 +96,7 @@ def train_transformer(model_type):
         learning_rate=5e-4,
         save_steps=30000,
         report_to="wandb",
-        run_name=f"{model_type}_{current_timestamp}",
+        run_name=f"{model_type}",
         fp16=True,
     )
 
