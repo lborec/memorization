@@ -218,8 +218,8 @@ def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50):
             for n in range(1, i + 1):
                 file_name_without_extension = file_path.split(".txt")[0]
                 new_file_name = f"{file_name_without_extension}_{n + 1}.txt"
-                new_file_path = os.path.join(folder_path, new_file_name)
-                with open(new_file_path, "w") as f:
+                # new_file_path = os.path.join(folder_path, new_file_name)
+                with open(new_file_name, "w") as f:
                     f.write(txt)
 
 
