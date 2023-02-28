@@ -40,17 +40,17 @@ def sample_entrypoint(cmd):
     print("..Generating duplicates...")
     # generate_duplicates(train_path)
     # generate_duplicates(valid_path)
-    generate_duplicates_controlled(train_path)
+    # generate_duplicates_controlled(train_path)
     # generate_duplicates_controlled(valid_path)
 
-    # # Generate duplicate statistics
-    # print("...Generating stats...")
-    # stats_folder_path = os.path.join(project_path, "memorization/dataset/stats")
-    # train_json = os.path.join(stats_folder_path, "train_stats")
-    # train_duplicates_json, train_nonduplicates_json = generate_stats(
-    #     train_path, train_json
-    # )
-    #
+    # Generate duplicate statistics
+    print("...Generating stats...")
+    stats_folder_path = os.path.join(project_path, "memorization/dataset/stats")
+    train_json = os.path.join(stats_folder_path, "train_stats")
+    train_duplicates_json, train_nonduplicates_json = generate_stats(
+        train_path, train_json
+    )
+
     # # Generate stats list that's used for the experiments
-    # print("...Generating stats masterlist...")
-    # generate_stats_masterlist([train_duplicates_json, train_nonduplicates_json], stats_path)
+    print("...Generating stats masterlist...")
+    generate_stats_masterlist([train_duplicates_json, train_nonduplicates_json], stats_path)
