@@ -215,12 +215,13 @@ def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50):
         print("Writing copied files to disk.")
         for file_path in data_sample_all_lengths:
             txt = open(file_path, "r").read()
-            for n in range(1, i + 1):
+            for n in range(2, i+1):
                 file_name_without_extension = file_path.split(".txt")[0]
-                new_file_name = f"{file_name_without_extension}_{n + 1}.txt"
+                new_file_name = f"{file_name_without_extension}_{n}.txt"
                 # new_file_path = os.path.join(folder_path, new_file_name)
                 with open(new_file_name, "w") as f:
                     f.write(txt)
+
 
 
 def generate_stats(split_path, stats_folder_path):
@@ -340,3 +341,25 @@ def generate_stats_masterlist(files, save_path, num_files_to_keep=250):
 
     with open(f"{save_path}/experiment_masterlist.json", "w") as json_file:
         json.dump(pruned_buckets, json_file)
+
+
+# path="train"
+# all_folders = os.listdir(path)
+# all_folders = [
+#         folder
+#         for folder in all_folders
+#         if os.path.isdir(os.path.join(path, folder))
+#     ]
+# regex = r"(?:_[0-9]+)*\.txt"
+# for folder in all_folders:
+#     folder_path = os.path.join(path, folder)
+#     files = os.listdir(folder_path)
+#     files = [file for file in files if file.endswith(".txt")]
+#     proper_files = []
+#     for file in files:
+#         extensionless_filename = re.split(regex, file)
+#         proper_file = extensionless_filename[0] + ".txt"
+#         proper_files.append(proper_file)
+#     for file in files:
+#         if file not in proper_files:
+#             os.remove(os.path.join(folder_path,file))
