@@ -96,7 +96,7 @@ def train_transformer(model_type):
         learning_rate=5e-4,
         save_steps=30000,
         report_to="wandb",
-        run_name=f"{model_type}",
+        run_name=modeldir,
         fp16=True,
     )
 
