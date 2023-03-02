@@ -52,6 +52,7 @@ def train_transformer(model_type):
     dataset = load_dataset(
         "text", data_dir="memorization/dataset/sampled_dataset/", sample_by="document"
     )
+    dataset = dataset.shuffle(42)
 
     print("Loading tokenizer...")
     tokenizer = load_tokenizer()
@@ -87,8 +88,8 @@ def train_transformer(model_type):
         per_device_train_batch_size=4,
         per_device_eval_batch_size=4,
         evaluation_strategy="steps",
-        eval_steps=30000,
-        logging_steps=30000,
+        eval_steps=9000,
+        logging_steps=9000,
         num_train_epochs=1,
         weight_decay=0.1,
         warmup_steps=1_000,
