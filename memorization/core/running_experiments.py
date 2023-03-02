@@ -63,10 +63,11 @@ def run_experiments(model_identifier, json_file, save_path, method):
     keys = [int(num) for num in keys]
     keys = sorted(keys, reverse=True)
     for key in keys:
+        print()
         print("Num counts:", key)
         str_key = str(key)
         # import pdb; pdb.set_trace()
-        for data_point in data[str_key]:
+        for data_point in data[str_key][:5]:
             # Get the variables
             file_path = data_point["file_path"]
             tokens = data_point["tokens"]
