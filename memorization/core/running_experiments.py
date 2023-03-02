@@ -61,7 +61,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
 
     keys = data.keys()
     keys = [int(num) for num in keys]
-    keys = sorted(keys, reverse=True)
+    keys = sorted(keys, reverse=False)
     for key in keys:
         print()
         print("Num counts:", key)
