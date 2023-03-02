@@ -65,7 +65,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
     for key in keys:
         print("Num counts:", key)
         str_key = str(key)
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         for data_point in data[str_key]:
             # Get the variables
             file_path = data_point["file_path"]
