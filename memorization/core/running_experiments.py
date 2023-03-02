@@ -40,11 +40,13 @@ def tokenize(element, tokenizer):
     return {"input_ids": outputs["input_ids"]}
 
 
-def run_experiments(model, json_file, save_path, method):
+def run_experiments(model_identifier, json_file, save_path, method):
     # Load model and tokenizer
     tokenizer = load_tokenizer()
     print("...Loading the model...")
-    model = GPTNeoForCausalLM.from_pretrained("trained/gpt-neo-125M/checkpoint-180000/").cuda(device=3)
+    model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(
+        device=3
+    )
     model.config.pad_token_id = tokenizer.pad_token_id
 
     # Load experiment data
@@ -56,6 +58,7 @@ def run_experiments(model, json_file, save_path, method):
     # pdb.set_trace()
 
     print("..Starting memorization experiments...")
+
     keys = data.keys()
     keys = [int(num) for num in keys]
     keys = sorted(keys, reverse=True)
@@ -80,7 +83,9 @@ def run_experiments(model, json_file, save_path, method):
 
             # Run memorization loop
             prefix_length = max_length - 50
-            input_tokens = torch.tensor(tokens[:prefix_length]).unsqueeze(0).cuda(device=3)
+            input_tokens = (
+                torch.tensor(tokens[:prefix_length]).unsqueeze(0).cuda(device=3)
+            )
             if method == "greedy_decoding":
                 model_output = model.generate(
                     input_tokens, num_beams=1, do_sample=False, max_length=max_length
@@ -99,10 +104,6 @@ def run_experiments(model, json_file, save_path, method):
             results.append(result_dict)
 
     # Write results to JSON file
-    current_timestamp = datetime.now().timestamp()
-    current_timestamp = datetime.fromtimestamp(current_timestamp).strftime(
-        "%Y-%m-%d-%Hh%Mm%Ss"
-    )
-    json_save_path = os.path.join(save_path, f"{model}_{current_timestamp}.json")
+    json_save_path = os.path.join(save_path, f"{model_identifier}.json")
     with open(json_save_path, "w") as json_file:
         json.dump(results, json_file)

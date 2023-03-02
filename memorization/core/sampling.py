@@ -59,7 +59,7 @@ def unpack_dataset(unpacked_dataset_path):
     The files are unpacked inside the directory.
     """
     for filename in progressBar(
-            os.listdir(unpacked_dataset_path), prefix="Progress", suffix="Complete"
+        os.listdir(unpacked_dataset_path), prefix="Progress", suffix="Complete"
     ):
         # Iterate through .xz files
         if filename.endswith(".xz"):
@@ -76,7 +76,7 @@ def unpack_dataset(unpacked_dataset_path):
 
 
 def sample_dataset(
-        dataset_path, sampled_dataset_path, sample_ratio=0.25, split="train"
+    dataset_path, sampled_dataset_path, sample_ratio=0.25, split="train"
 ):
     """
     This functions samples the original openwebtext and stores it to the target folder.
@@ -170,7 +170,12 @@ def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50):
             all_files.append(filepath)  # "{folder}/{file}.txt"
 
     # Arrange files according to length
-    length_buckets = {"up_to_200": [], "200_to_300": [], "300_to_400": [], "over_400": []}
+    length_buckets = {
+        "up_to_200": [],
+        "200_to_300": [],
+        "300_to_400": [],
+        "over_400": [],
+    }
 
     print("...assorting files into buckets...")
     for file in progressBar(all_files, prefix="Progress", suffix="Complete"):
@@ -186,22 +191,30 @@ def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50):
         elif length >= 400:
             length_buckets["over_400"].append(file)
 
-    for i in range(2, copy_up_to+1):  # 2 to copy_up_to
+    for i in range(2, copy_up_to + 1):  # 2 to copy_up_to
         print(f"Generating: {i} copies.")
         data_sample_all_lengths = []
 
         print("Sampling files from the buckets...")
         sample__up_to_200 = random.sample(length_buckets["up_to_200"], 70)
-        length_buckets["up_to_200"] = [x for x in length_buckets["up_to_200"] if x not in sample__up_to_200]
+        length_buckets["up_to_200"] = [
+            x for x in length_buckets["up_to_200"] if x not in sample__up_to_200
+        ]
 
         sample__200_to_300 = random.sample(length_buckets["200_to_300"], 70)
-        length_buckets["200_to_300"] = [x for x in length_buckets["200_to_300"] if x not in sample__200_to_300]
+        length_buckets["200_to_300"] = [
+            x for x in length_buckets["200_to_300"] if x not in sample__200_to_300
+        ]
 
         sample__300_to_400 = random.sample(length_buckets["300_to_400"], 70)
-        length_buckets["300_to_400"] = [x for x in length_buckets["300_to_400"] if x not in sample__300_to_400]
+        length_buckets["300_to_400"] = [
+            x for x in length_buckets["300_to_400"] if x not in sample__300_to_400
+        ]
 
         sample__over_400 = random.sample(length_buckets["over_400"], 70)
-        length_buckets["over_400"] = [x for x in length_buckets["over_400"] if x not in sample__over_400]
+        length_buckets["over_400"] = [
+            x for x in length_buckets["over_400"] if x not in sample__over_400
+        ]
 
         for e in sample__up_to_200:
             data_sample_all_lengths.append(e)
@@ -215,13 +228,12 @@ def generate_duplicates_controlled(sampled_dataset_path, copy_up_to=50):
         print("Writing copied files to disk.")
         for file_path in data_sample_all_lengths:
             txt = open(file_path, "r").read()
-            for n in range(2, i+1):
+            for n in range(2, i + 1):
                 file_name_without_extension = file_path.split(".txt")[0]
                 new_file_name = f"{file_name_without_extension}_{n}.txt"
                 # new_file_path = os.path.join(folder_path, new_file_name)
                 with open(new_file_name, "w") as f:
                     f.write(txt)
-
 
 
 def generate_stats(split_path, stats_folder_path):
@@ -269,10 +281,7 @@ def generate_stats(split_path, stats_folder_path):
             filepath = os.path.join(folder_path, filename_txt)
 
             # Define the data to be included in the JSON file
-            data = {
-                "file_path": filepath,
-                "num_copies": num_copies
-            }
+            data = {"file_path": filepath, "num_copies": num_copies}
             if num_copies > 1:
                 duplicates.append(data)
             else:
@@ -290,9 +299,7 @@ def generate_stats(split_path, stats_folder_path):
 
 
 def generate_stats_masterlist(files, save_path, num_files_to_keep=250):
-    """
-
-    """
+    """ """
     # Load the tokenizer
     tokenizer = load_tokenizer()
 

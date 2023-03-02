@@ -52,4 +52,6 @@ def sample_entrypoint(cmd):
 
     # # Generate stats list that's used for the experiments
     print("...Generating stats masterlist...")
-    generate_stats_masterlist([train_duplicates_json, train_nonduplicates_json], stats_path)
+    generate_stats_masterlist(
+        [train_duplicates_json, train_nonduplicates_json], stats_path
+    )
