@@ -68,7 +68,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
         str_key = str(key)
 
         # import pdb; pdb.set_trace()
-        for data_point in data[str_key][:5]:
+        for data_point in data[str_key]:
             # Get the variables
             file_path = data_point["file_path"]
             tokens = data_point["tokens"]
@@ -95,8 +95,13 @@ def run_experiments(model_identifier, json_file, save_path, method):
                 )
             elif method == "nucleus_sampling":
                 pass
+
             output_tokens = model_output[0]
-            memorized = check_if_memorized(tokens_torch, output_tokens)
+
+            if len(output_tokens) == len(tokens_torch):
+                memorized = check_if_memorized(tokens_torch, output_tokens)
+            else:
+                memorized = False
 
             if memorized:
                 print(max_length)
