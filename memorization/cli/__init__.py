@@ -59,12 +59,12 @@ def parse_args():
 
     # FINETUNE ARGS
     run_experiments_parser = subparsers.add_parser("run_experiments")
-    run_experiments_parser.add_argument(
-        "--project_path",
-        type=str,
-        help="Path of the memorization project. E.g., /Users/luka/memorization.",
-        required=True,
-    )
+    # run_experiments_parser.add_argument(
+    #     "--project_path",
+    #     type=str,
+    #     help="Path of the memorization project. E.g., /Users/luka/memorization.",
+    #     required=True,
+    # )
     run_experiments_parser.add_argument(
         "--model_path",
         type=str,
