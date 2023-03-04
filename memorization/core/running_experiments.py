@@ -63,7 +63,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
     keys = [int(num) for num in keys]
     keys = sorted(keys, reverse=False)
 
-    for key in keys:
+    for key in progressBar(keys, prefix="Progress", suffix="Complete"):
         print("\nNum counts:", key)
         str_key = str(key)
 
@@ -106,9 +106,6 @@ def run_experiments(model_identifier, json_file, save_path, method):
             if memorized:
                 print(max_length)
                 result_dict["memorized"]: True
-                print("Memorized!")
-            else:
-                print("Non memorized yet!")
             results.append(result_dict)
 
     # Write results to JSON file
