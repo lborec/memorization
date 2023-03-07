@@ -85,8 +85,8 @@ def train_transformer(model_type):
 
     args = TrainingArguments(
         output_dir=modeldir,
-        per_device_train_batch_size=4,
-        per_device_eval_batch_size=4,
+        per_device_train_batch_size=1,
+        per_device_eval_batch_size=1,
         evaluation_strategy="steps",
         eval_steps=9000,
         logging_steps=9000,
