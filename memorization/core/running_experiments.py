@@ -105,7 +105,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
 
             if memorized:
                 print(max_length)
-                result_dict["memorized"]: True
+                result_dict["memorized"] = True
             results.append(result_dict)
 
     # Write results to JSON file
