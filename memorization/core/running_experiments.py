@@ -62,7 +62,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
     keys = sorted(keys, reverse=False)
 
     # for num_tokens in range(50, 451, 50):
-    for num_tokens in range(450, 49, -50):
+    for num_tokens in range(500, 49, -50):
         print(f"decoding experiment starting. num tokens: {num_tokens}")
         for key in progressBar(keys, prefix="Progress", suffix="Complete"):
             print("\nNum counts:", key)
