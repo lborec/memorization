@@ -54,8 +54,6 @@ def run_experiments(model_identifier, json_file, save_path, method):
         data = json.load(file)
 
     results = []
-    # import pdb;
-    # pdb.set_trace()
 
     print("..Starting memorization experiments...")
 
@@ -63,52 +61,56 @@ def run_experiments(model_identifier, json_file, save_path, method):
     keys = [int(num) for num in keys]
     keys = sorted(keys, reverse=False)
 
-    for key in progressBar(keys, prefix="Progress", suffix="Complete"):
-        print("\nNum counts:", key)
-        str_key = str(key)
+    # for num_tokens in range(50, 451, 50):
+    for num_tokens in range(450, 49, -50):
+        for key in progressBar(keys, prefix="Progress", suffix="Complete"):
+            print("\nNum counts:", key)
+            str_key = str(key)
 
-        # import pdb; pdb.set_trace()
-        for data_point in data[str_key]:
-            # Get the variables
-            file_path = data_point["file_path"]
-            tokens = data_point["tokens"]
-            tokens_torch = torch.tensor(tokens).cuda(device=3)
-            max_length = data_point["length"]
-            num_copies = data_point["num_copies"]
+            for data_point in data[str_key]:
+                # Get the variables
+                file_path = data_point["file_path"]
+                tokens = data_point["tokens"]
+                tokens_torch = torch.tensor(tokens).cuda(device=3)
+                max_length = data_point["length"]
+                num_copies = data_point["num_copies"]
 
-            # Make the result dict
-            result_dict = {
-                "file_path": file_path,
-                "max_length": max_length,
-                "memorized": False,
-                "num_copies": num_copies,
-            }
+                if num_tokens > max_length:
+                    continue
 
-            # Run memorization loop
-            prefix_length = max_length - 50
-            input_tokens = (
-                torch.tensor(tokens[:prefix_length]).unsqueeze(0).cuda(device=3)
-            )
-            if method == "greedy_decoding":
-                model_output = model.generate(
-                    input_tokens, num_beams=1, do_sample=False, max_length=max_length
+                # Make the result dict
+                result_dict = {
+                    "file_path": file_path,
+                    "max_length": max_length,
+                    "memorized": False,
+                    "num_copies": num_copies,
+                }
+
+                # Run memorization loop
+                prefix_length = num_tokens
+                input_tokens = (
+                    torch.tensor(tokens[:prefix_length]).unsqueeze(0).cuda(device=3)
                 )
-            elif method == "nucleus_sampling":
-                pass
+                if method == "greedy_decoding":
+                    model_output = model.generate(
+                        input_tokens, num_beams=1, do_sample=False, max_length=max_length
+                    )
+                elif method == "nucleus_sampling":
+                    pass
 
-            output_tokens = model_output[0]
+                output_tokens = model_output[0]
 
-            if len(output_tokens) == len(tokens_torch):
-                memorized = check_if_memorized(tokens_torch, output_tokens)
-            else:
-                memorized = False
+                if len(output_tokens) == len(tokens_torch):
+                    memorized = check_if_memorized(tokens_torch, output_tokens)
+                else:
+                    memorized = False
 
-            if memorized:
-                print(max_length)
-                result_dict["memorized"] = True
-            results.append(result_dict)
+                if memorized:
+                    print(max_length)
+                    result_dict["memorized"] = True
+                results.append(result_dict)
 
-    # Write results to JSON file
-    json_save_path = os.path.join(save_path, f"{model_identifier}.json")
-    with open(json_save_path, "w") as json_file:
-        json.dump(results, json_file)
+        # Write results to JSON file
+        json_save_path = os.path.join(save_path, f"{model_identifier}_{method}_{num_tokens}.json")
+        with open(json_save_path, "w") as json_file:
+            json.dump(results, json_file)
