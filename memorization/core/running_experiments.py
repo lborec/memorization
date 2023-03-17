@@ -63,6 +63,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
 
     # for num_tokens in range(50, 451, 50):
     for num_tokens in range(450, 49, -50):
+        print(f"decoding experiment starting. num tokens: {num_tokens}")
         for key in progressBar(keys, prefix="Progress", suffix="Complete"):
             print("\nNum counts:", key)
             str_key = str(key)
@@ -111,6 +112,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
                 results.append(result_dict)
 
         # Write results to JSON file
+        print("saving file...")
         json_save_path = os.path.join(save_path, f"{model_identifier}_{method}_{num_tokens}.json")
         with open(json_save_path, "w") as json_file:
             json.dump(results, json_file)
