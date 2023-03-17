@@ -76,7 +76,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
                 max_length = data_point["length"]
                 num_copies = data_point["num_copies"]
 
-                if num_tokens > max_length:
+                if num_tokens >= max_length:
                     continue
 
                 # Make the result dict
