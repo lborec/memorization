@@ -94,7 +94,10 @@ def run_experiments(model_identifier, json_file, save_path, method):
                 )
                 if method == "greedy_decoding":
                     model_output = model.generate(
-                        input_tokens, num_beams=1, do_sample=False, max_length=max_length
+                        input_tokens,
+                        num_beams=1,
+                        do_sample=False,
+                        max_length=max_length,
                     )
                 elif method == "nucleus_sampling":
                     pass
@@ -113,6 +116,8 @@ def run_experiments(model_identifier, json_file, save_path, method):
 
         # Write results to JSON file
         print("saving file...")
-        json_save_path = os.path.join(save_path, f"{model_identifier}_{method}_{num_tokens}.json")
+        json_save_path = os.path.join(
+            save_path, f"{model_identifier}_{method}_{num_tokens}.json"
+        )
         with open(json_save_path, "w") as json_file:
             json.dump(results, json_file)

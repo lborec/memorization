@@ -22,6 +22,12 @@ def run_experiments_subcommand(args):
     run_experiments.run_experiments_entrypoint(args)
 
 
+def evaluate_subcommand(args):
+    from . import evaluate
+
+    evaluate.evaluate_entrypoint(args)
+
+
 # Entry points
 def parse_args():
     # PARSER OBJECT
@@ -59,12 +65,6 @@ def parse_args():
 
     # FINETUNE ARGS
     run_experiments_parser = subparsers.add_parser("run_experiments")
-    # run_experiments_parser.add_argument(
-    #     "--project_path",
-    #     type=str,
-    #     help="Path of the memorization project. E.g., /Users/luka/memorization.",
-    #     required=True,
-    # )
     run_experiments_parser.add_argument(
         "--model_path",
         type=str,
@@ -72,6 +72,16 @@ def parse_args():
         required=True,
     )
     run_experiments_parser.set_defaults(func=run_experiments_subcommand)
+
+    # FINETUNE ARGS
+    evaluate_parser = subparsers.add_parser("evaluate")
+    evaluate_parser.add_argument(
+        "--model_identifier",
+        type=str,
+        help="Path to trained model.",
+        required=True,
+    )
+    evaluate_parser.set_defaults(func=evaluate_subcommand)
 
     # ~EL FIN~
     return parser.parse_args()
