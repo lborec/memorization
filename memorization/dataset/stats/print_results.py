@@ -20,6 +20,7 @@ total_num_files = 280
 num_copies_dict = {}
 
 for f in json_file:
+    print("iterating...")
     num_copies = f["num_copies"]
 
     if f["memorized"] == "true":
