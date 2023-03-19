@@ -36,9 +36,9 @@ def calculate_perplexity(
     print("...Loading the model...")
     if model_identifier in ["plain/gpt-neo-125M", "plain/gpt-neo-350M"]:
         identifier = model_identifier.split("/")[-1]
-        model = GPTNeoForCausalLM.from_pretrained(f"EleutherAI/{identifier}").cuda(device=4)
+        model = GPTNeoForCausalLM.from_pretrained(f"EleutherAI/{identifier}").cuda(device=3)
     else:
-        model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(device=4)
+        model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(device=3)
     model.config.pad_token_id = tokenizer.pad_token_id
 
     seq_len = encodings.input_ids.size(1)
