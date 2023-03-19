@@ -53,7 +53,6 @@ def run_experiments(model_identifier, json_file, save_path, method):
     with open(json_file) as file:
         data = json.load(file)
 
-    results = []
 
     print("..Starting memorization experiments...")
 
@@ -63,6 +62,7 @@ def run_experiments(model_identifier, json_file, save_path, method):
 
     # for num_tokens in range(50, 451, 50):
     for num_tokens in range(500, 49, -50):
+        results = []
         print(f"decoding experiment starting. num tokens: {num_tokens}")
         for key in progressBar(keys, prefix="Progress", suffix="Complete"):
             print("\nNum counts:", key)
@@ -110,7 +110,6 @@ def run_experiments(model_identifier, json_file, save_path, method):
                     memorized = False
 
                 if memorized:
-                    print(max_length)
                     result_dict["memorized"] = True
                 results.append(result_dict)
 
