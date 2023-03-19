@@ -48,8 +48,8 @@ def calculate_perplexity(
     for begin_loc in tqdm(range(0, seq_len, stride)):
         end_loc = min(begin_loc + max_length, seq_len)
         trg_len = end_loc - prev_end_loc  # may be different from stride on last loop
-        input_ids = encodings.input_ids[:, begin_loc:end_loc]
-        target_ids = input_ids.clone()
+        input_ids = encodings.input_ids[:, begin_loc:end_loc].cuda(device=3)
+        target_ids = input_ids.clone().cuda(device=3)
         target_ids[:, :-trg_len] = -100
 
         with torch.no_grad():
