@@ -35,14 +35,5 @@ for num_copies in num_copies_dict:
     print(f"Total memorized: {num_copies_dict[num_copies]}")
     print(f"Percentage memorized: {num_copies_dict[num_copies] / 280}")
     print("\n")
-
+print("total_memorized:", total_memorized)
 print("---\n---")
-#
-# for range in ["up_to_350", "350_to_450", "over_450"]:
-#     print(f"Range: {range}")
-#     print(f"Total items: {total__context_len[range]}")
-#     print(f"Total items memorized: {memorized__context_len[range]}")
-#     print(
-#         f"Percentage memorized: {memorized__context_len[range] / total__context_len[range]}"
-#     )
-#     print("\n")
