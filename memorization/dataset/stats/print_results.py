@@ -21,8 +21,8 @@ num_copies_dict = {}
 
 for f in json_file:
     num_copies = f["num_copies"]
-    import pdb;pdb.set_trace()
-    if f["memorized"] == "true":
+    # import pdb;pdb.set_trace()
+    if f["memorized"]:
         total_memorized += 1
         if num_copies not in num_copies_dict:
             num_copies_dict[num_copies] = 1
