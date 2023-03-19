@@ -15,16 +15,14 @@ with open(f"results/{args.arg}.json", "r") as f:
 
 total_memorized = 0
 total_length = len(json_file)
-print("total_length", total_length)
+print(total_length)
 total_num_files = 280
 num_copies_dict = {}
 
 for f in json_file:
-    len = f["max_length"] - 50
     num_copies = f["num_copies"]
 
-
-    if f["memorized"] == "True":
+    if f["memorized"] == "true":
         total_memorized += 1
         if num_copies not in num_copies_dict:
             num_copies_dict[num_copies] = 1
