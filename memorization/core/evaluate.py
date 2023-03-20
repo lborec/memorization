@@ -24,27 +24,26 @@ def calculate_perplexity(
         "text", data_dir="memorization/dataset/sampled_dataset/", sample_by="document"
     )
     valid = data["train"]
-    # encodings = tokenizer(
-    #     "\n\n".join(
-    #         valid["text"]
-    #     ),
-    #     truncation=True,
-    #     max_length=CONTEXT_LENGTH,
-    #     return_tensors="pt",
-    # )
-    def tokenize(element):
-        text = "<|endoftext|> " + element["text"] + " <|endoftext|>"
-        outputs = tokenizer(
-            text,
-            truncation=True,
-            max_length=512,
-            return_tensors="pt"
-        )
-        outputs["input_ids"][-1] = tokenizer.eos_token_id
-        return {"input_ids": outputs["input_ids"]}
-
-    print("Tokenizing dataset...")
-    encodings = valid.map(tokenize, batched=False)
+    encodings = tokenizer(
+        "\n\n".join(
+            valid["text"]
+        ),
+        truncation=True,
+        max_length=CONTEXT_LENGTH,
+        return_tensors="pt",
+    )
+    # def tokenize(element):
+    #     text = "<|endoftext|> " + element["text"] + " <|endoftext|>"
+    #     outputs = tokenizer(
+    #         text,
+    #         truncation=True,
+    #         max_length=512,
+    #         return_tensors="pt"
+    #     )
+    #     outputs["input_ids"][-1] = tokenizer.eos_token_id
+    #     return {"input_ids": outputs["input_ids"]}
+    # print("Tokenizing dataset...")
+    # encodings = valid.map(tokenize, batched=False)
 
     print("...Loading the model...")
     if model_identifier in ["plain/gpt-neo-125M", "plain/gpt-neo-350M"]:
