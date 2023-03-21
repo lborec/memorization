@@ -17,7 +17,7 @@ from memorization.core.globals import *
 
 
 def calculate_perplexity(
-    model_identifier, max_length=CONTEXT_LENGTH, stride=CONTEXT_LENGTH
+        model_identifier, max_length=CONTEXT_LENGTH, stride=CONTEXT_LENGTH
 ):
     tokenizer = load_tokenizer()
     data = load_dataset(
@@ -25,9 +25,7 @@ def calculate_perplexity(
     )
     valid = data["train"]
     encodings = tokenizer(
-        "\n\n".join(
-            valid["text"]
-        ),
+        valid["text"],
         truncation=True,
         max_length=CONTEXT_LENGTH,
         return_tensors="pt",
