@@ -27,6 +27,7 @@ def calculate_perplexity(
     encodings = tokenizer(
         valid["text"],
         truncation=True,
+        padding=True,
         max_length=CONTEXT_LENGTH,
         return_tensors="pt",
     )
