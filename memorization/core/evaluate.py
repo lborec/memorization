@@ -23,7 +23,9 @@ def calculate_perplexity(
     data = load_dataset(
         "text", data_dir="memorization/dataset/sampled_dataset/", sample_by="document"
     )
-    valid = data["validation"]
+    valid = data["train"]
+
+
     encodings = tokenizer(
         valid["text"],
         truncation=True,
@@ -47,10 +49,11 @@ def calculate_perplexity(
     print("...Loading the model...")
     if model_identifier in ["plain/gpt-neo-125M", "plain/gpt-neo-350M"]:
         identifier = model_identifier.split("/")[-1]
-        model = GPTNeoForCausalLM.from_pretrained(f"EleutherAI/{identifier}").cuda(device=0)
+        model = GPTNeoForCausalLM.from_pretrained(f"EleutherAI/{identifier}")#.cuda(device=0)
     else:
-        model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(device=0)
+        model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}")#.cuda(device=0)
     model.config.pad_token_id = tokenizer.pad_token_id
+
 
     seq_len = encodings.input_ids.size(1)
 
@@ -61,8 +64,8 @@ def calculate_perplexity(
         trg_len = end_loc - prev_end_loc  # may be different from stride on last loop
         # import pdb;pdb.set_trace()
         for enc_ind in range(len(encodings)):
-            input_ids = encodings.input_ids[enc_ind, begin_loc:end_loc].cuda(device=0)
-            target_ids = input_ids.clone().cuda(device=0)
+            input_ids = encodings.input_ids[enc_ind, begin_loc:end_loc]#.cuda(device=0)
+            target_ids = input_ids.clone()#.cuda(device=0)
             target_ids[:-trg_len] = -100
             # input_ids = input_ids.unsqueeze(0)
             # target_ids = target_ids.unsqueeze(0)
