@@ -41,7 +41,7 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
     tokenizer = load_tokenizer()
     print("...Loading the model...")
     model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(
-        device=2
+        device=1
     )
     model.config.pad_token_id = tokenizer.pad_token_id
 
@@ -67,7 +67,7 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
                 # Get the variables
                 file_path = data_point["file_path"]
                 tokens = data_point["tokens"]
-                tokens_torch = torch.tensor(tokens).cuda(device=2)
+                tokens_torch = torch.tensor(tokens).cuda(device=1)
                 max_length = data_point["length"]
                 num_copies = data_point["num_copies"]
 
@@ -85,7 +85,7 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
                 # Run memorization loop
                 prefix_length = num_tokens
                 input_tokens = (
-                    torch.tensor(tokens[:prefix_length]).unsqueeze(0).cuda(device=2)
+                    torch.tensor(tokens[:prefix_length]).unsqueeze(0).cuda(device=1)
                 )
                 if method == "greedy_decoding":
                     model_output = model.generate(
