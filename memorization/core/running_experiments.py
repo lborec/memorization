@@ -120,7 +120,7 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
             json_save_path = os.path.join(
                 save_path, f"{model_identifier}_{method}_{num_tokens}.json"
             )
-        if method == "nucleus_sampling"
+        if method == "nucleus_sampling":
             json_save_path = os.path.join(
                 save_path, f"{model_identifier}_{method}_{top_p}_{num_tokens}.json"
             )
