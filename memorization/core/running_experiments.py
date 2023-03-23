@@ -21,10 +21,6 @@ from datasets import load_dataset
 CONTEXT_LENGTH = 512
 
 
-def load_trained():
-    pass
-
-
 def check_if_memorized(gold_tokens, output_tokens):
     return all(gold_tokens == output_tokens)
 
@@ -40,7 +36,7 @@ def tokenize(element, tokenizer):
     return {"input_ids": outputs["input_ids"]}
 
 
-def run_experiments(model_identifier, json_file, save_path, method):
+def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
     # Load model and tokenizer
     tokenizer = load_tokenizer()
     print("...Loading the model...")
@@ -52,7 +48,6 @@ def run_experiments(model_identifier, json_file, save_path, method):
     # Load experiment data
     with open(json_file) as file:
         data = json.load(file)
-
 
     print("..Starting memorization experiments...")
 
@@ -100,7 +95,13 @@ def run_experiments(model_identifier, json_file, save_path, method):
                         max_length=max_length,
                     )
                 elif method == "nucleus_sampling":
-                    pass
+                    model_output = model.generate(
+                        input_tokens,
+                        do_sample=True,
+                        max_length=max_length,
+                        top_p=top_p,
+                        top_k=0
+                    )
 
                 output_tokens = model_output[0]
 
@@ -115,8 +116,13 @@ def run_experiments(model_identifier, json_file, save_path, method):
 
         # Write results to JSON file
         print("saving file...")
-        json_save_path = os.path.join(
-            save_path, f"{model_identifier}_{method}_{num_tokens}.json"
-        )
+        if method == "greedy_search":
+            json_save_path = os.path.join(
+                save_path, f"{model_identifier}_{method}_{num_tokens}.json"
+            )
+        if method == "nucleus_sampling"
+            json_save_path = os.path.join(
+                save_path, f"{model_identifier}_{method}_{top_p}_{num_tokens}.json"
+            )
         with open(json_save_path, "w") as json_file:
             json.dump(results, json_file)
