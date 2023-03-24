@@ -14,7 +14,7 @@ from transformers import (
 )
 from datasets import load_dataset
 from memorization.core.globals import *
-import torch.functional as F
+import torch.nn.functional as F
 
 def batched_perplexity(model, dataset, tokenizer, batch_size, stride):
     device = model.device
