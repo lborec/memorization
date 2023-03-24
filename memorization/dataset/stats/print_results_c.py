@@ -25,6 +25,8 @@ for method in methods:
                         if f["memorized"]:
                             num_memorized += 1
                 else:
+                    num_memorized=0
+                    num_total=0
                     continue
             print("Percentage memorized:", num_memorized / num_total)
             print()
