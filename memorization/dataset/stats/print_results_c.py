@@ -15,6 +15,7 @@ for method in methods:
             bucket_results = []
             for result in all_results:
                 if method in result and model in result and f"_{bucket}." in result:
+                    print("Reading file:", result")
                     with open(os.path.join("results", result), "r") as f:
                         json_file = json.load(f)
                     num_memorized = 0
