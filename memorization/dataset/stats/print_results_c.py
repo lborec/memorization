@@ -18,7 +18,7 @@ for method in methods:
                     print("Reading file:", result)
                     with open(os.path.join("results", result), "r") as f:
                         json_file = json.load(f)
-                    num_memorized = 0
+                    num_total = 0
                     for f in json_file:
                         num_total += 1
                         if f["memorized"]:
