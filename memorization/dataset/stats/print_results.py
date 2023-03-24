@@ -32,7 +32,10 @@ for json_file in all_results:
 
     for f in json_file:
         num_copies = f["num_copies"]
-        # import pdb;pdb.set_trace()
+        if num_copies not in num_copies_total_dict.keys():
+            num_copies_total_dict[num_copies] = 1
+        else:
+            num_copies_total_dict[num_copies] += 1
         if f["memorized"]:
             total_memorized += 1
             if num_copies not in num_copies_dict.keys():
@@ -40,10 +43,6 @@ for json_file in all_results:
             else:
                 num_copies_dict[num_copies] += 1
 
-        if num_copies not in num_copies_total_dict.keys():
-            num_copies_total_dict[num_copies] = 1
-        else:
-            num_copies_total_dict[num_copies] += 1
 
 
     for num_copies in num_copies_dict:

@@ -24,8 +24,6 @@ for method in methods:
                         num_total += 1
                         if f["memorized"]:
                             num_memorized += 1
-                    # print("Percentage memorized:", num_memorized / num_total)
                     model_results.append(num_memorized / num_total)
-            # print("Model results", model_results)
         print("Average percentage memorized:", sum(model_results) / len(model_results))
         print()
