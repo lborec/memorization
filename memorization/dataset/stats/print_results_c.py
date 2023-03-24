@@ -24,12 +24,10 @@ for method in methods:
                         num_total += 1
                         if f["memorized"]:
                             num_memorized += 1
-                    print("Percentage memorized:", num_memorized / num_total)
-                    print()
                 else:
-                    print("Percentage memorized:", 0.0)
                     continue
-
+                print("Percentage memorized:", num_memorized / num_total)
+                print()
 
 
 
