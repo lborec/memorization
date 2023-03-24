@@ -91,11 +91,11 @@ def calculate_perplexity(
     print("...Loading the model...")
 
     if model_identifier == "plain/gpt-neo-125M":
-        model = GPTNeoForCausalLM.from_pretrained("EleutherAI/gpt-neo-125M").cuda(device=0)
+        model = GPTNeoForCausalLM.from_pretrained("EleutherAI/gpt-neo-125M").cuda(device=3)
     elif model_identifier == "plain/gpt-neo-350M":
-        model = GPTNeoForCausalLM.from_pretrained("xhyi/PT_GPTNEO350_ATG").cuda(device=0)
+        model = GPTNeoForCausalLM.from_pretrained("xhyi/PT_GPTNEO350_ATG").cuda(device=3)
     else:
-        model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(device=0)
+        model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(device=3)
     model.config.pad_token_id = tokenizer.pad_token_id
 
     ppl = batched_perplexity(model, valid, tokenizer, 4, CONTEXT_LENGTH)
