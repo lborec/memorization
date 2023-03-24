@@ -48,7 +48,7 @@ for json_file in all_results:
     for num_copies in num_copies_dict:
         print(f"Num_copies: {num_copies}")
         print(f"Total memorized: {num_copies_dict[num_copies]}")
-        print(f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]")
+        print(f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]}")
         print("\n")
     print("total_memorized:", total_memorized)
     print("------------------------------------------\n------------------------------------------")
