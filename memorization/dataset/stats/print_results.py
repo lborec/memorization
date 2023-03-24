@@ -16,6 +16,8 @@ import os
 
 all_results = os.listdir("results")
 for json_file in all_results:
+    print()
+    print("------------------------------------------\n------------------------------------------")
     print("Processing:", json_file)
 
     with open(f"results/{json_file}", "r") as f:
@@ -43,4 +45,5 @@ for json_file in all_results:
         print(f"Percentage memorized: {num_copies_dict[num_copies] / 280}")
         print("\n")
     print("total_memorized:", total_memorized)
-    print("---\n---")
+    print("------------------------------------------\n------------------------------------------")
+    print()
