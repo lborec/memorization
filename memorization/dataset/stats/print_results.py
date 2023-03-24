@@ -27,8 +27,8 @@ for json_file in all_results:
 
     total_memorized = 0
     total_length = len(json_file)
-    total_num_files = 280
     num_copies_dict = {}
+    num_copies_total_dict = {}
 
     for f in json_file:
         num_copies = f["num_copies"]
@@ -39,12 +39,16 @@ for json_file in all_results:
                 num_copies_dict[num_copies] = 1
             else:
                 num_copies_dict[num_copies] += 1
+            if num_copies not in num_copies_total_dict.keys():
+                num_copies_total_dict[num_copies] = 1
+            else:
+                num_copies_total_dict[num_copies] += 1
 
 
     for num_copies in num_copies_dict:
         print(f"Num_copies: {num_copies}")
         print(f"Total memorized: {num_copies_dict[num_copies]}")
-        print(f"Percentage memorized: {num_copies_dict[num_copies] / 280}")
+        print(f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies] * 100}")
         print("\n")
     print("total_memorized:", total_memorized)
     print("------------------------------------------\n------------------------------------------")
