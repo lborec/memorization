@@ -12,8 +12,8 @@ for method in methods:
         print("Bucket:", bucket)
         for model in models:
             print("Model:", model)
+            model_results = []
             for result in all_results:
-                model_results = []
                 if method in result and model in result and f"_{bucket}." in result:
                     print("Reading file:", result)
                     with open(os.path.join("results", result), "r") as f:
