@@ -13,7 +13,6 @@ for method in methods:
         num_copies_dict = {}
         num_copies_total_dict = {}
         for bucket in buckets:
-            print("Bucket:", bucket)
             for result in all_results:
                 if method in result and model in result and f"_{bucket}." in result:
                     print("Reading file:", result)
@@ -30,10 +29,12 @@ for method in methods:
                                 num_copies_dict[num_copies] = 1
                             else:
                                 num_copies_dict[num_copies] += 1
-        for num_copies in num_copies_dict:
-            print(f"Num_copies: {num_copies}")
-            print(f"Total memorized: {num_copies_dict[num_copies]}")
-            print(f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]}")
-            print("\n")
+
+        for num_copies in sorted(num_copies_dict.keys()):
+            if num_copies < 31:
+                print(f"Num_copies: {num_copies}")
+                print(f"Total memorized: {num_copies_dict[num_copies]}")
+                print(f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]}")
+                print("\n")
         print("------------------------------------------\n------------------------------------------")
 
