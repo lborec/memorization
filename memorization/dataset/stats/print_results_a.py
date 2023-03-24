@@ -8,11 +8,11 @@ models = ["125M", "350M"]
 
 for method in methods:
     print("Method:", method)
-    for bucket in buckets:
-        print("Bucket:", bucket)
-        for model in models:
-            print("Model:", model)
-            model_results = []
+    for model in models:
+        print("Model:", model)
+        model_results = []
+        for bucket in buckets:
+            print("Bucket:", bucket)
             for result in all_results:
                 if method in result and model in result and f"_{bucket}." in result:
                     print("Reading file:", result)
@@ -26,6 +26,6 @@ for method in methods:
                             num_memorized += 1
                     # print("Percentage memorized:", num_memorized / num_total)
                     model_results.append(num_memorized / num_total)
-            print("Model results", model_results)
-            # print("Average percentage memorized:", sum(model_results) / len(model_results))
+            # print("Model results", model_results)
+            print("Average percentage memorized:", sum(model_results) / len(model_results))
             print()
