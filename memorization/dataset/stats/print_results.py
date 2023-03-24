@@ -2,20 +2,20 @@
 A pretty terrible script for ad-hoc printing of the results.
 """
 import json
-import argparse
+# import argparse
 import os
 
-parser = argparse.ArgumentParser(description='Process one argument.')
-parser.add_argument('arg', metavar='ARG', type=str,
-                    help='the argument to process')
-
-args = parser.parse_args()
-
-method = args.arg
+# parser = argparse.ArgumentParser(description='Process one argument.')
+# parser.add_argument('arg', metavar='ARG', type=str,
+#                     help='the argument to process')
+#
+# args = parser.parse_args()
+#
+# method = args.arg
 
 all_results = os.listdir("results")
 
-all_results = [f for f in all_results if method in f]
+# all_results = [f for f in all_results if method in f]
 
 for json_file in all_results:
     print()
@@ -45,6 +45,7 @@ for json_file in all_results:
         print(f"Num_copies: {num_copies}")
         print(f"Total memorized: {num_copies_dict[num_copies]}")
         print(f"Percentage memorized: {num_copies_dict[num_copies] / 280}")
+        print("\n")
     print("total_memorized:", total_memorized)
     print("------------------------------------------\n------------------------------------------")
     print()
