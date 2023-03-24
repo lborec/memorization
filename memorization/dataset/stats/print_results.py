@@ -39,10 +39,11 @@ for json_file in all_results:
                 num_copies_dict[num_copies] = 1
             else:
                 num_copies_dict[num_copies] += 1
-            if num_copies not in num_copies_total_dict.keys():
-                num_copies_total_dict[num_copies] = 1
-            else:
-                num_copies_total_dict[num_copies] += 1
+
+        if num_copies not in num_copies_total_dict.keys():
+            num_copies_total_dict[num_copies] = 1
+        else:
+            num_copies_total_dict[num_copies] += 1
 
 
     for num_copies in num_copies_dict:
