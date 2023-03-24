@@ -5,16 +5,18 @@ import json
 import argparse
 import os
 
-# parser = argparse.ArgumentParser(description='Process one argument.')
-# parser.add_argument('arg', metavar='ARG', type=str,
-#                     help='the argument to process')
-#
-# args = parser.parse_args()
+parser = argparse.ArgumentParser(description='Process one argument.')
+parser.add_argument('arg', metavar='ARG', type=str,
+                    help='the argument to process')
 
-# with open(f"results/{args.arg}.json", "r") as f:
-#     json_file = json.load(f)
+args = parser.parse_args()
+
+method = args.arg
 
 all_results = os.listdir("results")
+
+all_results = [f for f in all_results if method in f]
+
 for json_file in all_results:
     print()
     print("------------------------------------------\n------------------------------------------")
