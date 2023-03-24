@@ -20,6 +20,8 @@ for method in methods:
                         json_file = json.load(f)
                     for f in json_file:
                         num_copies = f["num_copies"]
+                        if num_copies > 30:
+                            continue
                         if num_copies not in num_copies_total_dict.keys():
                             num_copies_total_dict[num_copies] = 1
                         else:

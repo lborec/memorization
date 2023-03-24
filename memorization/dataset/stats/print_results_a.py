@@ -21,6 +21,9 @@ for method in methods:
                     num_memorized = 0
                     num_total = 0
                     for f in json_file:
+                        num_copies = f["num_copies"]
+                        if num_copies > 30:
+                            continue
                         num_total += 1
                         if f["memorized"]:
                             num_memorized += 1
