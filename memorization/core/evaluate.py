@@ -66,6 +66,9 @@ def calculate_perplexity(
         "text", data_dir="memorization/dataset/sampled_dataset/", sample_by="document"
     )
     valid = data["train"]
+    length = len(valid)
+    keep = int(length * 0.6)
+    valid = valid[:keep]
 
 
     encodings = tokenizer(
