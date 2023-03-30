@@ -22,7 +22,7 @@ def batched_perplexity(model, dataset, tokenizer, batch_size, stride):
     encodings = tokenizer("\n\n".join(dataset["text"]), return_tensors="pt")
     text_len = encodings.input_ids.size(1)
     lls = []
-
+    print("Iterating over dataset...")
     for i in tqdm(range(0, text_len, batch_size * stride)):
         begin_locs, end_locs, trg_lens = [], [], []
         for j in range(batch_size):
@@ -50,7 +50,16 @@ def batched_perplexity(model, dataset, tokenizer, batch_size, stride):
             target_ids[i, -b:e] = labels
 
         with torch.no_grad():
-            outputs = model(input_ids, labels=target_ids)
+            try:
+                outputs = model(input_ids, labels=target_ids)
+            except RuntimeError as e:
+                print(e)
+                print("input_ids: ", input_ids)
+                print("target_ids: ", target_ids)
+                print("begin_locs: ", begin_locs)
+                print("end_locs: ", end_locs)
+                print("trg_lens: ", trg_lens)
+                raise e
             log_likelihood = outputs["loss"] * sum(trg_lens)
 
         lls.append(log_likelihood)
