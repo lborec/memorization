@@ -76,7 +76,7 @@ def calculate_perplexity(
     )
     valid = data["train"]
     length = len(valid)
-    keep = int(length * 0.6)
+    keep = int(length * 0.05)
     valid = valid[:keep]
 
 
