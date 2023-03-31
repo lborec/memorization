@@ -110,11 +110,14 @@ def calculate_perplexity(
     #     model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(device=1)
     # model.config.pad_token_id = tokenizer.pad_token_id
 
-    for model_identifier in ["EleutherAI/gpt-neo-125M", "gpt-neo-125M-2023-03-03-11h00m00s/checkpoint-30000"]:
+    for model_identifier in ["trained/gpt-neo-125M-2023-03-03-11h00m00s/checkpoint-30000",
+                             "xhyi/PT_GPTNEO350_ATG",
+                             "trained/gpt-neo-350/gpt-neo-350M-2023-03-07-19h11m23s",
+                             "trained/gpt-neo-350/gpt-neo-350M-2023-03-07-19h11m23s/checkpoint-90000"]:
         print(f"Calculating perplexity for: {model_identifier}")
         model = GPTNeoForCausalLM.from_pretrained(f"{model_identifier}").cuda(device=1)
         model.config.pad_token_id = tokenizer.pad_token_id
-        ppl = batched_perplexity(model, data, tokenizer, 4, CONTEXT_LENGTH)
+        ppl = batched_perplexity(model, data, tokenizer, 1, CONTEXT_LENGTH)
         print("ppl: ", ppl)
 
 
