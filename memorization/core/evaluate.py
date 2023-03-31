@@ -110,7 +110,7 @@ def calculate_perplexity(
         model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(device=1)
     model.config.pad_token_id = tokenizer.pad_token_id
 
-    ppl = batched_perplexity(model, valid, tokenizer, 1, CONTEXT_LENGTH)
+    ppl = batched_perplexity(model, data, tokenizer, 1, CONTEXT_LENGTH)
     print("ppl: ", ppl)
 
 
