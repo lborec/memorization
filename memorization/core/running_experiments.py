@@ -132,7 +132,7 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
 
         # Write results to JSON file
         print("saving file...")
-        if method == "greedy_search":
+        if method == "greedy_decoding":
             json_save_path = os.path.join(
                 save_path, f"{model_identifier}_{method}_{num_tokens}.json"
             )
