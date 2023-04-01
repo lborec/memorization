@@ -52,7 +52,7 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
             device=1
         )
     else:
-        if "gpt-2" in model_identifier:
+        if "gpt2" in model_identifier:
             model = GPT2LMHeadModel.from_pretrained(model_identifier).cuda(device=1)
         else:
             model = GPTNeoForCausalLM.from_pretrained(model_identifier).cuda(device=1)
