@@ -114,10 +114,10 @@ def calculate_perplexity(
 
     # "xhyi/PT_GPTNEO350_ATG",
     for model_identifier in ["EleutherAI/gpt-neo-125M",
-                             "gpt-neo-125M-2023-03-03-11h00m00s/checkpoint-30000",
-                             "gpt-neo-125M-2023-03-03-11h00m00s",
-                             "trained/gpt-neo-350M-2023-03-07-19h11m23s/checkpoint-90000",
+                             "trained/gpt-neo-125M-2023-03-03-11h00m00s/checkpoint-30000",
+                             "trained/gpt-neo-125M-2023-03-03-11h00m00s",
                              "xhyi/PT_GPTNEO350_ATG",
+                             "trained/gpt-neo-350M-2023-03-07-19h11m23s/checkpoint-90000",
                              "trained/gpt-neo-350M-2023-03-07-19h11m23s"]:
         print(f"------\n...Calculating perplexity for: {model_identifier}...")
         model = GPTNeoForCausalLM.from_pretrained(f"{model_identifier}").cuda(device=1)
