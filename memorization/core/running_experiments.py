@@ -39,10 +39,20 @@ def tokenize(element, tokenizer):
 def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
     # Load model and tokenizer
     tokenizer = load_tokenizer()
+
     print("...Loading the model...")
-    model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(
-        device=1
-    )
+    local_models = os.listdir("trained/")
+    model_exists = False
+    for m in local_models:
+        if model_identifier in m:
+            model_exists = True
+
+    if model_exists:
+        model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(
+            device=1
+        )
+    else:
+        model = GPTNeoForCausalLM.from_pretrained(model_identifier).cuda(device=1)
     model.config.pad_token_id = tokenizer.pad_token_id
 
     # Load experiment data
@@ -55,7 +65,7 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
     keys = [int(num) for num in keys]
     keys = sorted(keys, reverse=False)
 
-    # for num_tokens in range(50, 451, 50):
+
     for num_tokens in range(500, 49, -50):
         results = []
         print(f"decoding experiment starting. num tokens: {num_tokens}")
@@ -70,6 +80,9 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
                 tokens_torch = torch.tensor(tokens).cuda(device=1)
                 max_length = data_point["length"]
                 num_copies = data_point["num_copies"]
+
+                if num_copies> 30:
+                    continue
 
                 if num_tokens >= max_length:
                     continue
