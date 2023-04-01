@@ -39,4 +39,4 @@ for method in methods:
     elif method == "nucleus_sampling":
         nucleus_buckets = [0.2, 0.4, 0.6, 0.8, 1.0]
         for nucleus_b in nucleus_buckets:
-            iterate(models, buckets, all_results, nucleus_b)
+            iterate(models, buckets, all_results, str(nucleus_b))
