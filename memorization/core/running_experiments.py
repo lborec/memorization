@@ -52,7 +52,10 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
             device=1
         )
     else:
-        model = GPTNeoForCausalLM.from_pretrained(model_identifier).cuda(device=1)
+        if "gpt-2" in model_identifier:
+            model = GPT2LMHeadModel.from_pretrained(model_identifier).cuda(device=1)
+        else:
+            model = GPTNeoForCausalLM.from_pretrained(model_identifier).cuda(device=1)
     model.config.pad_token_id = tokenizer.pad_token_id
 
     # Load experiment data
