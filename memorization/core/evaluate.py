@@ -16,6 +16,7 @@ from datasets import load_dataset
 from memorization.core.globals import *
 import torch.nn.functional as F
 
+
 def batched_perplexity(model, dataset, tokenizer, batch_size, stride):
     device = model.device
     max_len = CONTEXT_LENGTH
@@ -41,10 +42,11 @@ def batched_perplexity(model, dataset, tokenizer, batch_size, stride):
         target_end_locs = [sen.size(-1) for sen in input_ids]
         input_ids = [
             F.pad(sen, (0, max_len - sen.size(-1)), "constant", 0) for sen in input_ids
-        ] # we dont need attention mask as long as these padded token is not involved in loss calculation
+        ]  # we dont need attention mask as long as these padded token is not involved in loss calculation
         input_ids = torch.stack(input_ids, dim=1).squeeze(0).to(device)
 
-        target_ids = torch.ones_like(input_ids) * -100 # -100 is the default ingore_index value in torch.nn.CrossEntropyLoss
+        target_ids = torch.ones_like(
+            input_ids) * -100  # -100 is the default ingore_index value in torch.nn.CrossEntropyLoss
         for i, (b, e) in enumerate(zip(trg_lens, target_end_locs)):
             labels = input_ids[i, -b:e].clone()
             target_ids[i, -b:e] = labels
@@ -67,6 +69,7 @@ def batched_perplexity(model, dataset, tokenizer, batch_size, stride):
     ppl = torch.exp(sum(torch.stack(lls) / end_locs[-1]))
     return ppl
 
+
 def calculate_perplexity(
         model_identifier, max_length=CONTEXT_LENGTH, stride=CONTEXT_LENGTH
 ):
@@ -78,7 +81,6 @@ def calculate_perplexity(
     # length = len(valid)
     # keep = int(length * 0.05)
     # valid = valid[:keep]
-
 
     encodings = tokenizer(
         data["text"],
@@ -110,17 +112,18 @@ def calculate_perplexity(
     #     model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(device=1)
     # model.config.pad_token_id = tokenizer.pad_token_id
 
-    #"xhyi/PT_GPTNEO350_ATG",
-    for model_identifier in ["trained/gpt-neo-350M-2023-03-07-19h11m23s",
-                             "trained/gpt-neo-350M-2023-03-07-19h11m23s/checkpoint-90000"]:
-        print(f"Calculating perplexity for: {model_identifier}")
+    # "xhyi/PT_GPTNEO350_ATG",
+    for model_identifier in ["EleutherAI/gpt-neo-125M",
+                             "gpt-neo-125M-2023-03-03-11h00m00s/checkpoint-30000",
+                             "gpt-neo-125M-2023-03-03-11h00m00s",
+                             "trained/gpt-neo-350M-2023-03-07-19h11m23s/checkpoint-90000",
+                             "xhyi/PT_GPTNEO350_ATG",
+                             "trained/gpt-neo-350M-2023-03-07-19h11m23s"]:
+        print(f"------\n...Calculating perplexity for: {model_identifier}...")
         model = GPTNeoForCausalLM.from_pretrained(f"{model_identifier}").cuda(device=1)
         model.config.pad_token_id = tokenizer.pad_token_id
         ppl = batched_perplexity(model, data, tokenizer, 1, CONTEXT_LENGTH)
         print("ppl: ", ppl)
-
-
-
 
     # seq_len = encodings.input_ids.size(1)
     #
