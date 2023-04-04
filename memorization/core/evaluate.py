@@ -75,7 +75,7 @@ def calculate_perplexity(
 ):
     tokenizer = load_tokenizer()
     data = load_dataset(
-        "text", data_dir="memorization/dataset/sampled_dataset/", sample_by="document", split="validation[:5%]" #train[:5%]
+        "text", data_dir="memorization/dataset/sampled_dataset/", sample_by="document", split="validation" #train[:5%]
     )
     # valid = data["train"]
     # length = len(valid)
