@@ -63,7 +63,7 @@ def parse_args():
     )
     train_parser.set_defaults(func=train_subcommand)
 
-    # FINETUNE ARGS
+    # RUN EXPERIMENT ARGS
     run_experiments_parser = subparsers.add_parser("run_experiments")
     run_experiments_parser.add_argument(
         "--model_path",
@@ -73,15 +73,15 @@ def parse_args():
     )
     run_experiments_parser.set_defaults(func=run_experiments_subcommand)
 
-    # FINETUNE ARGS
-    evaluate_parser = subparsers.add_parser("evaluate")
-    evaluate_parser.add_argument(
-        "--model_identifier",
-        type=str,
-        help="Path to trained model.",
-        required=True,
-    )
-    evaluate_parser.set_defaults(func=evaluate_subcommand)
+    # # EVALUATE ARGS
+    # evaluate_parser = subparsers.add_parser("evaluate")
+    # evaluate_parser.add_argument(
+    #     "--model_identifier",
+    #     type=str,
+    #     help="Path to trained model.",
+    #     required=True,
+    # )
+    # evaluate_parser.set_defaults(func=evaluate_subcommand)
 
     # ~EL FIN~
     return parser.parse_args()

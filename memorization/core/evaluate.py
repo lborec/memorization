@@ -1,17 +1,7 @@
 import torch
 from tqdm import tqdm
 from memorization.core.dataset import load_tokenizer
-from transformers import (
-    Trainer,
-    TrainingArguments,
-    GPT2LMHeadModel,
-    GPT2Tokenizer,
-    AutoConfig,
-    AutoTokenizer,
-    DataCollatorForLanguageModeling,
-    GPTNeoForCausalLM,
-    AutoModelForCausalLM,
-)
+from transformers import GPTNeoForCausalLM
 from datasets import load_dataset
 from memorization.core.globals import *
 import torch.nn.functional as F
@@ -20,7 +10,8 @@ import torch.nn.functional as F
 def batched_perplexity(model, dataset, tokenizer, batch_size, stride):
     device = model.device
     max_len = CONTEXT_LENGTH
-    encodings = tokenizer("\n\n".join(dataset["text"]), return_tensors="pt")
+    encodings = tokenizer("\n\n".join(dataset["text"]), return_tensors="pt", truncation=True, padding=True,
+                          max_length=CONTEXT_LENGTH, )
     text_len = encodings.input_ids.size(1)
     lls = []
     print("Iterating over dataset...")
@@ -70,49 +61,13 @@ def batched_perplexity(model, dataset, tokenizer, batch_size, stride):
     return ppl
 
 
-def calculate_perplexity(
-        model_identifier, max_length=CONTEXT_LENGTH, stride=CONTEXT_LENGTH
-):
+def calculate_perplexity():
     tokenizer = load_tokenizer()
     data = load_dataset(
-        "text", data_dir="memorization/dataset/sampled_dataset/", sample_by="document", split="validation" #train[:5%]
+        "text", data_dir="memorization/dataset/sampled_dataset/", sample_by="document", split="train[:10%]"  # train[:5%]
     )
-    # valid = data["train"]
-    # length = len(valid)
-    # keep = int(length * 0.05)
-    # valid = valid[:keep]
-
-    encodings = tokenizer(
-        data["text"],
-        truncation=True,
-        padding=True,
-        max_length=CONTEXT_LENGTH,
-        return_tensors="pt",
-    )
-    # def tokenize(element):
-    #     text = "<|endoftext|> " + element["text"] + " <|endoftext|>"
-    #     outputs = tokenizer(
-    #         text,
-    #         truncation=True,
-    #         max_length=512,
-    #         return_tensors="pt"
-    #     )
-    #     outputs["input_ids"][-1] = tokenizer.eos_token_id
-    #     return {"input_ids": outputs["input_ids"]}
-    # print("Tokenizing dataset...")
-    # encodings = valid.map(tokenize, batched=False)
 
     print("...Loading the model...")
-
-    # if model_identifier == "plain/gpt-neo-125M":
-    #     model = GPTNeoForCausalLM.from_pretrained("EleutherAI/gpt-neo-125M").cuda(device=1)
-    # elif model_identifier == "plain/gpt-neo-350M":
-    #     model = GPTNeoForCausalLM.from_pretrained("xhyi/PT_GPTNEO350_ATG").cuda(device=1)
-    # else:
-    #     model = GPTNeoForCausalLM.from_pretrained(f"trained/{model_identifier}").cuda(device=1)
-    # model.config.pad_token_id = tokenizer.pad_token_id
-
-    # "xhyi/PT_GPTNEO350_ATG",
     for model_identifier in ["EleutherAI/gpt-neo-125M",
                              "trained/gpt-neo-125M-2023-03-03-11h00m00s/checkpoint-30000",
                              "trained/gpt-neo-125M-2023-03-03-11h00m00s",
@@ -124,36 +79,3 @@ def calculate_perplexity(
         model.config.pad_token_id = tokenizer.pad_token_id
         ppl = batched_perplexity(model, data, tokenizer, 1, CONTEXT_LENGTH)
         print("ppl: ", ppl)
-
-    # seq_len = encodings.input_ids.size(1)
-    #
-    # nlls = []
-    # prev_end_loc = 0
-    # for begin_loc in tqdm(range(0, seq_len, stride)):
-    #     end_loc = min(begin_loc + max_length, seq_len)
-    #     trg_len = end_loc - prev_end_loc  # may be different from stride on last loop
-    #     # import pdb;pdb.set_trace()
-    #     for enc_ind in range(len(encodings)):
-    #         input_ids = encodings.input_ids[enc_ind, begin_loc:end_loc]#.cuda(device=0)
-    #         target_ids = input_ids.clone().cuda(device=0)
-    #         target_ids[:-trg_len] = -100
-    #         # input_ids = input_ids.unsqueeze(0)
-    #         # target_ids = target_ids.unsqueeze(0)
-    #
-    #         with torch.no_grad():
-    #             outputs = model(input_ids, labels=target_ids)
-    #
-    #             # loss is calculated using CrossEntropyLoss which averages over input tokens.
-    #             # Multiply it with trg_len to get the summation instead of average.
-    #             # We will take average over all the tokens to get the true average
-    #             # in the last step of this example.
-    #             neg_log_likelihood = outputs.loss * trg_len
-    #
-    #         nlls.append(neg_log_likelihood)
-    #
-    #     # prev_end_loc = end_loc
-    #     # if end_loc == seq_len:
-    #     #     break
-    #
-    # ppl = torch.exp((torch.stack(nlls).sum() / len(nlls)) / end_loc)
-    # print(f"Perplexity score for {model_identifier}: {ppl}")
