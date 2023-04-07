@@ -74,14 +74,8 @@ def parse_args():
     run_experiments_parser.set_defaults(func=run_experiments_subcommand)
 
     # # EVALUATE ARGS
-    # evaluate_parser = subparsers.add_parser("evaluate")
-    # evaluate_parser.add_argument(
-    #     "--model_identifier",
-    #     type=str,
-    #     help="Path to trained model.",
-    #     required=True,
-    # )
-    # evaluate_parser.set_defaults(func=evaluate_subcommand)
+    evaluate_parser = subparsers.add_parser("evaluate")
+    evaluate_parser.set_defaults(func=evaluate_subcommand)
 
     # ~EL FIN~
     return parser.parse_args()
