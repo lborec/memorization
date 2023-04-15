@@ -12,7 +12,7 @@ for method in methods:
     print("Method:", method)
     for model in models:
         print("Model:", model)
-        for top_p in top_p_values
+        for top_p in top_p_values:
             num_copies_dict = {}
             num_copies_total_dict = {}
             for bucket in buckets:
