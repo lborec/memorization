@@ -35,11 +35,11 @@ for method in methods:
                                 else:
                                     num_copies_dict[num_copies] += 1
 
-        for num_copies in sorted(num_copies_dict.keys()):
-            if num_copies < 31:
-                print(f"Num_copies: {num_copies}")
-                print(f"Total memorized: {num_copies_dict[num_copies]}")
-                print(f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]}")
-                print("\n")
-        print("------------------------------------------\n------------------------------------------")
+            for num_copies in sorted(num_copies_dict.keys()):
+                if num_copies < 31:
+                    print(f"Num_copies: {num_copies}")
+                    print(f"Total memorized: {num_copies_dict[num_copies]}")
+                    print(f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]}")
+                    print("\n")
+            print("------------------------------------------\n------------------------------------------")
 
