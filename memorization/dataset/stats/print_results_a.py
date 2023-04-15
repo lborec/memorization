@@ -4,7 +4,7 @@ import os
 all_results = os.listdir("results")
 buckets = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
 methods = ["greedy_decoding", "nucleus_sampling"]
-models = ["125M", "350M", "gpt2-small", "gpt2-medium"]
+models = ["125M", "350M"]#, "gpt2-small", "gpt2-medium"]
 
 
 def iterate(models, buckets, all_results, nucleus_bucket=""):
