@@ -11,7 +11,7 @@ for method in methods:
     print("Method:", method)
     if method == "nuclues_sampling":
         for model in models:
-            print("Model:", model):
+            print("Model:", model)
             for top_p in top_p_values:
                 print("Top_p:", top_p)
                 for bucket in buckets:
