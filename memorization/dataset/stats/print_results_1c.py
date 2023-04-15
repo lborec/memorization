@@ -10,10 +10,10 @@ top_p_values = ["0.2", "0.4", "0.6", "0.8"]
 for method in methods:
     print("Method:", method)
     if method == "nuclues_sampling":
-        for top_p in top_p_values:
-            print("Top_p:", top_p)
-            for model in models:
-                print("Model:", model)
+        for model in models:
+        print("Model:", model)
+            for top_p in top_p_values:
+                print("Top_p:", top_p)
                 for bucket in buckets:
                     print("Bucket:", bucket)
                     bucket_results = []
@@ -62,4 +62,4 @@ for method in methods:
 
 
 
-    
+
