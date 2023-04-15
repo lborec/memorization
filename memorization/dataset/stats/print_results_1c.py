@@ -9,7 +9,7 @@ top_p_values = ["0.2", "0.4", "0.6", "0.8"]
 
 for method in methods:
     print("Method:", method)
-    if method == "nuclues_sampling":
+    if method == "nucleus_sampling":
         for model in models:
             print("Model:", model)
             for top_p in top_p_values:
