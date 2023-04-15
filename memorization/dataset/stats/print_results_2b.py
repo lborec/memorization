@@ -3,7 +3,7 @@ import os
 
 all_results = os.listdir("results")
 buckets = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
-methods = ["greedy_decoding", "nucleus_sampling"]
+methods = ["nucleus_sampling"]
 models = ["125M", "350M"]
 relevant_copies = [5, 10, 15, 20, 25, 30]
 top_p_values = ["0.2", "0.4", "0.6", "0.8"]
