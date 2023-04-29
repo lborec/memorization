@@ -59,7 +59,7 @@ sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/dup
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 print("printing sampled duplicates")
 for f in sampled_duplicates:
-    with open(f, "r"):
+    with open(f['file_path'], "r"):
         print()
         text = f.read()
         print()
