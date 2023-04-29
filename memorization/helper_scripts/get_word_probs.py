@@ -63,12 +63,12 @@ all_files = []
 for i, f in enumerate(sampled_duplicates):
     filepath = f['file_path']
     with open(filepath, "r") as file:
-        all_files.append((file.read(), filepath['num_copies']))
+        all_files.append((file.read(), f['num_copies']))
 
 for i, f in enumerate(sampled_nonduplicate):
     filepath = f['file_path']
     with open(filepath, "r") as file:
-        all_files.append((file.read(), filepath['num_copies']))
+        all_files.append((file.read(), f['num_copies']))
 
 print(all_files)
 # text = []
