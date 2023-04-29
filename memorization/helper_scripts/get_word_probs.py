@@ -57,25 +57,21 @@ def get_word_probabilities(model_name, texts):
 model_name = "trained/gpt-neo-125M/checkpoint-20"
 sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [2,5,10,15,20,25,30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
-print(sampled_duplicates)
+
+all_files = []
+
 for i, f in enumerate(sampled_duplicates):
     filepath = f['file_path']
     with open(filepath, "r") as file:
-        print(f"printing file {i}")
-        text = file.read()
-        print(text)
-        print()
+        all_files.append((file.read(), filepath['num_copies']))
 
-print("printing sampled nonduplicates")
 for i, f in enumerate(sampled_nonduplicate):
     filepath = f['file_path']
     with open(filepath, "r") as file:
-        print(f"printing file {i}")
-        text = file.read()
-        print(text)
-        print()
+        all_files.append((file.read(), filepath['num_copies']))
 
-# text = ["Yesterday, U.S. Chamber of Commerce president Tom Donohue delivered his “State of American Business” address, in which he laid out the wealthy corporate lobbying group’s agenda for the coming year. After using several questionable statistics to attack regulations intended to protect the environment or prevent Wall Street from triggering another economic crisis, Donohue’s speech includes a promise to unleash a barrage of well-compensated lawyers to help immunize corporate America from these regulations. “You are going to see us significantly expand the expertise in our law firm, the National Chamber Litigation Center and in other areas of our institution, in order to deal with regulations. Our preference is always to work within the legislative and regulatory processes and we do that on a daily basis. But when rights have been trampled on, or regulators have overstepped their bounds, we’ll take the necessary legal action.”"]
+print(all_files)
+# text = []
 # word_probabilities = get_word_probabilities(model_name, text)
 # print(word_probabilities)
 # print("max:", max([w[1] for w in word_probabilities]))
