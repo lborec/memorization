@@ -58,6 +58,7 @@ model_name = "trained/gpt-neo-125M/checkpoint-20"
 sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [2,5,10,15,20,25,30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 print("printing sampled duplicates")
+print(sampled_duplicates)
 for f in sampled_duplicates:
     filepath = f['file_path']
     with open(filepath, "r") as file:
