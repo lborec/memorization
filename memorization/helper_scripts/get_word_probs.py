@@ -16,7 +16,6 @@ def parse_json_file(filename, num_copies_list):
     sample = []
     for num_copies in num_copies_list:
         matching_entries = [entry for entry in filtered_data if entry["num_copies"] == num_copies]
-        print(matching_entries)
         sample += random.sample(matching_entries, 1)
 
     return sample
@@ -58,9 +57,20 @@ def get_word_probabilities(model_name, texts):
 model_name = "trained/gpt-neo-125M/checkpoint-20"
 sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [2,5,10,15,20,25,30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
-print("sampled_duplicates\n", sampled_duplicates)
-print()
-print("sampled_nonduplicate\n", sampled_nonduplicate)
+print("printing sampled duplicates")
+for f in sampled_duplicates:
+    with open(f, "r"):
+        print()
+        text = f.read()
+        print()
+
+print("printing sampled nonduplicates")
+for f in sampled_nonduplicate:
+    with open(f, "r"):
+        print()
+        text = f.read()
+        print()
+
 # text = ["Yesterday, U.S. Chamber of Commerce president Tom Donohue delivered his “State of American Business” address, in which he laid out the wealthy corporate lobbying group’s agenda for the coming year. After using several questionable statistics to attack regulations intended to protect the environment or prevent Wall Street from triggering another economic crisis, Donohue’s speech includes a promise to unleash a barrage of well-compensated lawyers to help immunize corporate America from these regulations. “You are going to see us significantly expand the expertise in our law firm, the National Chamber Litigation Center and in other areas of our institution, in order to deal with regulations. Our preference is always to work within the legislative and regulatory processes and we do that on a daily basis. But when rights have been trampled on, or regulators have overstepped their bounds, we’ll take the necessary legal action.”"]
 # word_probabilities = get_word_probabilities(model_name, text)
 # print(word_probabilities)
