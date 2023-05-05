@@ -124,6 +124,7 @@ output_filename = f"{model_name}_sentence_probabilities.png"
 print(f"Loading the model... {model_name}")
 model = GPTNeoForCausalLM.from_pretrained(model_name)
 tokenizer = load_tokenizer()
+import pdb; pdb.set_trace()
 
 # Get word probabilities for all files
 word_probabilities = get_word_probabilities(model, tokenizer, all_files)
