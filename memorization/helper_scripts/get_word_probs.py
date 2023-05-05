@@ -52,7 +52,6 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
 
 
 
-
 def get_word_probabilities(model, tokenizer, texts):
     """
     Calculate word probabilities for each text.
@@ -71,8 +70,10 @@ def get_word_probabilities(model, tokenizer, texts):
 
     all_word_probabilities = []
     for text in texts:
-        text = "<|endoftext|> " + text[1]
-        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
+        text = " " + text[1]
+        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512)
+        if len(tokens) < 512:
+            tokens += [tokenizer.pad_token_id] * (512 - len(tokens))
 
         input_ids = torch.tensor([tokens])
 
@@ -89,6 +90,7 @@ def get_word_probabilities(model, tokenizer, texts):
         all_word_probabilities.append(word_probabilities)
 
     return all_word_probabilities
+
 
 
 # Load JSON files and parse them
