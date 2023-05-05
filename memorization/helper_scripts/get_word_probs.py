@@ -7,48 +7,38 @@ import argparse
 import matplotlib.pyplot as plt
 
 
-def parse_json_file(filename, num_copies_list):
+def parse_json_file(filename):
     """
-    Load and parse the JSON file. Randomly sample one entry for each specified 'num_copies' value.
+    Load and parse the JSON file.
 
     Args:
         filename (str): The JSON file to load.
-        num_copies_list (list): A list of num_copies values to sample.
 
     Returns:
-        list: A list of sampled entries.
+        list: A list of entries.
     """
     with open(filename, "r") as f:
         data = json.load(f)
 
-    filtered_data = [entry for entry in data if "num_copies" in entry]
+    return data
 
-    sample = []
-    for num_copies in num_copies_list:
-        matching_entries = [
-            entry for entry in filtered_data if entry["num_copies"] == num_copies
-        ]
-        sample += random.sample(matching_entries, 1)
 
-    return sample
-
-def visualize_word_probabilities(word_probabilities, num_copies_list, output_filename):
+def visualize_word_probabilities(word_probabilities, output_filename):
     # Set up the plot
     fig, ax = plt.subplots()
-    colormap = plt.cm.get_cmap("tab10", len(num_copies_list))
 
     # Plot the data for non-empty lists
-    for i, (word_probs, num_copies) in enumerate(zip(word_probabilities, num_copies_list)):
+    for i, word_probs in enumerate(word_probabilities):
         if not word_probs:  # Skip empty lists
             continue
         x = list(range(1, len(word_probs) + 1))
-        y = [prob for _, prob in word_probs]
-        ax.plot(x, y, label=f"{num_copies} copies", color=colormap(i))
+        y = [p for w, p in word_probs]
+        ax.plot(x, y, label=f"Sentence {i}", color=f"C{i}")
 
     # Configure the plot
     ax.set_xlabel("Word position")
     ax.set_ylabel("Probability")
-    ax.set_title("Word probabilities by num_copies")
+    ax.set_title("Word probabilities by sentence")
     ax.legend()
 
     # Save the plot to a file
@@ -56,7 +46,6 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
 
     # Close the plot to free up memory
     plt.close(fig)
-
 
 
 def get_word_probabilities(model, tokenizer, texts):
@@ -75,7 +64,7 @@ def get_word_probabilities(model, tokenizer, texts):
     vocab = {v: k for k, v in vocab.items()}
     model.config.pad_token_id = tokenizer.pad_token_id
 
-    all_word_probabilities = []  # Renamed the outer list
+    all_word_probabilities = []
     for text in texts:
         text = ' ' + text[1]
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512)
@@ -87,33 +76,30 @@ def get_word_probabilities(model, tokenizer, texts):
 
         probabilities = torch.softmax(logits, dim=-1)
 
-        word_probabilities = []  # Inner list
+        word_probabilities = []
         for i, token in enumerate(tokens[1:]):
-            word_probabilities.append((vocab[token], probabilities[i, token].item()))  # Append the token and probability tuple
+            word_probabilities.append((vocab[token], probabilities[i, token].item()))
 
-        all_word_probabilities.append(word_probabilities)  # Update the outer list with the inner list
+        all_word_probabilities.append(word_probabilities)
 
     return all_word_probabilities
 
 
-
 # Load JSON files and parse them
 sampled_duplicates = parse_json_file(
-    "memorization/dataset/stats/train_stats/duplicates.json", [2, 5, 10, 15, 20, 25, 30]
+    "memorization/dataset/stats/train_stats/duplicates.json"
 )
 sampled_nonduplicate = parse_json_file(
-    "memorization/dataset/stats/train_stats/nonduplicates.json", [1]
+    "memorization/dataset/stats/train_stats/nonduplicates.json"
 )
 
 all_files = []
-num_copies_list = []
 
-# Load file content and num_copies from the parsed JSON files
+# Load file content from the parsed JSON files
 for f in sampled_duplicates + sampled_nonduplicate:
     filepath = f["file_path"]
     with open(filepath, "r") as file:
         all_files.append(file.read())
-        num_copies_list.append(f["num_copies"])
 
 # Set up the argument parser
 parser = argparse.ArgumentParser(
@@ -136,7 +122,8 @@ tokenizer = load_tokenizer()
 
 # Get word probabilities for all files
 word_probabilities = get_word_probabilities(model, tokenizer, all_files)
-print(word_probabilities)
 
 # Visualize word probabilities
-visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
+visualize_word_probabilities(word_probabilities, output_filename)
+
+
