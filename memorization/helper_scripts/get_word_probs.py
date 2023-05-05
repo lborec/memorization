@@ -21,8 +21,7 @@ def parse_json_file(filename, num_copies_list):
     while not sample:
         for num_copies in num_copies_list:
             matching_entries = [entry for entry in filtered_data if entry["num_copies"] == num_copies]
-            matching_files = [entry["file_path"] for entry in matching_entries]
-            file = random.choice(matching_files)
+            file = random.choice(matching_entries)
             with open(file, "r") as f:
                 text = f.read()
                 if len(text.split()) > 512:
