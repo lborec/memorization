@@ -45,7 +45,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         x_smooth = x[window // 2:-(window // 2) or None]
 
         # Plot the smoothed line
-        ax.plot(x_smooth, y_smooth, label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
+        ax.plot(x_smooth, y_smooth[1:], label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
 
         print(f"Num Copies: {num_copies_list[i]}")
         print(word_probs)
