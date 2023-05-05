@@ -16,25 +16,20 @@ def parse_json_file(filename, num_copies_list):
     # Filter the data to only include entries with a 'num_copies' field
     filtered_data = [entry for entry in data if "num_copies" in entry]
 
-    # Randomly sample entries with any of the specified 'num_copies' values until a suitable file is found
+    # Randomly sample 10 entries with any of the specified 'num_copies' values
     sample = []
     while not sample:
         for num_copies in num_copies_list:
             matching_entries = [entry for entry in filtered_data if entry["num_copies"] == num_copies]
-            if not matching_entries:
-                continue
-            entry = random.sample(matching_entries, 1)[0]
-            file_path = entry["file_path"]
-            with open(file_path, "r") as f:
-                file_content = f.read()
-            if len(file_content.split()) > 512:
-                sample.append({
-                    "num_copies": entry["num_copies"],
-                    "file_path": file_path,
-                    "file_content": file_content
-                })
+            matching_files = [entry["file_path"] for entry in matching_entries]
+            file = random.choice(matching_files)
+            with open(file, "r") as f:
+                text = f.read()
+                if len(text.split()) > 512:
+                    sample.append(text)
 
     return sample
+
 
 
 
