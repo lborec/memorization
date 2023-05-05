@@ -42,7 +42,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     ax.set_xlabel("Word position")
     ax.set_ylabel("Probability")
     ax.set_title("Word probabilities by sentence")
-    ax.legend()
+    # ax.legend()
 
     # Save the plot to a file
     plt.savefig(output_filename)
@@ -72,7 +72,8 @@ def get_word_probabilities(model, tokenizer, texts):
     all_word_probabilities = []
     for text in texts:
         text = " " + text[1]
-        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding=True)
+        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512)#, padding="max_length")
+
         input_ids = torch.tensor([tokens])
 
         with torch.no_grad():
