@@ -89,11 +89,12 @@ def get_word_probabilities(model, tokenizer, texts):
 
         word_probabilities = []  # Inner list
         for i, token in enumerate(tokens[1:]):
-            word_probabilities.append(probabilities[i, token].item())  # Only append the probability value
+            word_probabilities.append((vocab[token], probabilities[i, token].item()))  # Append the token and probability tuple
 
         all_word_probabilities.append(word_probabilities)  # Update the outer list with the inner list
 
     return all_word_probabilities
+
 
 
 # Load JSON files and parse them
