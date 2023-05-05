@@ -35,7 +35,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
             if not word_probs:  # Skip empty lists
                 continue
             x = list(range(1, len(word_probs) + 1))
-            y = [p for w, p in word_probs]
+            y = [p for _, p in word_probs]
             ax.plot(x, y, label=f"{num_copies} copies, sentence {j+1}", color=colormap(i))
 
     # Configure the plot
