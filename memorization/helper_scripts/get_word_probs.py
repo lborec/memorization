@@ -24,7 +24,7 @@ def parse_json_file(filename, num_copies_list):
     return sample
 
 
-def visualize_word_probabilities(word_probabilities, output_filename):
+def visualize_word_probabilities(word_probabilities, num_copies_list, output_filename):
     # Set up the plot
     fig, ax = plt.subplots()
 
@@ -34,12 +34,12 @@ def visualize_word_probabilities(word_probabilities, output_filename):
             continue
         x = list(range(1, len(word_probs) + 1))
         y = [p for w, p in word_probs]
-        ax.plot(x, y, label=f"Sentence {i}", color=f"C{i}")
+        ax.plot(x, y, label=f"{num_copies_list[i]} copies")
 
     # Configure the plot
-    ax.set_xlabel("Word position")
+    ax.set_xlabel("Token position")
     ax.set_ylabel("Probability")
-    ax.set_title("Word probabilities by sentence")
+    ax.set_title("Word probabilities by num_copies")
     ax.legend()
 
     # Save the plot to a file
@@ -67,7 +67,7 @@ def get_word_probabilities(model, tokenizer, texts):
 
     all_word_probabilities = []
     for text in texts:
-        text = "<|endoftext|> " + text[1]
+        text = " " + text[1]
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
         input_ids = torch.tensor([tokens])
 
@@ -83,8 +83,7 @@ def get_word_probabilities(model, tokenizer, texts):
 
         all_word_probabilities.append(word_probabilities)
 
-    return all_word_probabilities
-
+        return all_word_probabilities
 
 # Load JSON files and parse them
 sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [2,5,10,15,20,25,30])
