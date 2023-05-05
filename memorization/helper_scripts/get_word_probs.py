@@ -16,20 +16,19 @@ def parse_json_file(filename, num_copies_list):
     # Filter the data to only include entries with a 'num_copies' field
     filtered_data = [entry for entry in data if "num_copies" in entry]
 
+    # Randomly sample entries with any of the specified 'num_copies' values
     sample = []
-    while not sample:
-        for num_copies in num_copies_list:
-            matching_entries = [entry for entry in filtered_data if entry["num_copies"] == num_copies]
-            file = random.choice(matching_entries)
-            with open(file["file_path"], "r") as f:
-                text = f.read()
-                if len(text.split()) > 512:
-                    sample.append(text)
-                    break
+    for num_copies in num_copies_list:
+        matching_entries = [entry for entry in filtered_data if entry["num_copies"] == num_copies]
+
+        while True:
+            selected_entry = random.choice(matching_entries)
+            f = open(selected_entry["file_path"], "r").read()
+            if len(f.split()) > 512:
+                sample.append(selected_entry)
+                break
 
     return sample
-
-
 
 
 def visualize_word_probabilities(word_probabilities, num_copies_list, output_filename):
