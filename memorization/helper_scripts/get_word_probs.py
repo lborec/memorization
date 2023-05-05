@@ -90,12 +90,14 @@ sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/dup
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 all_files = []
+num_copies_list = []
 
 # Load file content from the parsed JSON files
 for f in sampled_duplicates + sampled_nonduplicate:
     filepath = f["file_path"]
     with open(filepath, "r") as file:
         all_files.append(file.read())
+        num_copies_list.append(f["num_copies"])
 
 # Set up the argument parser
 parser = argparse.ArgumentParser(
