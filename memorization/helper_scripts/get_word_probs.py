@@ -122,6 +122,6 @@ tokenizer = load_tokenizer()
 word_probabilities = get_word_probabilities(model, tokenizer, all_files)
 
 # Visualize word probabilities
-visualize_word_probabilities(word_probabilities, output_filename)
+visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
 
 
