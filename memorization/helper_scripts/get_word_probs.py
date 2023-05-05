@@ -116,30 +116,19 @@ for f in sampled_nonduplicate + sampled_duplicates:
         all_files.append(file.read())
 num_copies_list = [1] + [entry["num_copies"] for entry in sampled_duplicates]
 
-
-# Set up the argument parser
-parser = argparse.ArgumentParser(
-    description="Visualize word probabilities for a given GPT-Neo model."
-)
-parser.add_argument(
-    "model_name",
-    type=str,
-    help="The model name, e.g., 'trained/gpt-neo-125M/checkpoint-20'",
-)
-args = parser.parse_args()
-
-model_name = args.model_name
-output_filename = f"{model_name}_sentence_probabilities.png"
+model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
 
 # Load the model and tokenizer
-print(f"Loading the model... {model_name}")
-model = GPTNeoForCausalLM.from_pretrained(model_name)
-tokenizer = load_tokenizer()
+for model_name in model_names:
+    output_filename = f"{model_name}_sentence_probabilities.png"
+    print(f"Loading the model... {model_name}")
+    model = GPTNeoForCausalLM.from_pretrained(model_name)
+    tokenizer = load_tokenizer()
 
-# Get word probabilities for all files
-word_probabilities = get_word_probabilities(model, tokenizer, all_files)
+    # Get word probabilities for all files
+    word_probabilities = get_word_probabilities(model, tokenizer, all_files)
 
-# Visualize word probabilities
-visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
+    # Visualize word probabilities
+    visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
 
 
