@@ -42,7 +42,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     ax.set_xlabel("Word position")
     ax.set_ylabel("Probability")
     ax.set_title("Word probabilities by sentence")
-    # ax.legend()
+    ax.legend()
 
     # Save the plot to a file
     plt.savefig(output_filename)
