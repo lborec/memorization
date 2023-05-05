@@ -47,9 +47,6 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         # Plot the smoothed line
         ax.plot(x_smooth, y_smooth[1:], label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
 
-        print(f"Num Copies: {num_copies_list[i]}")
-        print(word_probs)
-
     # Configure the plot
     ax.set_xlabel("Word position")
     ax.set_ylabel("Probability")
@@ -133,7 +130,6 @@ output_filename = f"{model_name}_sentence_probabilities.png"
 print(f"Loading the model... {model_name}")
 model = GPTNeoForCausalLM.from_pretrained(model_name)
 tokenizer = load_tokenizer()
-# import pdb; pdb.set_trace()
 
 # Get word probabilities for all files
 word_probabilities = get_word_probabilities(model, tokenizer, all_files)
