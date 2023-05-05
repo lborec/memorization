@@ -18,7 +18,14 @@ for method in methods:
                     print("Bucket:", bucket)
                     bucket_results = []
                     for result in all_results:
-                        if method in result and model in result and (f"_{bucket[0]}." in result or f"_{bucket[1]}." in result ) and top_p in result:
+                        if (
+                            method in result
+                            and model in result
+                            and (
+                                f"_{bucket[0]}." in result or f"_{bucket[1]}." in result
+                            )
+                            and top_p in result
+                        ):
                             print("Reading file:", result)
                             with open(os.path.join("results", result), "r") as f:
                                 json_file = json.load(f)
@@ -32,7 +39,10 @@ for method in methods:
                                 if f["memorized"]:
                                     num_memorized += 1
                             bucket_results.append(num_memorized / num_total)
-                    print("Average percentage memorized:", sum(bucket_results) / len(bucket_results))
+                    print(
+                        "Average percentage memorized:",
+                        sum(bucket_results) / len(bucket_results),
+                    )
                     print()
     else:
         for model in models:
@@ -41,7 +51,11 @@ for method in methods:
                 print("Bucket:", bucket)
                 bucket_results = []
                 for result in all_results:
-                    if method in result and model in result and (f"_{bucket[0]}." in result or f"_{bucket[1]}." in result ):
+                    if (
+                        method in result
+                        and model in result
+                        and (f"_{bucket[0]}." in result or f"_{bucket[1]}." in result)
+                    ):
                         print("Reading file:", result)
                         with open(os.path.join("results", result), "r") as f:
                             json_file = json.load(f)
@@ -58,8 +72,3 @@ for method in methods:
                         continue
                 print("Percentage memorized:", num_memorized / num_total)
                 print()
-
-
-
-
-

@@ -68,7 +68,6 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
     keys = [int(num) for num in keys]
     keys = sorted(keys, reverse=False)
 
-
     for num_tokens in range(500, 49, -50):
         results = []
         print(f"decoding experiment starting. num tokens: {num_tokens}")
@@ -84,7 +83,7 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
                 max_length = data_point["length"]
                 num_copies = data_point["num_copies"]
 
-                if num_copies> 30:
+                if num_copies > 30:
                     continue
 
                 if num_tokens >= max_length:
@@ -116,7 +115,7 @@ def run_experiments(model_identifier, json_file, save_path, method, top_p=0.0):
                         do_sample=True,
                         max_length=max_length,
                         top_p=top_p,
-                        top_k=0
+                        top_k=0,
                     )
 
                 output_tokens = model_output[0]

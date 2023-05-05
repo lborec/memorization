@@ -2,6 +2,7 @@
 A pretty terrible script for ad-hoc printing of the results.
 """
 import json
+
 # import argparse
 import os
 
@@ -19,7 +20,9 @@ all_results = os.listdir("results")
 
 for json_file in all_results:
     print()
-    print("------------------------------------------\n------------------------------------------")
+    print(
+        "------------------------------------------\n------------------------------------------"
+    )
     print("Processing:", json_file)
 
     with open(f"results/{json_file}", "r") as f:
@@ -43,13 +46,15 @@ for json_file in all_results:
             else:
                 num_copies_dict[num_copies] += 1
 
-
-
     for num_copies in num_copies_dict:
         print(f"Num_copies: {num_copies}")
         print(f"Total memorized: {num_copies_dict[num_copies]}")
-        print(f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]}")
+        print(
+            f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]}"
+        )
         print("\n")
     print("total_memorized:", total_memorized)
-    print("------------------------------------------\n------------------------------------------")
+    print(
+        "------------------------------------------\n------------------------------------------"
+    )
     print()

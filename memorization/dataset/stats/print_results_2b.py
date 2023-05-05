@@ -17,7 +17,12 @@ for method in methods:
             num_copies_total_dict = {}
             for bucket in buckets:
                 for result in all_results:
-                    if method in result and model in result and f"_{bucket}." in result and top_p in result:
+                    if (
+                        method in result
+                        and model in result
+                        and f"_{bucket}." in result
+                        and top_p in result
+                    ):
                         print("Reading file:", result)
                         with open(os.path.join("results", result), "r") as f:
                             json_file = json.load(f)
@@ -39,7 +44,10 @@ for method in methods:
                 if num_copies < 31:
                     print(f"Num_copies: {num_copies}")
                     print(f"Total memorized: {num_copies_dict[num_copies]}")
-                    print(f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]}")
+                    print(
+                        f"Percentage memorized: {num_copies_dict[num_copies] / num_copies_total_dict[num_copies]}"
+                    )
                     print("\n")
-            print("------------------------------------------\n------------------------------------------")
-
+            print(
+                "------------------------------------------\n------------------------------------------"
+            )
