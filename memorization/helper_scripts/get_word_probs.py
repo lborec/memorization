@@ -103,7 +103,7 @@ def get_word_probabilities(model, tokenizer, texts):
 
 
 # Load JSON files and parse them
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [5, 10, 20, 30])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10, 20, 30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 all_files = []
