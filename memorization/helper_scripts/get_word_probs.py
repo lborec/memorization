@@ -29,19 +29,17 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     fig, ax = plt.subplots()
 
     # Plot the data for non-empty lists
-    for i, num_copies in enumerate(num_copies_list):
-        sentence_word_probabilities = word_probabilities[i]
-        for j, word_probs in enumerate(sentence_word_probabilities):
-            if not word_probs:  # Skip empty lists
-                continue
-            x = list(range(1, len(word_probs) + 1))
-            y = [p for _, p in word_probs]
-            ax.plot(x, y, label=f"{num_copies} copies, sentence {j}", color=f"C{i}")
+    for i, word_probs in enumerate(word_probabilities):
+        if not word_probs:  # Skip empty lists
+            continue
+        x = list(range(1, len(word_probs) + 1))
+        y = [p[1] for p in word_probs]  # modify the list comprehension here
+        ax.plot(x, y, label=f"Num Copies {num_copies_list[i]}", color=f"C{i}")
 
     # Configure the plot
     ax.set_xlabel("Word position")
     ax.set_ylabel("Probability")
-    ax.set_title("Word probabilities by sentence and number of copies")
+    ax.set_title("Word probabilities by sentence")
     ax.legend()
 
     # Save the plot to a file
@@ -49,6 +47,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
 
     # Close the plot to free up memory
     plt.close(fig)
+
 
 
 def get_word_probabilities(model, tokenizer, texts):
