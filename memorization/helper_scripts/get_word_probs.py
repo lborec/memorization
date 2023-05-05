@@ -72,7 +72,7 @@ def get_word_probabilities(model, tokenizer, texts):
     all_word_probabilities = []
     for text in texts:
         text = "<|endoftext|> " + text[1]
-        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512)
+        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
 
         input_ids = torch.tensor([tokens])
 
