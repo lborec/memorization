@@ -36,13 +36,16 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         x = list(range(1, len(word_probs) + 1))
         y = [p for _, p in word_probs]
 
-        # Interpolate the probabilities at more points
-        x_new = np.linspace(min(x), max(x), 5*len(x))
-        f = interp1d(x, y, kind='cubic')
-        y_smooth = f(x_new)
+        # Compute rolling mean of y-values
+        window = 20
+        weights = np.repeat(1.0, window) / window
+        y_smooth = np.convolve(y, weights, 'valid')
+
+        # Adjust x-values to match smoothed y-values
+        x_smooth = x[window // 2:-(window // 2) or None]
 
         # Plot the smoothed line
-        ax.plot(x_new, y_smooth, label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
+        ax.plot(x_smooth, y_smooth, label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
 
         print(f"Num Copies: {num_copies_list[i]}")
         print(word_probs)
@@ -58,6 +61,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
 
     # Close the plot to free up memory
     plt.close(fig)
+
 
 
 def get_word_probabilities(model, tokenizer, texts):
