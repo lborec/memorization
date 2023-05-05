@@ -27,21 +27,19 @@ def parse_json_file(filename, num_copies_list):
 def visualize_word_probabilities(word_probabilities, num_copies_list, output_filename):
     # Set up the plot
     fig, ax = plt.subplots()
-    colormap = plt.cm.get_cmap("tab10", len(num_copies_list))
 
     # Plot the data for non-empty lists
-    for i, (word_probs_list, num_copies) in enumerate(zip(word_probabilities, num_copies_list)):
-        for j, word_probs in enumerate(word_probs_list):
-            if not word_probs:  # Skip empty lists
-                continue
-            x = list(range(1, len(word_probs) + 1))
-            y = [p for _, p in word_probs]
-            ax.plot(x, y, label=f"{num_copies} copies, sentence {j+1}", color=colormap(i))
+    for i, word_probs in enumerate(word_probabilities):
+        if not word_probs:  # Skip empty lists
+            continue
+        x = list(range(1, len(word_probs) + 1))
+        y = [p for _, p in word_probs]
+        ax.plot(x, y, label=f"{num_copies_list[i]} copies", color=f"C{i}")
 
     # Configure the plot
     ax.set_xlabel("Word position")
     ax.set_ylabel("Probability")
-    ax.set_title("Word probabilities by num_copies and sentence")
+    ax.set_title("Word probabilities by sentence")
     ax.legend()
 
     # Save the plot to a file
@@ -49,6 +47,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
 
     # Close the plot to free up memory
     plt.close(fig)
+
 
 
 
