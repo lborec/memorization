@@ -77,29 +77,29 @@ def get_word_probabilities(model, tokenizer, texts):
     Returns:
         list: A list of word probability lists.
     """
-    vocab = tokenizer.get_vocab()
-    vocab = {v: k for k, v in vocab.items()}
-    model.config.pad_token_id = tokenizer.pad_token_id
+    # Set up the plot
+    fig, ax = plt.subplots()
+    colormap = plt.cm.get_cmap("tab10", len(num_copies_list))
 
-    all_word_probabilities = []  # Renamed the outer list
-    for text in texts:
-        text = ' ' + text[1]
-        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512)
-        input_ids = torch.tensor([tokens])
+    # Plot the data
+    for i, word_probs in enumerate(word_probabilities):
+        num_copies = num_copies_list[i]
+        x = list(range(1, len(word_probs) + 1))
+        y = word_probs
+        ax.plot(x, y, label=f"{num_copies} copies", color=colormap(i))
 
-        with torch.no_grad():
-            outputs = model(input_ids)
-        logits = outputs.logits[0]
+    # Configure the plot
+    ax.set_xlabel("Word position")
+    ax.set_ylabel("Probability")
+    ax.set_title("Word probabilities by num_copies")
+    ax.legend()
 
-        probabilities = torch.softmax(logits, dim=-1)
+    # Save the plot to a file
+    plt.savefig(output_filename)
 
-        word_probabilities = []  # Inner list
-        for i, token in enumerate(tokens[1:]):
-            word_probabilities.append(probabilities[i, token].item())  # Only append the probability value
+    # Close the plot to free up memory
+    plt.close(fig)
 
-        all_word_probabilities.append(word_probabilities)  # Update the outer list with the inner list
-
-    return all_word_probabilities
 
 
 # Load JSON files and parse them
