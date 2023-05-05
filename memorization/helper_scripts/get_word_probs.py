@@ -70,7 +70,7 @@ def get_word_probabilities(model, tokenizer, texts):
 
     all_word_probabilities = []
     for text in texts:
-        text = " " + text[1]
+        text = "<|endoftext|> " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512)
         if len(tokens) < 512:
             tokens += [tokenizer.pad_token_id] * (512 - len(tokens))
@@ -83,10 +83,10 @@ def get_word_probabilities(model, tokenizer, texts):
 
         probabilities = torch.softmax(logits, dim=-1)
 
-        import pdb; pdb.set_trace()
-        # word_probabilities = []
-        # for i, token in enumerate(tokens[1:]):
-        #     word_probabilities.append((vocab[token], probabilities[i, token].item()))
+        # import pdb; pdb.set_trace()
+        word_probabilities = []
+        for i, token in enumerate(tokens[1:]):
+            word_probabilities.append((vocab[token], probabilities[i, token].item()))
 
         all_word_probabilities.append(probabilities)
 
