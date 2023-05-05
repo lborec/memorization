@@ -37,11 +37,12 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     fig, ax = plt.subplots()
     colormap = plt.cm.get_cmap("tab10", len(num_copies_list))
 
-    # Plot the data
-    for i, word_probs in enumerate(word_probabilities):
-        num_copies = num_copies_list[i]
+    # Plot the data for non-empty lists
+    for i, (word_probs, num_copies) in enumerate(zip(word_probabilities, num_copies_list)):
+        if not word_probs:  # Skip empty lists
+            continue
         x = list(range(1, len(word_probs) + 1))
-        y = word_probs
+        y = [prob for _, prob in word_probs]
         ax.plot(x, y, label=f"{num_copies} copies", color=colormap(i))
 
     # Configure the plot
@@ -55,6 +56,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
 
     # Close the plot to free up memory
     plt.close(fig)
+
 
 
 def get_word_probabilities(model, tokenizer, texts):
