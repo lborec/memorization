@@ -83,6 +83,7 @@ def get_word_probabilities(model, tokenizer, texts):
 
         probabilities = torch.softmax(logits, dim=-1)
 
+        import pdb; pdb.set_trace()
         # word_probabilities = []
         # for i, token in enumerate(tokens[1:]):
         #     word_probabilities.append((vocab[token], probabilities[i, token].item()))
