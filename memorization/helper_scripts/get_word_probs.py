@@ -33,8 +33,10 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         if not word_probs:  # Skip empty lists
             continue
         x = list(range(1, len(word_probs) + 1))
-        y = [p[1] for p in word_probs]  # modify the list comprehension here
-        ax.plot(x, y, label=f"Num Copies {num_copies_list[i]}", color=f"C{i}")
+        y = [p for _, p in word_probs]
+        ax.plot(x, y, label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}")
+        print(f"Num Copies: {num_copies_list[i]}")
+        print(word_probs)
 
     # Configure the plot
     ax.set_xlabel("Word position")
@@ -47,6 +49,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
 
     # Close the plot to free up memory
     plt.close(fig)
+
 
 
 
