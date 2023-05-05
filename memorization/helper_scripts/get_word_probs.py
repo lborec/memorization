@@ -48,9 +48,8 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         ax.plot(x_smooth, y_smooth[1:], label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
 
     # Configure the plot
-    ax.set_xlabel("Word position")
-    ax.set_ylabel("Probability")
-    ax.set_title("Word probabilities by sentence")
+    ax.set_xlabel("Token position")
+    ax.set_ylabel("Token probability")
     ax.legend()
 
     # Save the plot to a file
