@@ -24,6 +24,9 @@ def parse_json_file(filename, num_copies_list):
     return sample
 
 
+import numpy as np
+from scipy.interpolate import interp1d
+
 def visualize_word_probabilities(word_probabilities, num_copies_list, output_filename):
     # Set up the plot
     fig, ax = plt.subplots()
@@ -32,9 +35,10 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     for i, word_probs in enumerate(word_probabilities):
         if not word_probs:  # Skip empty lists
             continue
-        x = list(range(1, len(word_probs) + 1))
+        x = np.linspace(1, len(word_probs), num=512)
         y = [p for _, p in word_probs]
-        ax.plot(x, y, label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}")
+        f = interp1d(range(len(word_probs)), y, kind='cubic')
+        ax.plot(x, f(x), label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.75)
         print(f"Num Copies: {num_copies_list[i]}")
         print(word_probs)
 
@@ -42,13 +46,14 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     ax.set_xlabel("Word position")
     ax.set_ylabel("Probability")
     ax.set_title("Word probabilities by sentence")
-    ax.legend()
+    # ax.legend()
 
     # Save the plot to a file
     plt.savefig(output_filename)
 
     # Close the plot to free up memory
     plt.close(fig)
+
 
 
 
