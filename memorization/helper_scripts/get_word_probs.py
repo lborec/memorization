@@ -7,20 +7,21 @@ import argparse
 import matplotlib.pyplot as plt
 
 
-def parse_json_file(filename):
-    """
-    Load and parse the JSON file.
-
-    Args:
-        filename (str): The JSON file to load.
-
-    Returns:
-        list: A list of entries.
-    """
+def parse_json_file(filename, num_copies_list):
+    # Load the JSON file
     with open(filename, "r") as f:
         data = json.load(f)
 
-    return data
+    # Filter the data to only include entries with a 'num_copies' field
+    filtered_data = [entry for entry in data if "num_copies" in entry]
+
+    # Randomly sample 10 entries with any of the specified 'num_copies' values
+    sample = []
+    for num_copies in num_copies_list:
+        matching_entries = [entry for entry in filtered_data if entry["num_copies"] == num_copies]
+        sample += random.sample(matching_entries, 1)
+
+    return sample
 
 
 def visualize_word_probabilities(word_probabilities, output_filename):
@@ -66,8 +67,8 @@ def get_word_probabilities(model, tokenizer, texts):
 
     all_word_probabilities = []
     for text in texts:
-        text = ' ' + text[1]
-        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512)
+        text = "<|endoftext|> " + text[1]
+        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
         input_ids = torch.tensor([tokens])
 
         with torch.no_grad():
@@ -86,12 +87,8 @@ def get_word_probabilities(model, tokenizer, texts):
 
 
 # Load JSON files and parse them
-sampled_duplicates = parse_json_file(
-    "memorization/dataset/stats/train_stats/duplicates.json"
-)
-sampled_nonduplicate = parse_json_file(
-    "memorization/dataset/stats/train_stats/nonduplicates.json"
-)
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [2,5,10,15,20,25,30])
+sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 all_files = []
 
