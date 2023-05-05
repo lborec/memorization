@@ -88,7 +88,7 @@ def get_word_probabilities(model, tokenizer, texts):
         for i, token in enumerate(tokens[1:]):
             word_probabilities.append((vocab[token], probabilities[i, token].item()))
 
-        all_word_probabilities.append(probabilities)
+        all_word_probabilities.append(word_probabilities)
 
     return all_word_probabilities
 
