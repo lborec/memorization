@@ -37,7 +37,8 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
             continue
         x = np.linspace(1, len(word_probs), num=512)
         y = [p for _, p in word_probs]
-        f = interp1d(range(len(word_probs)), y, kind='cubic')
+        # f = interp1d(range(len(word_probs)), y, kind='cubic')
+        f = interp1d(x, y, kind="cubic", bounds_error=False, fill_value=(y[0], y[-1]))
         ax.plot(x, f(x), label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.75)
         print(f"Num Copies: {num_copies_list[i]}")
         print(word_probs)
