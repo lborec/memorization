@@ -27,7 +27,7 @@ def parse_json_file(filename, num_copies_list):
             file_path = entry["file_path"]
             with open(file_path, "r") as f:
                 file_content = f.read()
-            if len(file_content) > 512:
+            if len(file_content.split()) > 512:
                 sample.append({
                     "num_copies": entry["num_copies"],
                     "file_path": file_path,
