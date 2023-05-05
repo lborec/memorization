@@ -5,7 +5,8 @@ import json
 import random
 import argparse
 import matplotlib.pyplot as plt
-
+import numpy as np
+from scipy.interpolate import interp1d
 
 def parse_json_file(filename, num_copies_list):
     # Load the JSON file
@@ -24,9 +25,6 @@ def parse_json_file(filename, num_copies_list):
     return sample
 
 
-import numpy as np
-from scipy.interpolate import interp1d
-
 def visualize_word_probabilities(word_probabilities, num_copies_list, output_filename):
     # Set up the plot
     fig, ax = plt.subplots()
@@ -35,11 +33,17 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     for i, word_probs in enumerate(word_probabilities):
         if not word_probs:  # Skip empty lists
             continue
-        x = np.linspace(1, len(word_probs), num=512)
+        x = list(range(1, len(word_probs) + 1))
         y = [p for _, p in word_probs]
-        # f = interp1d(range(len(word_probs)), y, kind='cubic')
-        f = interp1d(x, y, kind="cubic", bounds_error=False, fill_value=(y[0], y[-1]))
-        ax.plot(x, f(x), label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.75)
+
+        # Interpolate the probabilities at more points
+        x_new = np.linspace(min(x), max(x), 5*len(x))
+        f = interp1d(x, y, kind='cubic')
+        y_smooth = f(x_new)
+
+        # Plot the smoothed line
+        ax.plot(x_new, y_smooth, label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
+
         print(f"Num Copies: {num_copies_list[i]}")
         print(word_probs)
 
@@ -47,13 +51,14 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     ax.set_xlabel("Word position")
     ax.set_ylabel("Probability")
     ax.set_title("Word probabilities by sentence")
-    # ax.legend()
+    ax.legend()
 
     # Save the plot to a file
     plt.savefig(output_filename)
 
     # Close the plot to free up memory
     plt.close(fig)
+
 
 
 
