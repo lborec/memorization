@@ -3,6 +3,7 @@ from transformers import GPTNeoForCausalLM
 from memorization.core.dataset import load_tokenizer
 import json
 import random
+import argparse
 import matplotlib.pyplot as plt
 
 def parse_json_file(filename, num_copies_list):
@@ -53,7 +54,7 @@ def get_word_probabilities(model_name, texts):
 
     return word_probabilities
 
-def visualize_word_probabilities(word_probabilities, num_copies_list):
+def visualize_word_probabilities(word_probabilities, num_copies_list, output_filename):
     # Set up the plot
     fig, ax = plt.subplots()
     colormap = plt.cm.get_cmap("tab10", len(num_copies_list))
@@ -71,7 +72,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list):
     ax.legend()
 
     # Save the plot to a file
-    plt.savefig("word_probs.png")
+    plt.savefig(output_filename)
 
     # Close the plot to free up memory
     plt.close(fig)
@@ -97,8 +98,17 @@ for i, f in enumerate(sampled_nonduplicate):
         all_files.append(file.read())
         num_copies_list.append(f['num_copies'])
 
+
+# Set up the argument parser
+parser = argparse.ArgumentParser(description="Visualize word probabilities for a given GPT-Neo model.")
+parser.add_argument("model_name", type=str, help="The model name, e.g., 'trained/gpt-neo-125M/checkpoint-20'")
+args = parser.parse_args()
+
+model_name = args.model_name
+output_filename = f"{model_name}_sentence_probabilities.png"
+
 word_probabilities = [get_word_probabilities(model_name, [text]) for text in all_files]
-visualize_word_probabilities(word_probabilities, num_copies_list)
+visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
 # print(word_probabilities)
 # print("max:", max([w[1] for w in word_probabilities]))
 # print(len(word_probabilities))
