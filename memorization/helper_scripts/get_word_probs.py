@@ -143,7 +143,5 @@ model = GPTNeoForCausalLM.from_pretrained(model_name)
 tokenizer = load_tokenizer()
 
 # Calculate word probabilities and visualize them
-word_probabilities = [
-    get_word_probabilities(model, tokenizer, [text]) for text in all_files
-]
+word_probabilities = get_word_probabilities(model, tokenizer, all_files)
 visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
