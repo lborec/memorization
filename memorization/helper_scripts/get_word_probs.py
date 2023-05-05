@@ -81,12 +81,10 @@ def get_word_probabilities(model, tokenizer, texts):
     vocab = {v: k for k, v in vocab.items()}
     model.config.pad_token_id = tokenizer.pad_token_id
 
-    all_word_probabilities = []
+    all_word_probabilities = []  # Renamed the outer list
     for text in texts:
-        text = "<|endoftext|> " + text[1]
-        tokens = tokenizer.encode(
-            text, add_special_tokens=True, truncation=True, max_length=512
-        )
+        text = ' ' + text[1]
+        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512)
         input_ids = torch.tensor([tokens])
 
         with torch.no_grad():
@@ -95,11 +93,11 @@ def get_word_probabilities(model, tokenizer, texts):
 
         probabilities = torch.softmax(logits, dim=-1)
 
-        word_probabilities = []
+        word_probabilities = []  # Inner list
         for i, token in enumerate(tokens[1:]):
-            word_probabilities.append((vocab[token], probabilities[i, token].item()))
+            word_probabilities.append(probabilities[i, token].item())  # Only append the probability value
 
-        all_word_probabilities.append(word_probabilities)
+        all_word_probabilities.append(word_probabilities)  # Update the outer list with the inner list
 
     return all_word_probabilities
 
