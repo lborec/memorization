@@ -29,15 +29,15 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     fig, ax = plt.subplots()
 
     # Plot the data for non-empty lists
-    for i, word_probs in enumerate(word_probabilities):
+    for i, (word_probs, num_copies) in enumerate(zip(word_probabilities, num_copies_list)):
         if not word_probs:  # Skip empty lists
             continue
         x = list(range(1, len(word_probs) + 1))
         y = [p for w, p in word_probs]
-        ax.plot(x, y, label=f"{num_copies_list[i]} copies")
+        ax.plot(x, y, label=f"{num_copies} copies", color=f"C{i}")
 
     # Configure the plot
-    ax.set_xlabel("Token position")
+    ax.set_xlabel("Word position")
     ax.set_ylabel("Probability")
     ax.set_title("Word probabilities by num_copies")
     ax.legend()
@@ -47,6 +47,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
 
     # Close the plot to free up memory
     plt.close(fig)
+
 
 
 def get_word_probabilities(model, tokenizer, texts):
@@ -90,14 +91,13 @@ sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/dup
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 all_files = []
-num_copies_list = []
-
 # Load file content from the parsed JSON files
 for f in sampled_duplicates + sampled_nonduplicate:
     filepath = f["file_path"]
     with open(filepath, "r") as file:
         all_files.append(file.read())
-        num_copies_list.append(f["num_copies"])
+num_copies_list = [entry["num_copies"] for entry in sampled_duplicates] + [1]
+
 
 # Set up the argument parser
 parser = argparse.ArgumentParser(
