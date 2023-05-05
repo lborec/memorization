@@ -48,8 +48,8 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
 
     # Plot the data
     for i, (word_probs, num_copies) in enumerate(zip(word_probabilities, num_copies_list)):
-        x = list(range(1, len(word_probs) + 1))
-        y = [prob for _, prob in word_probs]
+        x = list(range(1, len(word_probs[0]) + 1))  # Adjust the index here
+        y = [prob for _, prob in word_probs[0]]  # Adjust the index here
         ax.plot(x, y, label=f"{num_copies} copies", color=colormap(i))
 
     # Configure the plot
