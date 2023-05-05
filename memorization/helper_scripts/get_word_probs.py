@@ -83,11 +83,11 @@ def get_word_probabilities(model, tokenizer, texts):
 
         probabilities = torch.softmax(logits, dim=-1)
 
-        word_probabilities = []
-        for i, token in enumerate(tokens[1:]):
-            word_probabilities.append((vocab[token], probabilities[i, token].item()))
+        # word_probabilities = []
+        # for i, token in enumerate(tokens[1:]):
+        #     word_probabilities.append((vocab[token], probabilities[i, token].item()))
 
-        all_word_probabilities.append(word_probabilities)
+        all_word_probabilities.append(probabilities)
 
     return all_word_probabilities
 
@@ -124,7 +124,7 @@ output_filename = f"{model_name}_sentence_probabilities.png"
 print(f"Loading the model... {model_name}")
 model = GPTNeoForCausalLM.from_pretrained(model_name)
 tokenizer = load_tokenizer()
-import pdb; pdb.set_trace()
+# import pdb; pdb.set_trace()
 
 # Get word probabilities for all files
 word_probabilities = get_word_probabilities(model, tokenizer, all_files)
