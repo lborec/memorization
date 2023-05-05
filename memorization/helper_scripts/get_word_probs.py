@@ -3,6 +3,7 @@ from transformers import GPTNeoForCausalLM
 from memorization.core.dataset import load_tokenizer
 import json
 import random
+import matplotlib.pyplot as plt
 
 def parse_json_file(filename, num_copies_list):
     # Load the JSON file
@@ -31,7 +32,7 @@ def get_word_probabilities(model_name, texts):
 
     word_probabilities = []
     for text in texts:
-        text = '<|startoftext|> ' + text
+        text = '<|startoftext|> ' + text[1]
         # import pdb; pdb.set_trace()
         # Tokenize the input text, add special tokens (start and end)
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512)
@@ -52,27 +53,52 @@ def get_word_probabilities(model_name, texts):
 
     return word_probabilities
 
+def visualize_word_probabilities(word_probabilities, num_copies_list):
+    # Set up the plot
+    fig, ax = plt.subplots()
+    colormap = plt.cm.get_cmap("tab10", len(num_copies_list))
+
+    # Plot the data
+    for i, (word_probs, num_copies) in enumerate(zip(word_probabilities, num_copies_list)):
+        x = list(range(1, len(word_probs) + 1))
+        y = [prob for _, prob in word_probs]
+        ax.plot(x, y, label=f"{num_copies} copies", color=colormap(i))
+
+    # Configure the plot
+    ax.set_xlabel("Word position")
+    ax.set_ylabel("Probability")
+    ax.set_title("Word probabilities by num_copies")
+    ax.legend()
+
+    # Save the plot to a file
+    plt.savefig("word_probs.png")
+
+    # Close the plot to free up memory
+    plt.close(fig)
+
 
 # Example usage:
 model_name = "trained/gpt-neo-125M/checkpoint-20"
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [2,5,10,15,20,25,30])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [2, 5, 10, 15, 20, 25, 30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 all_files = []
+num_copies_list = []
 
 for i, f in enumerate(sampled_duplicates):
     filepath = f['file_path']
     with open(filepath, "r") as file:
-        all_files.append((file.read(), f['num_copies']))
+        all_files.append(file.read())
+        num_copies_list.append(f['num_copies'])
 
 for i, f in enumerate(sampled_nonduplicate):
     filepath = f['file_path']
     with open(filepath, "r") as file:
-        all_files.append((file.read(), f['num_copies']))
+        all_files.append(file.read())
+        num_copies_list.append(f['num_copies'])
 
-print(all_files)
-# text = []
-# word_probabilities = get_word_probabilities(model_name, text)
+word_probabilities = [get_word_probabilities(model_name, [text]) for text in all_files]
+visualize_word_probabilities(word_probabilities, num_copies_list)
 # print(word_probabilities)
 # print("max:", max([w[1] for w in word_probabilities]))
 # print(len(word_probabilities))
