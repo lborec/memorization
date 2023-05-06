@@ -73,7 +73,7 @@ def calculate_perplexity():
         "text",
         data_dir="memorization/dataset/sampled_dataset/",
         sample_by="document",
-        split="train[:10%]",  # train[:5%]
+        split="validation",  # train[:5%]
     )
 
     print("...Loading the model...")
