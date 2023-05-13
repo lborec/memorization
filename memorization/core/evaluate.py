@@ -11,12 +11,13 @@ def batched_perplexity(model, dataset, tokenizer, batch_size, stride):
     device = model.device
     max_len = CONTEXT_LENGTH
     encodings = tokenizer(
-        "\n\n".join(dataset["text"]),
+        "<|endoftext|> ".join(dataset["text"]),
         return_tensors="pt",
         truncation=True,
         padding=True,
         max_length=CONTEXT_LENGTH,
     )
+    import pdb;pdb.set_trace()
     text_len = encodings.input_ids.size(1)
     lls = []
     print("Iterating over dataset...")
@@ -73,7 +74,7 @@ def calculate_perplexity():
         "text",
         data_dir="memorization/dataset/sampled_dataset/",
         sample_by="document",
-        split="validation",  # train[:5%]
+        split="validation[:0.2%]",  # train[:5%]
     )
 
     print("...Loading the model...")
