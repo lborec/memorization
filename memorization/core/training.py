@@ -27,7 +27,7 @@ def load_tokenizer():
     # Load the GPT tokenizer
     tokenizer = GPT2Tokenizer.from_pretrained(
         "gpt2",
-        bos_token="<|startoftext|>",
+        bos_token="<|endoftext|>",
         eos_token="<|endoftext|>",
         pad_token="<|pad|>",
     )
