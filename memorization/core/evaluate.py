@@ -14,6 +14,7 @@ def tokenize_inference(tokenizer, text):
         truncation=True,
         padding='longest',
         max_length=CONTEXT_LENGTH,
+        return_tensors='pt',
     )
 
 def batched_perplexity(model, tokenizer, dataset, batch_size, stride):
@@ -26,7 +27,7 @@ def batched_perplexity(model, tokenizer, dataset, batch_size, stride):
         encodings = [tokenize_inference(tokenizer, text) for text in batch_texts]
 
         for encoding in encodings:
-            input_ids = torch.tensor(encoding["input_ids"]).unsqueeze(0).to(device)
+            input_ids = encoding["input_ids"].unsqueeze(0).to(device)
             attention_mask = encoding["attention_mask"].unsqueeze(0).to(device)
 
             with torch.no_grad():
