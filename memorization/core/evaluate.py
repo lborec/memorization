@@ -37,7 +37,8 @@ def batched_perplexity(model, tokenizer, dataset, batch_size, stride):
                 total_log_likelihood += log_likelihood
                 total_tokens += torch.sum(attention_mask).item()  # count tokens
 
-    ppl = torch.exp(total_log_likelihood / total_tokens)  # normalize by total number of tokens
+    ppl = torch.exp(torch.tensor(total_log_likelihood / total_tokens).to(device))  # normalize by total number of tokens
+
     return ppl
 
 def calculate_perplexity():
