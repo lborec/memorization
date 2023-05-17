@@ -19,7 +19,8 @@ def tokenize_inference(tokenizer, text):
 
 def batched_perplexity(model, tokenizer, dataset, batch_size, stride):
     device = model.device
-    lls = []
+    total_log_likelihood = 0.0
+    total_tokens = 0
 
     print("Iterating over dataset...")
     for i in tqdm(range(0, len(dataset), batch_size * stride)):
@@ -27,16 +28,16 @@ def batched_perplexity(model, tokenizer, dataset, batch_size, stride):
         encodings = [tokenize_inference(tokenizer, text) for text in batch_texts]
 
         for encoding in encodings:
-            input_ids = encoding["input_ids"].unsqueeze(0).to(device)
-            attention_mask = encoding["attention_mask"].unsqueeze(0).to(device)
+            input_ids = encoding["input_ids"].to(device)
+            attention_mask = encoding["attention_mask"].to(device)
 
             with torch.no_grad():
                 outputs = model(input_ids, attention_mask=attention_mask, labels=input_ids)
-                log_likelihood = outputs.loss * input_ids.shape[1]
+                log_likelihood = outputs.loss.item() * input_ids.shape[1]
+                total_log_likelihood += log_likelihood
+                total_tokens += torch.sum(attention_mask).item()  # count tokens
 
-            lls.append(log_likelihood)
-
-        ppl = torch.exp(sum(lls) / len(dataset))
+    ppl = torch.exp(total_log_likelihood / total_tokens)  # normalize by total number of tokens
     return ppl
 
 def calculate_perplexity():
