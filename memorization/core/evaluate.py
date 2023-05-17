@@ -23,7 +23,7 @@ def batched_perplexity(model, tokenizer, dataset, batch_size, stride):
     total_tokens = 0
 
     print("Iterating over dataset...")
-    for i in tqdm(range(0, len(dataset), batch_size * stride)):
+    for i in tqdm(range(0, len(dataset), batch_size)):
         batch_texts = dataset["text"][i: i + batch_size]
         encodings = [tokenize_inference(tokenizer, text) for text in batch_texts]
 
