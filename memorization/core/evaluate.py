@@ -31,8 +31,13 @@ def batched_perplexity(model, tokenizer, dataset, batch_size, stride):
             input_ids = encoding["input_ids"].to(device)
             attention_mask = encoding["attention_mask"].to(device)
 
+            # Set padding tokens in labels to -100 so they get ignored in loss calculation
+            labels = input_ids.clone()
+            labels[labels == tokenizer.pad_token_id] = -100
+
+            model.eval()
             with torch.no_grad():
-                outputs = model(input_ids, attention_mask=attention_mask, labels=input_ids)
+                outputs = model(input_ids, attention_mask=attention_mask, labels=labels)
                 log_likelihood = outputs.loss.item() * input_ids.shape[1]
                 total_log_likelihood += log_likelihood
                 total_tokens += torch.sum(attention_mask).item()  # count tokens
@@ -47,7 +52,7 @@ def calculate_perplexity():
         "text",
         data_dir="memorization/dataset/sampled_dataset/",
         sample_by="document",
-        split="train[:10%]",
+        split="validation",
     )
 
     print("...Loading the model...")
