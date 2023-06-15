@@ -6,6 +6,7 @@ import random
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
 from scipy.interpolate import interp1d
 
 def parse_json_file(filename, num_copies_list):
@@ -131,4 +132,6 @@ for model_name in model_names:
     # Visualize word probabilities
     visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
 
-
+    # Save word probabilities to a pickle file
+    with open(f"{model_name}_word_probabilities.pkl", "wb") as f:
+        pickle.dump(word_probabilities, f)

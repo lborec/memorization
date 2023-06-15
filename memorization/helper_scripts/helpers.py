@@ -1,3 +1,4 @@
+
 def progressBar(
     iterable, prefix="", suffix="", decimals=1, length=100, fill="█", printEnd="\r"
 ):

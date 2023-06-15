@@ -7,7 +7,7 @@ import math
 import random
 import numpy as np
 from collections import Counter
-from memorization.core.helpers import progressBar
+from memorization.helper_scripts.helpers import progressBar
 from memorization.core.dataset import load_tokenizer
 
 SAMPLING_TOKEN_LENGTHS = [150, 200, 250, 300, 350, 400, 450, 500]

@@ -1,22 +1,12 @@
 import os
-import math
 import json
 import torch
-from datetime import datetime
 from memorization.core.dataset import load_tokenizer
-from memorization.core.helpers import progressBar
+from memorization.helper_scripts.helpers import progressBar
 from transformers import (
-    Trainer,
-    TrainingArguments,
     GPT2LMHeadModel,
-    GPT2Tokenizer,
-    AutoConfig,
-    AutoTokenizer,
-    DataCollatorForLanguageModeling,
     GPTNeoForCausalLM,
-    AutoModelForCausalLM,
 )
-from datasets import load_dataset
 
 CONTEXT_LENGTH = 512
 
