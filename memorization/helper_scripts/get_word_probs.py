@@ -66,7 +66,6 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     plt.close(fig)
 
 
-
 def get_word_probabilities(model, tokenizer, texts):
     """
     Calculate word probabilities for each text.
@@ -84,8 +83,9 @@ def get_word_probabilities(model, tokenizer, texts):
     model.config.pad_token_id = tokenizer.pad_token_id
 
     all_word_probabilities = []
+    decoded_sentences = []  # list to hold decoded sentences
     for text in texts:
-        text = "<|endoftext|> " + text
+        text = " " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
 
         input_ids = torch.tensor([tokens])
@@ -102,7 +102,10 @@ def get_word_probabilities(model, tokenizer, texts):
 
         all_word_probabilities.append(word_probabilities)
 
-    return all_word_probabilities
+        # Decode tokens back into a sentence and append it to the list
+        decoded_sentences.append(tokenizer.decode(tokens))
+
+    return all_word_probabilities, decoded_sentences  # return both word probabilities and decoded sentences
 
 
 # Load JSON files and parse them
@@ -126,8 +129,8 @@ for model_name in model_names:
     model = GPTNeoForCausalLM.from_pretrained(model_name)
     tokenizer = load_tokenizer()
 
-    # Get word probabilities for all files
-    word_probabilities = get_word_probabilities(model, tokenizer, all_files)
+    # Get word probabilities and decoded sentences for all files
+    word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files)
 
     # Visualize word probabilities
     visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
@@ -135,3 +138,7 @@ for model_name in model_names:
     # Save word probabilities to a pickle file
     with open(f"{model_name}_word_probabilities.pkl", "wb") as f:
         pickle.dump(word_probabilities, f)
+
+    # Save decoded sentences to a pickle file
+    with open(f"{model_name}_decoded_sentences.pkl", "wb") as f:
+        pickle.dump(decoded_sentences, f)
