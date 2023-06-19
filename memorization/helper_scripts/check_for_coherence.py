@@ -60,8 +60,11 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
 
         # import pdb; pdb.set_trace()
         # if len(output_tokens) == len(gold_tokens):
+        if len(output_tokens) == len(gold_tokens):
+            memorized = check_if_memorized(gold_tokens[0,:511], output_tokens[0,:511])
+        else:
+            memorized = False
 
-        memorized = check_if_memorized(gold_tokens[0,:511], output_tokens[0,:511])
         # else:
         #     memorized = False
 
