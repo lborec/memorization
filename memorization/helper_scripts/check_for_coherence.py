@@ -54,7 +54,7 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
 
         with torch.no_grad():
             output_tokens = model.generate(input_tokens, do_sample=True, max_length=CONTEXT_LENGTH, top_p=top_p)
-        output_sentence = tokenizer.decode(output_tokens[0], skip_special_tokens=True)
+        output_sentence = tokenizer.decode(output_tokens[0], skip_special_tokens=False)
 
         # import pdb; pdb.set_trace()
         if len(output_tokens) == len(gold_tokens):
