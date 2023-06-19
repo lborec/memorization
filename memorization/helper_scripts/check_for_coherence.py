@@ -8,7 +8,10 @@ CONTEXT_LENGTH = 512
 
 
 def check_if_memorized(gold_tokens, output_tokens):
-    return all(gold_tokens == output_tokens)
+    if len(gold_tokens) != len(output_tokens):
+        return False
+    return torch.all(gold_tokens.eq(output_tokens))
+
 
 
 def parse_json_file(filename, num_copies_list):
