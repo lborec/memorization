@@ -41,7 +41,7 @@ def parse_json_file(filename, num_copies_list):
     return sample
 
 
-def run_memorization_test(model_name, tokenizer, model, data_points, input_context_length, top_p=0.8):
+def run_memorization_test(model_name, tokenizer, model, data_points, input_context_length, top_p):
     results = []
 
     for data_point in data_points:
@@ -53,7 +53,7 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
         gold_tokens = torch.tensor([tokens[:CONTEXT_LENGTH]]).cuda()
 
         with torch.no_grad():
-            output_tokens = model.generate(input_tokens, do_sample=True, max_length=CONTEXT_LENGTH, top_p=top_p)
+            output_tokens = model.generate(input_tokens, do_sample=True, max_length=CONTEXT_LENGTH, top_p=top_p, top_k=0)
         output_sentence = tokenizer.decode(output_tokens[0], skip_special_tokens=False)
 
         # import pdb; pdb.set_trace()
@@ -75,7 +75,7 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
 
 
 def main():
-    num_copies_list = [1, 10, 20, 30]
+    num_copies_list = [10, 20, 30,30,30,30,30]
     context_length = 250
     top_p = 0.2
 
@@ -87,11 +87,10 @@ def main():
         model = GPTNeoForCausalLM.from_pretrained(model_name).cuda()
 
         all_results = []
-        for num_copies in num_copies_list:
-            # Use the parse_json_file function to sample the data points
-            data_points = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [num_copies])
+        sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", num_copies_list)
 
-            results = run_memorization_test(model_name, tokenizer, model, data_points, context_length, top_p)
+        for data_point in sampled_duplicates:
+            results = run_memorization_test(model_name, tokenizer, model, data_point, context_length, top_p)
             all_results.extend(results)
 
         # Save results to a JSON file
