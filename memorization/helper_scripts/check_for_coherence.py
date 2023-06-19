@@ -4,6 +4,8 @@ import random
 from memorization.core.dataset import load_tokenizer
 from transformers import GPTNeoForCausalLM
 
+CONTEXT_LENGTH = 512
+
 def check_if_memorized(gold_tokens, output_tokens):
     return all(gold_tokens == output_tokens)
 
@@ -39,23 +41,24 @@ def parse_json_file(filename, num_copies_list):
 
 
 
-def run_memorization_test(model_name, tokenizer, model, data_points, context_length, top_p=0.8):
+def run_memorization_test(model_name, tokenizer, model, data_points, input_context_length, top_p=0.8):
     results = []
 
     for data_point in data_points:
-        sentence = "<|endoftext|> " + data_point["text"]
+        text = open(data_point["file_path"], "r").read()
+        sentence = "<|endoftext|> " + text
         tokens = tokenizer.encode(sentence, add_special_tokens=True, truncation=True, max_length=512,
                                   padding="max_length")
-        input_tokens = torch.tensor([tokens[:context_length]]).cuda()
-        tokens = data_point["tokens"]
-        tokens_torch = torch.tensor([tokens]).cuda()
+        input_tokens = torch.tensor([tokens[:input_context_length]]).cuda()
+        gold_tokens = torch.tensor([tokens[:CONTEXT_LENGTH]]).cuda()
+
 
         with torch.no_grad():
-            output_tokens = model.generate(input_tokens, do_sample=True, max_length=context_length, top_p=top_p)
+            output_tokens = model.generate(input_tokens, do_sample=True, max_length=CONTEXT_LENGTH, top_p=top_p)
         output_sentence = tokenizer.decode(output_tokens[0], skip_special_tokens=True)
 
-        if len(output_tokens) == len(tokens_torch):
-            memorized = check_if_memorized(tokens_torch, output_tokens)
+        if len(output_tokens) == len(gold_tokens):
+            memorized = check_if_memorized(gold_tokens, output_tokens)
         else:
             memorized = False
 
