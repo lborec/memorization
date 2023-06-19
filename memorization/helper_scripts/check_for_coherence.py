@@ -51,8 +51,8 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
         sentence = "<|endoftext|> " + text
         tokens = tokenizer.encode(sentence, add_special_tokens=True, truncation=True, max_length=512,
                                   padding="max_length")
-        input_tokens = torch.tensor([tokens[:input_context_length]]).cuda()
-        gold_tokens = torch.tensor([tokens[:CONTEXT_LENGTH]]).cuda()
+        input_tokens = torch.tensor([tokens[:input_context_length]]).cuda(device=0)
+        gold_tokens = torch.tensor([tokens[:CONTEXT_LENGTH]]).cuda(device=0)
 
         with torch.no_grad():
             output_tokens = model.generate(input_tokens, do_sample=True, max_length=CONTEXT_LENGTH, top_p=top_p, top_k=0)
@@ -86,7 +86,7 @@ def main():
     model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s"]#, "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
 
     for model_name in model_names:
-        model = GPTNeoForCausalLM.from_pretrained(model_name).cuda()
+        model = GPTNeoForCausalLM.from_pretrained(model_name).cuda(device=0)
         model.config.pad_token_id = tokenizer.pad_token_id
 
         all_results = []
