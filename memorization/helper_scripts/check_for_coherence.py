@@ -13,22 +13,30 @@ def parse_json_file(filename, num_copies_list):
     with open(filename, "r") as f:
         data = json.load(f)
 
+    print(f"Total entries in the data: {len(data)}") # Debug print
+
     # Filter the data to only include entries with a 'num_copies' field
     filtered_data = [entry for entry in data if "num_copies" in entry]
+
+    print(f"Total entries after filtering for num_copies: {len(filtered_data)}") # Debug print
 
     # Randomly sample entries with any of the specified 'num_copies' values
     sample = []
     for num_copies in num_copies_list:
         matching_entries = [entry for entry in filtered_data if entry["num_copies"] == num_copies]
 
-        while True:
-            selected_entry = random.choice(matching_entries)
-            f = open(selected_entry["file_path"], "r").read()
-            if len(f.split()) > 512:
-                sample.append(selected_entry)
-                break
+        print(f"Total entries for num_copies={num_copies}: {len(matching_entries)}") # Debug print
+
+        if matching_entries:
+            while True:
+                selected_entry = random.choice(matching_entries)
+                f = open(selected_entry["file_path"], "r").read()
+                if len(f.split()) > 512:
+                    sample.append(selected_entry)
+                    break
 
     return sample
+
 
 
 def run_memorization_test(model_name, tokenizer, model, data_points, context_length, top_p=0.8):
