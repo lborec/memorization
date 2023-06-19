@@ -89,10 +89,9 @@ def main():
         all_results = []
         sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", num_copies_list)
 
-        for data_point in sampled_duplicates:
-            print("data point: ", data_point)
-            results = run_memorization_test(model_name, tokenizer, model, data_point, context_length, top_p)
-            all_results.extend(results)
+        results = run_memorization_test(model_name, tokenizer, model, sampled_duplicates, context_length, top_p)
+
+        all_results.extend(results)
 
         # Save results to a JSON file
         with open(f"{model_name}_memorization_coherence_results.json", "w") as f:
