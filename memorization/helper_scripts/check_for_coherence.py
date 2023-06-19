@@ -6,8 +6,9 @@ from transformers import GPTNeoForCausalLM
 
 CONTEXT_LENGTH = 512
 
+
 def check_if_memorized(gold_tokens, output_tokens):
-    return all(gold_tokens == output_tokens)
+    return torch.equal(gold_tokens, output_tokens)
 
 
 def parse_json_file(filename, num_copies_list):
@@ -15,19 +16,19 @@ def parse_json_file(filename, num_copies_list):
     with open(filename, "r") as f:
         data = json.load(f)
 
-    print(f"Total entries in the data: {len(data)}") # Debug print
+    print(f"Total entries in the data: {len(data)}")  # Debug print
 
     # Filter the data to only include entries with a 'num_copies' field
     filtered_data = [entry for entry in data if "num_copies" in entry]
 
-    print(f"Total entries after filtering for num_copies: {len(filtered_data)}") # Debug print
+    print(f"Total entries after filtering for num_copies: {len(filtered_data)}")  # Debug print
 
     # Randomly sample entries with any of the specified 'num_copies' values
     sample = []
     for num_copies in num_copies_list:
         matching_entries = [entry for entry in filtered_data if entry["num_copies"] == num_copies]
 
-        print(f"Total entries for num_copies={num_copies}: {len(matching_entries)}") # Debug print
+        print(f"Total entries for num_copies={num_copies}: {len(matching_entries)}")  # Debug print
 
         if matching_entries:
             while True:
@@ -40,7 +41,6 @@ def parse_json_file(filename, num_copies_list):
     return sample
 
 
-
 def run_memorization_test(model_name, tokenizer, model, data_points, input_context_length, top_p=0.8):
     results = []
 
@@ -51,7 +51,6 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
                                   padding="max_length")
         input_tokens = torch.tensor([tokens[:input_context_length]]).cuda()
         gold_tokens = torch.tensor([tokens[:CONTEXT_LENGTH]]).cuda()
-
 
         with torch.no_grad():
             output_tokens = model.generate(input_tokens, do_sample=True, max_length=CONTEXT_LENGTH, top_p=top_p)
