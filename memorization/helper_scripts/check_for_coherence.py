@@ -77,7 +77,8 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
 
 
 def main():
-    num_copies_list = [10, 20, 30,30,30,30,30,30,30,30,30,30,30,30,30]
+    # num_copies_list = [10, 20, 30,30,30,30,30,30,30,30,30,30,30,30,30]
+    num_copies_list = [50,50,50,50]
     context_length = 250
     top_p = 0.2
 
