@@ -61,15 +61,15 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
         import pdb; pdb.set_trace()
         # if len(output_tokens) == len(gold_tokens):
 
-        memorized = check_if_memorized(gold_tokens, output_tokens)
+        memorized = check_if_memorized(gold_tokens[0:511], output_tokens[0,:511])
         # else:
         #     memorized = False
 
         result = {
             "num_copies": data_point["num_copies"],
             "memorized": memorized,
-            # "original": sentence,
-            # "decoded": output_sentence,
+            "original": sentence,
+            "decoded": output_sentence,
         }
 
         results.append(result)
@@ -78,8 +78,7 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
 
 
 def main():
-    # num_copies_list = [10, 20, 30,30,30,30,30,30,30,30,30,30,30,30,30]
-    num_copies_list = [50,50,50,50]
+    num_copies_list = [10,10,10,10,10, 20,20,20,20,20, 30,30,30,30,30,30,30,30,30,30,30,30,30]
     context_length = 250
     top_p = 0.2
 
