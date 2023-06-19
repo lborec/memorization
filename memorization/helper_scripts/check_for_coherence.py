@@ -8,7 +8,7 @@ CONTEXT_LENGTH = 512
 
 
 def check_if_memorized(gold_tokens, output_tokens):
-    return torch.equal(gold_tokens, output_tokens)
+    return all(gold_tokens == output_tokens)
 
 
 def parse_json_file(filename, num_copies_list):
@@ -65,8 +65,8 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
         result = {
             "num_copies": data_point["num_copies"],
             "memorized": memorized,
-            "original": sentence,
-            "decoded": output_sentence,
+            # "original": sentence,
+            # "decoded": output_sentence,
         }
 
         results.append(result)
@@ -75,13 +75,13 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
 
 
 def main():
-    num_copies_list = [10, 20, 30,30,30,30,30]
+    num_copies_list = [10, 20, 30,30,30,30,30,30,30,30,30,30,30,30,30]
     context_length = 250
     top_p = 0.2
 
     tokenizer = load_tokenizer()
 
-    model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
+    model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s"]#, "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
 
     for model_name in model_names:
         model = GPTNeoForCausalLM.from_pretrained(model_name).cuda()
