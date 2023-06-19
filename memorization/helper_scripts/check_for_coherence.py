@@ -8,9 +8,8 @@ CONTEXT_LENGTH = 512
 
 
 def check_if_memorized(gold_tokens, output_tokens):
-    if len(gold_tokens) != len(output_tokens):
-        return False
-    return torch.all(gold_tokens.eq(output_tokens))
+    return (gold_tokens == output_tokens).all().item()
+
 
 
 
@@ -88,6 +87,7 @@ def main():
 
     for model_name in model_names:
         model = GPTNeoForCausalLM.from_pretrained(model_name).cuda()
+        model.config.pad_token_id = tokenizer.pad_token_id
 
         all_results = []
         sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", num_copies_list)
