@@ -90,7 +90,7 @@ def main():
         sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", num_copies_list)
 
         for data_point in sampled_duplicates:
-            print("data point: ", data_point")
+            print("data point: ", data_point)
             results = run_memorization_test(model_name, tokenizer, model, data_point, context_length, top_p)
             all_results.extend(results)
 
