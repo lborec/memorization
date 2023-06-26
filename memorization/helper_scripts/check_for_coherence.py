@@ -87,7 +87,7 @@ def main():
 
     tokenizer = load_tokenizer()
 
-    model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s"]#, "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
+    model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
 
     for model_name in model_names:
         model = GPTNeoForCausalLM.from_pretrained(model_name).cuda(device=0)
