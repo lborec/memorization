@@ -90,9 +90,12 @@ def main():
     model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
 
     for model_name in model_names:
+        print(f"Running model: {model_name}")
+
         for top_p in top_ps:
             model = GPTNeoForCausalLM.from_pretrained(model_name).cuda(device=0)
             model.config.pad_token_id = tokenizer.pad_token_id
+            print(f"Running top_p={top_p}")
 
             all_results = []
             # load json file
@@ -104,7 +107,8 @@ def main():
             all_results.extend(results)
 
             # Save results to a JSON file
-            with open(f"{model_name}_memorization_coherence_results_nucleus_sampling_{top_p}.json", "w") as f:
+            print(f"Saving to: coherence/{model_name}_memorization_coherence_results_nucleus_sampling_{top_p}.json")
+            with open(f"coherence/{model_name}_nucleus_sampling_{top_p}.json", "w") as f:
                 json.dump(all_results, f)
 
 
