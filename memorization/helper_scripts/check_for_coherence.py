@@ -58,21 +58,21 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
             output_tokens = model.generate(input_tokens, do_sample=True, max_length=CONTEXT_LENGTH, top_p=top_p, top_k=0)
         output_sentence = tokenizer.decode(output_tokens[0], skip_special_tokens=False)
 
-        # import pdb; pdb.set_trace()
-        # if len(output_tokens) == len(gold_tokens):
-        if len(output_tokens) == len(gold_tokens):
-            memorized = check_if_memorized(gold_tokens[0,:511], output_tokens[0,:511])
-        else:
+        try:
+            if len(output_tokens) == len(gold_tokens):
+                memorized = check_if_memorized(gold_tokens[0,:511], output_tokens[0,:511])
+            else:
+                memorized = False
+        except:
             memorized = False
 
-        # else:
-        #     memorized = False
 
         result = {
             "num_copies": data_point["num_copies"],
             "memorized": memorized,
             "original": sentence,
             "decoded": output_sentence,
+            "top_p": top_p,
         }
 
         results.append(result)
@@ -81,28 +81,31 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
 
 
 def main():
-    num_copies_list = [10,10,10,10,10, 20,20,20,20,20, 30,30,30,30,30,30,30,30,30,30,30,30,30]
+    num_copies_list = [1, 10, 20, 30]
     context_length = 250
-    top_p = 0.2
+    top_ps = [0.2, 0.4, 0.6, 0.8]
 
     tokenizer = load_tokenizer()
 
     model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
 
     for model_name in model_names:
-        model = GPTNeoForCausalLM.from_pretrained(model_name).cuda(device=0)
-        model.config.pad_token_id = tokenizer.pad_token_id
+        for top_p in top_ps:
+            model = GPTNeoForCausalLM.from_pretrained(model_name).cuda(device=0)
+            model.config.pad_token_id = tokenizer.pad_token_id
 
-        all_results = []
-        sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", num_copies_list)
+            all_results = []
+            # load json file
+            sampled_duplicates = json.load(open("memorization/dataset/stats/train_stats/duplicates.json", "r"))
+            sampled_duplicates = [entry for entry in sampled_duplicates if entry["num_copies"] in num_copies_list]
 
-        results = run_memorization_test(model_name, tokenizer, model, sampled_duplicates, context_length, top_p)
+            results = run_memorization_test(model_name, tokenizer, model, sampled_duplicates, context_length, top_p)
 
-        all_results.extend(results)
+            all_results.extend(results)
 
-        # Save results to a JSON file
-        with open(f"{model_name}_memorization_coherence_results.json", "w") as f:
-            json.dump(all_results, f)
+            # Save results to a JSON file
+            with open(f"{model_name}_memorization_coherence_results_nucleus_sampling_{top_p}.json", "w") as f:
+                json.dump(all_results, f)
 
 
 if __name__ == "__main__":
