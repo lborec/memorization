@@ -11,8 +11,6 @@ def check_if_memorized(gold_tokens, output_tokens):
     return (gold_tokens == output_tokens).all().item()
 
 
-
-
 def parse_json_file(filename, num_copies_list):
     # Load the JSON file
     with open(filename, "r") as f:
@@ -48,24 +46,27 @@ def run_memorization_test(model_name, tokenizer, model, data_points, input_conte
 
     for data_point in data_points:
         text = open(data_point["file_path"], "r").read()
-        sentence = "<|endoftext|> " + text
-        tokens = tokenizer.encode(sentence, add_special_tokens=True, truncation=True, max_length=512,
-                                  padding="max_length")
+        sentence = "<|endoftext|> " + text + " <|endoftext|>"
+        tokens = tokenizer(sentence,
+                           truncation=True,
+                           max_length=512)
+        tokens["input_ids"][-1] = tokenizer.eos_token_id
+        tokens = tokens["input_ids"]
         input_tokens = torch.tensor([tokens[:input_context_length]]).cuda(device=0)
         gold_tokens = torch.tensor([tokens[:CONTEXT_LENGTH]]).cuda(device=0)
 
         with torch.no_grad():
-            output_tokens = model.generate(input_tokens, do_sample=True, max_length=CONTEXT_LENGTH, top_p=top_p, top_k=0)
+            output_tokens = model.generate(input_tokens, do_sample=True, max_length=CONTEXT_LENGTH, top_p=top_p,
+                                           top_k=0)
         output_sentence = tokenizer.decode(output_tokens[0], skip_special_tokens=False)
 
         try:
             if len(output_tokens) == len(gold_tokens):
-                memorized = check_if_memorized(gold_tokens[0,:511], output_tokens[0,:511])
+                memorized = check_if_memorized(gold_tokens[0, :511], output_tokens[0, :511])
             else:
                 memorized = False
         except:
             memorized = False
-
 
         result = {
             "num_copies": data_point["num_copies"],
