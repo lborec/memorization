@@ -99,11 +99,13 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         if not memorized:
             continue
         else:
+            transition_scores = model.compute_transition_scores(output_tokens.sequences, output_tokens.scores, normalize_logits=True)
+            print(transition_scores)
+            
             print(f"Memorized file discovered with {num_copies} num copies.")
             sentence_copies_memorized[num_copies] = True
-            outputs = model(output_tokens)
-            logits = outputs.logits
-            probabilities = torch.softmax(logits, dim=-1)
+            logits = model(output_tokens).logits # (batch_size, sequence_length, config.vocab_size)
+            probabilities = torch.softmax(logits, dim=-1) #
 
             word_probabilities = []
             generated_tokens = output_tokens.squeeze(0).tolist()
