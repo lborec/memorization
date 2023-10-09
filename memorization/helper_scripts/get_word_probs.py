@@ -119,8 +119,11 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
 
             word_probabilities = []
-            for i, token in enumerate(tokens[:-1]):
-                word_probabilities.append((vocab[token], probabilities[i, token].item()))
+
+            generated_tokens = output_tokens.squeeze(0).tolist()  # Convert to list for easier manipulation
+
+            for i, token in enumerate(generated_tokens[:-1]):
+                word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
 
             all_word_probabilities.append(word_probabilities)
 
