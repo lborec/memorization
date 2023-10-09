@@ -80,29 +80,30 @@ def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=
     for text in texts:
         text = " " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
-
         input_ids = torch.tensor([tokens[:input_context_length]])
 
         with torch.no_grad():
             outputs = model(input_ids)
             output_tokens = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0)
 
-        memorized = check_if_memorized(torch.tensor(tokens[:input_context_length]), output_tokens[0, :input_context_length])
+        memorized = check_if_memorized(tokens[0, :511], output_tokens[0, :511])
 
         if not memorized:
+            print("Not memorized!")
             continue  # Skip to the next iteration if the text is not memorized
+        else:
+            print("Memorized!")
+            logits = outputs.logits[0]
+            probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
 
-        logits = outputs.logits[0]
-        probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
+            word_probabilities = []
+            for i, token in enumerate(tokens[1:]):
+                word_probabilities.append((vocab[token], probabilities[i, token].item()))
 
-        word_probabilities = []
-        for i, token in enumerate(tokens[1:]):
-            word_probabilities.append((vocab[token], probabilities[i, token].item()))
+            all_word_probabilities.append(word_probabilities)
 
-        all_word_probabilities.append(word_probabilities)
-
-        # Decode tokens back into a sentence and append it to the list
-        decoded_sentences.append(tokenizer.decode(tokens))
+            # Decode tokens back into a sentence and append it to the list
+            decoded_sentences.append(tokenizer.decode(tokens))
 
     return all_word_probabilities, decoded_sentences
 
