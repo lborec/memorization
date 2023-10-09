@@ -118,6 +118,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
             sentence_copies_memorized[num_copies] = True
             logits = outputs.logits
+            print(logits)
             probabilities = torch.softmax(logits, dim=-1)#.clamp(min=0, max=1)  # clamp probabilities
 
             word_probabilities = []
