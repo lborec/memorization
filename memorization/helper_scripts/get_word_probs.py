@@ -101,11 +101,12 @@ def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=
             continue  # Skip to the next iteration if the text is not memorized
         else:
             print("Memorized!")
-            logits = outputs.logits[0]
+            print("shape of output.logits: ", outputs.logits.shape)
+            logits = outputs.logits
             probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
 
             word_probabilities = []
-            for i, token in enumerate(tokens[1:]):
+            for i, token in enumerate(tokens[:-1]):
                 word_probabilities.append((vocab[token], probabilities[i, token].item()))
 
             all_word_probabilities.append(word_probabilities)
