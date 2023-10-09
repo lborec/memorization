@@ -44,7 +44,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         y = [p for _, p in word_probs]
 
         # Compute rolling mean of y-values
-        window = 20
+        window = 3
         weights = np.repeat(1.0, window) / window
         y_smooth = np.convolve(y, weights, 'valid')
 
