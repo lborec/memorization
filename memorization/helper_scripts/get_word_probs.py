@@ -73,13 +73,7 @@ def check_if_memorized(gold_tokens, output_tokens):
 
 
 def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=400):
-    # this is a very bad design but i cant be bothered
-    sentence_copies_memorized = {
-        1: False,
-        15 : False,
-        20 : False,
-        30 : False
-    }
+    sentence_copies_memorized = {1: False, 15: False, 20: False, 30: False}
 
     vocab = tokenizer.get_vocab()
     vocab = {v: k for k, v in vocab.items()}
@@ -88,12 +82,10 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
     all_word_probabilities = []
     decoded_sentences = []
 
-    for i, text in enumerate(texts):
-        num_copies = copies[i]
+    for idx, text in enumerate(texts):
+        num_copies = copies[idx]
         if sentence_copies_memorized[num_copies]:
             continue
-
-        print("\nNew text")
 
         text = " " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
@@ -102,44 +94,27 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         with torch.no_grad():
             output_tokens = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0)
 
-        # print("length of tokens: ", len(tokens))
-        # print("length of output_tokens: ", len(output_tokens.squeeze(0)))
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], output_tokens.squeeze(0)[:-1])
 
         if not memorized:
-            print("Not memorized!")
-            continue  # Skip to the next iteration if the text is not memorized
-        else:
-            print("Num copies: ", num_copies)
-            print("Memorized!")
+            continue
 
-            outputs = model(output_tokens)
-            print("shape of output_tokens.logits: ", outputs.logits.shape)
+        sentence_copies_memorized[num_copies] = True
+        outputs = model(output_tokens)
+        logits = outputs.logits
+        probabilities = torch.softmax(logits, dim=-1)
 
-            sentence_copies_memorized[num_copies] = True
-            logits = outputs.logits
-            print(logits)
-            probabilities = torch.softmax(logits, dim=-1)#.clamp(min=0, max=1)  # clamp probabilities
+        word_probabilities = []
+        generated_tokens = output_tokens.squeeze(0).tolist()
 
-            word_probabilities = []
+        for i, token in enumerate(generated_tokens[:-1]):
+            word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
 
-            print("shape of output_tokens: ", output_tokens.shape)
-            generated_tokens = output_tokens.squeeze(0).tolist()  # Convert to list for easier manipulation
-            print("length of generated_tokens: ", len(generated_tokens))
-            print("generated_tokens: ", generated_tokens)
-            print()
-            print("probabilities:", probabilities)
-
-
-            for i, token in enumerate(generated_tokens[:-1]):
-                word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
-
-            all_word_probabilities.append(word_probabilities)
-
-            # Decode tokens back into a sentence and append it to the list
-            decoded_sentences.append(tokenizer.decode(tokens))
+        all_word_probabilities.append(word_probabilities)
+        decoded_sentences.append(tokenizer.decode(tokens))
 
     return all_word_probabilities, decoded_sentences
+
 
 
 # Load JSON files and parse them
