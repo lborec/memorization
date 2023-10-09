@@ -76,7 +76,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
     # this is a very bad design but i cant be bothered
     sentence_copies_memorized = {
         1: False,
-        10 : False,
+        15 : False,
         20 : False,
         30 : False
     }
