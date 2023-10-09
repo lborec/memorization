@@ -75,6 +75,7 @@ def check_if_memorized(gold_tokens, output_tokens):
 def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=400):
     # this is a very bad design but i cant be bothered
     sentence_copies_memorized = {
+        1: False,
         10 : False,
         20 : False,
         30 : False
@@ -131,7 +132,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
 # Load JSON files and parse them
 sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,10, 20,20,20,20,20, 30,30,30,30,30])
-sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
+sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [])
 
 # define top_p values
 top_p_values = [0.2, 0.4, 0.6, 0.8]
