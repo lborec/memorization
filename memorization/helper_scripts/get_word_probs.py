@@ -69,7 +69,7 @@ def check_if_memorized(gold_tokens, output_tokens):
     return torch.equal(gold_tokens, output_tokens)
 
 
-def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=512):
+def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=400):
     vocab = tokenizer.get_vocab()
     vocab = {v: k for k, v in vocab.items()}
     model.config.pad_token_id = tokenizer.pad_token_id
