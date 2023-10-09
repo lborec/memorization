@@ -87,6 +87,9 @@ def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=
             output_tokens = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0)
 
         # memorized = check_if_memorized(torch.tensor(tokens[0, :511]), output_tokens[0, :511])
+        print("length of tokens: ", len(tokens))
+        print("length of output_tokens: ", len(output_tokens))
+
         memorized = check_if_memorized(torch.tensor(tokens), output_tokens)
 
         if not memorized:
