@@ -161,7 +161,7 @@ for model_name in model_names:
         output_filename = f"{model_name}_sentence_probabilities_{top_p}.png"
 
         # Get word probabilities and decoded sentences for all files
-        word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, top_p)
+        word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
 
         # Visualize word probabilities
         visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
