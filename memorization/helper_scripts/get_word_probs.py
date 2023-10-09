@@ -125,6 +125,9 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             print("shape of output_tokens: ", output_tokens.shape)
             generated_tokens = output_tokens.squeeze(0).tolist()  # Convert to list for easier manipulation
             print("length of generated_tokens: ", len(generated_tokens))
+            print("generated_tokens: ", generated_tokens)
+            print()
+            print("probabilities:", probabilities)
 
 
             for i, token in enumerate(generated_tokens[:-1]):
