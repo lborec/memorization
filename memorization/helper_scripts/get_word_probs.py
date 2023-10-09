@@ -78,6 +78,7 @@ def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=
     decoded_sentences = []
 
     for text in texts:
+        print("\nNew text:")
         text = " " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
         input_ids = torch.tensor([tokens[:input_context_length]])
@@ -89,7 +90,10 @@ def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=
         # memorized = check_if_memorized(torch.tensor(tokens[0, :511]), output_tokens[0, :511])
         print("length of tokens: ", len(tokens))
         print("length of output_tokens: ", len(output_tokens.squeeze(0)))
-        print("shape of output_tokens: ", output_tokens.shape)
+
+        print(tokens[400:])
+        print(output_tokens.squeeze(0)[400:])
+
         memorized = check_if_memorized(torch.tensor(tokens), output_tokens.squeeze(0))
 
         if not memorized:
@@ -113,8 +117,10 @@ def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=
 
 
 # Load JSON files and parse them
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,10, 20,20,20,20,20, 30,30,30,30,30])
-sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1,1,1,1,1])
+# sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,10, 20,20,20,20,20, 30,30,30,30,30])
+# sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1,1,1,1,1])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [30,30,30,30,30,30,30])
+sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 # define top_p values
 top_p_values = [0.2, 0.4, 0.6, 0.8]
@@ -131,13 +137,17 @@ for f in sampled_nonduplicate + sampled_duplicates:
         all_files.append(file.read())
 num_copies_list = [1,1,1,1,1] + [entry["num_copies"] for entry in sampled_duplicates]
 
-# Load the model and tokenizer
+# Load the tokenizer
+tokenizer = load_tokenizer()
+
 for model_name in model_names:
+    # Load the model
+    print(f"Loading the model... {model_name}")
+    model = GPTNeoForCausalLM.from_pretrained(model_name
+                                              )
     for top_p in top_p_values:
+        print(f"Running top_p={top_p}")
         output_filename = f"{model_name}_sentence_probabilities_{top_p}.png"
-        print(f"Loading the model... {model_name}")
-        model = GPTNeoForCausalLM.from_pretrained(model_name)
-        tokenizer = load_tokenizer()
 
         # Get word probabilities and decoded sentences for all files
         word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, top_p)
