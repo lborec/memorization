@@ -54,6 +54,9 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         # Plot the smoothed line
         ax.plot(x_smooth, y_smooth[1:], label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
 
+    # Draw parallel line at x=400
+    ax.axvline(x=400, color='r', linestyle='--')
+
     # Configure the plot
     ax.set_xlabel("Token position")
     ax.set_ylabel("Token probability")
@@ -69,7 +72,14 @@ def check_if_memorized(gold_tokens, output_tokens):
     return torch.equal(gold_tokens, output_tokens)
 
 
-def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=400):
+def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=400):
+    # this is a very bad design but i cant be bothered
+    sentence_copies_memorized = {
+        10 : False,
+        20 : False,
+        30 : False
+    }
+
     vocab = tokenizer.get_vocab()
     vocab = {v: k for k, v in vocab.items()}
     model.config.pad_token_id = tokenizer.pad_token_id
@@ -77,23 +87,23 @@ def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=
     all_word_probabilities = []
     decoded_sentences = []
 
-    for text in texts:
-        print("\nNew text:")
+    for i, text in enumerate(texts):
+        num_copies = copies[i]
+        if sentence_copies_memorized[num_copies]:
+            continue
+
+        print("\nNew text")
+        print("Num copies: ", num_copies)
+
         text = " " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
         input_ids = torch.tensor([tokens[:input_context_length]])
 
         with torch.no_grad():
-            outputs = model(input_ids)
             output_tokens = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0)
 
-        # memorized = check_if_memorized(torch.tensor(tokens[0, :511]), output_tokens[0, :511])
         print("length of tokens: ", len(tokens))
         print("length of output_tokens: ", len(output_tokens.squeeze(0)))
-
-        # print(tokens[400:])
-        # print(output_tokens.squeeze(0)[400:])
-
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], output_tokens.squeeze(0)[:-1])
 
         if not memorized:
@@ -101,7 +111,9 @@ def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=
             continue  # Skip to the next iteration if the text is not memorized
         else:
             print("Memorized!")
-            print("shape of output.logits: ", outputs.logits.shape)
+            sentence_copies_memorized[num_copies] = True
+            outputs = model(output_tokens)
+            print("shape of output_tokens.logits: ", outputs.logits.shape)
             logits = outputs.logits
             probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
 
@@ -118,9 +130,7 @@ def get_word_probabilities(model, tokenizer, texts, top_p, input_context_length=
 
 
 # Load JSON files and parse them
-# sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,10, 20,20,20,20,20, 30,30,30,30,30])
-# sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1,1,1,1,1])
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [30,30,30,30,30,30,30])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,10, 20,20,20,20,20, 30,30,30,30,30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 # define top_p values
