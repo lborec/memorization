@@ -94,7 +94,6 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             continue
 
         print("\nNew text")
-        print("Num copies: ", num_copies)
 
         text = " " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
@@ -103,24 +102,29 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         with torch.no_grad():
             output_tokens = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0)
 
-        print("length of tokens: ", len(tokens))
-        print("length of output_tokens: ", len(output_tokens.squeeze(0)))
+        # print("length of tokens: ", len(tokens))
+        # print("length of output_tokens: ", len(output_tokens.squeeze(0)))
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], output_tokens.squeeze(0)[:-1])
 
         if not memorized:
             print("Not memorized!")
             continue  # Skip to the next iteration if the text is not memorized
         else:
+            print("Num copies: ", num_copies)
             print("Memorized!")
+            print("shape of output_tokens.logits: ", outputs.logits.shape)
+
             sentence_copies_memorized[num_copies] = True
             outputs = model(output_tokens)
-            print("shape of output_tokens.logits: ", outputs.logits.shape)
             logits = outputs.logits
-            probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
+            probabilities = torch.softmax(logits, dim=-1)#.clamp(min=0, max=1)  # clamp probabilities
 
             word_probabilities = []
 
+            print("shape of output_tokens: ", output_tokens.shape)
             generated_tokens = output_tokens.squeeze(0).tolist()  # Convert to list for easier manipulation
+            print("length of generated_tokens: ", len(generated_tokens))
+
 
             for i, token in enumerate(generated_tokens[:-1]):
                 word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
@@ -134,8 +138,8 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
 
 # Load JSON files and parse them
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,10, 20,20,20,20,20, 30,30,30,30,30])
-sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1,1,1,1,1])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10, 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20, 30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
+sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 # define top_p values
 top_p_values = [0.2, 0.4, 0.6, 0.8]
@@ -150,7 +154,7 @@ for f in sampled_nonduplicate + sampled_duplicates:
     filepath = f["file_path"]
     with open(filepath, "r") as file:
         all_files.append(file.read())
-num_copies_list = [1,1,1,1,1] + [entry["num_copies"] for entry in sampled_duplicates]
+num_copies_list = [1] + [entry["num_copies"] for entry in sampled_duplicates]
 
 # Load the tokenizer
 tokenizer = load_tokenizer()
@@ -168,7 +172,7 @@ for model_name in model_names:
         word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
 
         # Visualize word probabilities
-        visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
+        visualize_word_probabilities(word_probabilities, [10,20,30], output_filename)
 
         # Save word probabilities to a pickle file
         with open(f"{model_name}_word_probabilities_{top_p}.pkl", "wb") as f:
