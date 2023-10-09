@@ -44,7 +44,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         y = [p for _, p in word_probs]
 
         # Compute rolling mean of y-values
-        window = 3
+        window = 1
         weights = np.repeat(1.0, window) / window
         y_smooth = np.convolve(y, weights, 'valid')
 
@@ -98,28 +98,29 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         if not memorized:
             continue
+        else:
+            print(f"Memorized file discovered with {num_copies} num copies.")
+            sentence_copies_memorized[num_copies] = True
+            outputs = model(output_tokens)
+            logits = outputs.logits
+            probabilities = torch.softmax(logits, dim=-1)
 
-        sentence_copies_memorized[num_copies] = True
-        outputs = model(output_tokens)
-        logits = outputs.logits
-        probabilities = torch.softmax(logits, dim=-1)
+            word_probabilities = []
+            generated_tokens = output_tokens.squeeze(0).tolist()
 
-        word_probabilities = []
-        generated_tokens = output_tokens.squeeze(0).tolist()
+            for i, token in enumerate(generated_tokens[:-1]):
+                word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
 
-        for i, token in enumerate(generated_tokens[:-1]):
-            word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
-
-        all_word_probabilities.append(word_probabilities)
-        decoded_sentences.append(tokenizer.decode(tokens))
+            all_word_probabilities.append(word_probabilities)
+            decoded_sentences.append(tokenizer.decode(tokens))
 
     return all_word_probabilities, decoded_sentences
 
 
 
 # Load JSON files and parse them
-# sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [15,15,15,15,15,15,15,15,15,15,15,15,15,15,15, 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20, 30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [15,15,15,15,15,15,15,15,15,15,15,15,15,15,15, 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20, 30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
+# sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 # define top_p values
@@ -153,7 +154,7 @@ for model_name in model_names:
         word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
 
         # Visualize word probabilities
-        visualize_word_probabilities(word_probabilities, [10,20,30], output_filename)
+        visualize_word_probabilities(word_probabilities, [15,20,30], output_filename)
 
         # Save word probabilities to a pickle file
         with open(f"{model_name}_word_probabilities_{top_p}.pkl", "wb") as f:
