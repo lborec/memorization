@@ -135,7 +135,7 @@ for model_name in model_names:
         tokenizer = load_tokenizer()
 
         # Get word probabilities and decoded sentences for all files
-        word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files)
+        word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, top_p)
 
         # Visualize word probabilities
         visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
