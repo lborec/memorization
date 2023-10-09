@@ -112,10 +112,11 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         else:
             print("Num copies: ", num_copies)
             print("Memorized!")
+
+            outputs = model(output_tokens)
             print("shape of output_tokens.logits: ", outputs.logits.shape)
 
             sentence_copies_memorized[num_copies] = True
-            outputs = model(output_tokens)
             logits = outputs.logits
             probabilities = torch.softmax(logits, dim=-1)#.clamp(min=0, max=1)  # clamp probabilities
 
@@ -138,7 +139,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
 
 # Load JSON files and parse them
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10, 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20, 30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [15,15,15,15,15,15,15,15,15,15,15,15,15,15,15, 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20, 30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 # define top_p values
