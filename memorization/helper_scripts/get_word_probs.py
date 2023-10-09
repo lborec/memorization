@@ -92,7 +92,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         input_ids = torch.tensor([tokens[:input_context_length]])
 
         with torch.no_grad():
-            output_tokens = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0)
+            output_tokens = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], output_tokens.squeeze(0)[:-1])
 
@@ -101,7 +101,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         else:
             transition_scores = model.compute_transition_scores(output_tokens.sequences, output_tokens.scores, normalize_logits=True)
             print(transition_scores)
-            
+
             print(f"Memorized file discovered with {num_copies} num copies.")
             sentence_copies_memorized[num_copies] = True
             logits = model(output_tokens).logits # (batch_size, sequence_length, config.vocab_size)
