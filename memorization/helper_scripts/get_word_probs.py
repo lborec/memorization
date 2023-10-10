@@ -87,7 +87,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         if sentence_copies_memorized[num_copies]:
             continue
 
-        text = " " + text
+        text = "<|endoftext|> " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
         input_ids = torch.tensor([tokens[:input_context_length]])
 
@@ -110,20 +110,20 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             print(transition_scores)
 
             print(f"Memorized file discovered with {num_copies} num copies.")
-            sentence_copies_memorized[num_copies] = True
-            logits = model(outputs).logits # (batch_size, sequence_length, config.vocab_size)
-            probabilities = torch.softmax(logits, dim=-1) #
+            # sentence_copies_memorized[num_copies] = True
+            # logits = model(outputs).logits # (batch_size, sequence_length, config.vocab_size)
+            # probabilities = torch.softmax(logits, dim=-1) #
+            #
+            # word_probabilities = []
+            # generated_tokens = outputs.squeeze(0).tolist()
+            #
+            # for i, token in enumerate(generated_tokens[:-1]):
+            #     word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
 
-            word_probabilities = []
-            generated_tokens = outputs.squeeze(0).tolist()
+            # all_word_probabilities.append(word_probabilities)
+            # decoded_sentences.append(tokenizer.decode(tokens))
 
-            for i, token in enumerate(generated_tokens[:-1]):
-                word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
-
-            all_word_probabilities.append(word_probabilities)
-            decoded_sentences.append(tokenizer.decode(tokens))
-
-    return all_word_probabilities, decoded_sentences
+    # return all_word_probabilities, decoded_sentences
 
 
 
