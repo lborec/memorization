@@ -100,7 +100,8 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             continue
         else:
             transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
-            generated_tokens = outputs.sequences[:, outputs:]
+            input_length = 1 if model.config.is_encoder_decoder else input_context_length
+            generated_tokens = outputs.sequences[:, input_length:]
 
             for tok, score in zip(generated_tokens[0], transition_scores[0]):
                 # | token | token string | logits | probability
