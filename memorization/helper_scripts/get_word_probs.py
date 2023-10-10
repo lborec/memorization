@@ -96,20 +96,20 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
-        if not memorized:
-            continue
-        else:
-            transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
-            input_length = 1 if model.config.is_encoder_decoder else input_context_length
-            generated_tokens = outputs.sequences[:, input_length:]
+        # if not memorized:
+        #     continue
+        # else:
+        transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
+        input_length = 1 if model.config.is_encoder_decoder else input_context_length
+        generated_tokens = outputs.sequences[:, input_length:]
 
-            for tok, score in zip(generated_tokens[0], transition_scores[0]):
-                # | token | token string | logits | probability
-                print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
+        for tok, score in zip(generated_tokens[0], transition_scores[0]):
+            # | token | token string | logits | probability
+            print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
-            print(transition_scores)
+        print(transition_scores)
 
-            print(f"Memorized file discovered with {num_copies} num copies.")
+        print(f"Memorized file discovered with {num_copies} num copies.")
             # sentence_copies_memorized[num_copies] = True
             # logits = model(outputs).logits # (batch_size, sequence_length, config.vocab_size)
             # probabilities = torch.softmax(logits, dim=-1) #
