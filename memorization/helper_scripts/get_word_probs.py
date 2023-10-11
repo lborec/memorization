@@ -73,7 +73,7 @@ def check_if_memorized(gold_tokens, output_tokens):
 
 
 def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=400):
-    sentence_copies_memorized = {1: False, 15: False, 20: False, 30: False}
+    sentence_copies_memorized = {1: False,10:False,  15: False, 20: False, 25:False, 30: False}
 
     vocab = tokenizer.get_vocab()
     vocab = {v: k for k, v in vocab.items()}
@@ -96,20 +96,20 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
-        # if not memorized:
+        if not memorized:
         #     continue
         # else:
-        transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
-        input_length = 1 if model.config.is_encoder_decoder else input_context_length
-        generated_tokens = outputs.sequences[:, input_length:]
+            transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
+            input_length = 1 if model.config.is_encoder_decoder else input_context_length
+            generated_tokens = outputs.sequences[:, input_length:]
 
-        for tok, score in zip(generated_tokens[0], transition_scores[0]):
-            # | token | token string | logits | probability
-            print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
+            for tok, score in zip(generated_tokens[0], transition_scores[0]):
+                # | token | token string | logits | probability
+                print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
-        print(transition_scores)
+            print(transition_scores)
 
-        print(f"Memorized file discovered with {num_copies} num copies.")
+            print(f"Memorized file discovered with {num_copies} num copies.")
             # sentence_copies_memorized[num_copies] = True
             # logits = model(outputs).logits # (batch_size, sequence_length, config.vocab_size)
             # probabilities = torch.softmax(logits, dim=-1) #
@@ -128,13 +128,12 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
 
 # Load JSON files and parse them
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [15,15,15,15,15,15,15,15,15,15,15,15,15,15,15, 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20, 30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15, 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,25,25,25,25,25,25,25,25,25,25,25,25,25,25, 30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
 # sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 # define top_p values
-# top_p_values = [0.2, 0.4, 0.6, 0.8]
-top_p_values = [0.8]
+top_p_values = [0.2, 0.4, 0.6, 0.8]
 
 # define model names
 model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
@@ -164,12 +163,12 @@ for model_name in model_names:
         word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
 
         # Visualize word probabilities
-        visualize_word_probabilities(word_probabilities, [15,20,30], output_filename)
+        visualize_word_probabilities(word_probabilities, [10,15,20,25,30], output_filename)
 
         # Save word probabilities to a pickle file
         with open(f"{model_name}_word_probabilities_{top_p}.pkl", "wb") as f:
             pickle.dump(word_probabilities, f)
 
         # Save decoded sentences to a pickle file
-        with open(f"{model_name}_decoded_sentences_{top_p}.pkl", "wb") as f:
+        with open(f"{model_name}_decoded_sentences_{top_p}_NON_memorized.pkl", "wb") as f:
             pickle.dump(decoded_sentences, f)
