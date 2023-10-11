@@ -109,10 +109,10 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
                 # | token | token string | logits | probability
                 print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
-            print(transition_scores)
+            # print(transition_scores)
 
-            print(f"Memorized file discovered with {num_copies} num copies.")
-            # sentence_copies_memorized[num_copies] = True
+            print(f"Nonmemorized file discovered with {num_copies} num copies.")
+            sentence_copies_memorized[num_copies] = True
             # logits = model(outputs).logits # (batch_size, sequence_length, config.vocab_size)
             # probabilities = torch.softmax(logits, dim=-1) #
             #
