@@ -72,7 +72,9 @@ def check_if_memorized(gold_tokens, output_tokens):
     return torch.equal(gold_tokens, output_tokens)
 
 
-def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=400):
+def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=250):
+    print("top_p", top_p)
+
     sentence_copies_memorized = {1: False,10:False,  15: False, 20: False, 25:False, 30: False}
 
     vocab = tokenizer.get_vocab()
@@ -163,7 +165,7 @@ for model_name in model_names:
         word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
 
         # Visualize word probabilities
-        visualize_word_probabilities(word_probabilities, [10,15,20,25,30], output_filename)
+        visualize_word_probabilities(word_probabilities, [1,10,15,20,25,30], output_filename)
 
         # Save word probabilities to a pickle file
         with open(f"{model_name}_word_probabilities_{top_p}.pkl", "wb") as f:
