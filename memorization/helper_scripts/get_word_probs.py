@@ -111,7 +111,8 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             # Get logits of the input sequence
             input_outputs = model(input_ids)
             input_logits = input_outputs.logits[0]
-            input_probabilities = torch.softmax(input_logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
+            # input_probabilities = torch.softmax(input_logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
+            input_probabilities = input_logits
             input_generated_tokens = outputs.sequences[:, :input_context_length]
 
             counter = 0
