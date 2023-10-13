@@ -93,7 +93,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         text = "<|endoftext|> " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
         input_ids = torch.tensor([tokens[:input_context_length]])
-
+        import pdb; pdb.set_trace()
         with torch.no_grad():
             outputs = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
 
