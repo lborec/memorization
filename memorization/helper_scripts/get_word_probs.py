@@ -84,10 +84,12 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
     counter = 0
 
     for idx, text in enumerate(texts):
+        # Check if the sentence with this num of copies has already been memorized
+        print("num_copies", copies[idx])
         num_copies = copies[idx]
         if num_copies not in sentence_copies_memorized:
             sentence_copies_memorized[num_copies] = False
-        if [num_copies]:
+        if sentence_copies_memorized[num_copies]:
             continue
 
         text = "<|endoftext|> " + text
@@ -104,6 +106,9 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             print("Sentence is memorized! Counter: ", counter)
 
         if not memorized:
+            print(f"Nonmemorized file discovered with {num_copies} num copies.")
+            sentence_copies_memorized[num_copies] = True
+
             # Get logits of the input sequence
             input_outputs = model(input_ids)
             input_logits = input_outputs.logits[0]
@@ -127,8 +132,6 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
                 probs.append((tok, score.numpy()))
                 print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
-            print(f"Nonmemorized file discovered with {num_copies} num copies.")
-            sentence_copies_memorized[num_copies] = True
             decoded_sentences.append(tokenizer.decode(tokens))
             import pdb; pdb.set_trace()
             all_word_probabilities.append(probs)
