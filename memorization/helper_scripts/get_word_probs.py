@@ -127,10 +127,10 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             # for i, token in enumerate(generated_tokens[:-1]):
             #     word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
 
-            # all_word_probabilities.append(word_probabilities)
-            # decoded_sentences.append(tokenizer.decode(tokens))
+            all_word_probabilities.append(np.exp(score.numpy()))
+            decoded_sentences.append(tokenizer.decode(tokens))
 
-    # return all_word_probabilities, decoded_sentences
+    return all_word_probabilities, decoded_sentences
 
 
 
