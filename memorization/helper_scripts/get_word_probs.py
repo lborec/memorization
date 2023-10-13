@@ -104,12 +104,24 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             print("Sentence is memorized! Counter: ", counter)
 
         if not memorized:
+            # Get logits of the input sequence
+            input_outputs = model(input_ids)
+            input_logits = input_outputs.logits[0]
+            input_probabilities = torch.softmax(input_logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
+            input_generated_tokens = outputs.sequences[:, :input_context_length]
+
             counter = 0
             transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
             input_length = 1 if model.config.is_encoder_decoder else input_context_length
             generated_tokens = outputs.sequences[:, input_length:]
 
             probs = []
+
+            for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
+                # | token | token string | logits | probability
+                probs.append((tok, score.numpy()))
+                print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
+
             for tok, score in zip(generated_tokens[0], transition_scores[0]):
                 # | token | token string | logits | probability
                 probs.append((tok, score.numpy()))
