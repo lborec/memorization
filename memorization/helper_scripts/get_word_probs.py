@@ -74,7 +74,7 @@ def check_if_memorized(gold_tokens, output_tokens):
 
 def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=250):
     print("top_p", top_p)
-    
+    sentence_copies_memorized = {}
     vocab = tokenizer.get_vocab()
     vocab = {v: k for k, v in vocab.items()}
     model.config.pad_token_id = tokenizer.pad_token_id
