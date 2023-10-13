@@ -84,6 +84,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
     all_word_probabilities = []
     decoded_sentences = []
     counter = 0
+
     for idx, text in enumerate(texts):
         num_copies = copies[idx]
         if sentence_copies_memorized[num_copies]:
@@ -104,31 +105,20 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         if not memorized:
             counter = 0
-        #     continue
-        # else:
             transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
             input_length = 1 if model.config.is_encoder_decoder else input_context_length
             generated_tokens = outputs.sequences[:, input_length:]
 
+            probs = []
             for tok, score in zip(generated_tokens[0], transition_scores[0]):
                 # | token | token string | logits | probability
+                probs.append((tok, score.numpy()))
                 print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
-
-            # print(transition_scores)
 
             print(f"Nonmemorized file discovered with {num_copies} num copies.")
             sentence_copies_memorized[num_copies] = True
-            # logits = model(outputs).logits # (batch_size, sequence_length, config.vocab_size)
-            # probabilities = torch.softmax(logits, dim=-1) #
-            #
-            # word_probabilities = []
-            # generated_tokens = outputs.squeeze(0).tolist()
-            #
-            # for i, token in enumerate(generated_tokens[:-1]):
-            #     word_probabilities.append((vocab[token], probabilities[0, i, token].item()))
-
-            all_word_probabilities.append(np.exp(score.numpy()))
             decoded_sentences.append(tokenizer.decode(tokens))
+            all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
 
