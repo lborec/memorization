@@ -130,7 +130,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             print(f"Nonmemorized file discovered with {num_copies} num copies.")
             sentence_copies_memorized[num_copies] = True
             decoded_sentences.append(tokenizer.decode(tokens))
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
