@@ -44,7 +44,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         y = [p for _, p in word_probs]
 
         # Compute rolling mean of y-values
-        window = 3
+        window = 10
         weights = np.repeat(1.0, window) / window
         y_smooth = np.convolve(y, weights, 'valid')
 
@@ -123,7 +123,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
             for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
                 # | token | token string | logits | probability
-                probs.append((tok, np.exp(score.detach().numpy())))
+                probs.append((tok, score))
                 # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
 
             for tok, score in zip(generated_tokens[0], transition_scores[0]):
