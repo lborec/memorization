@@ -85,7 +85,6 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
     for idx, text in enumerate(texts):
         # Check if the sentence with this num of copies has already been memorized
-        print("num_copies", copies[idx])
         num_copies = copies[idx]
         if num_copies not in sentence_copies_memorized:
             sentence_copies_memorized[num_copies] = False
@@ -125,12 +124,12 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
                 # | token | token string | logits | probability
                 probs.append((tok, np.exp(score.detach().numpy())))
-                print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
+                # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
 
             for tok, score in zip(generated_tokens[0], transition_scores[0]):
                 # | token | token string | logits | probability
                 probs.append((tok, np.exp(score.numpy())))
-                print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
+                # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
             decoded_sentences.append(tokenizer.decode(tokens))
             # import pdb; pdb.set_trace()
@@ -178,7 +177,7 @@ for model_name in model_names:
         word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
 
         # Visualize word probabilities
-        visualize_word_probabilities(word_probabilities, [5,15,25], output_filename)
+        visualize_word_probabilities(word_probabilities, [1,5,15,25], output_filename)
 
         # Save word probabilities to a pickle file
         with open(f"{model_name}_word_probabilities_{top_p}.pkl", "wb") as f:
