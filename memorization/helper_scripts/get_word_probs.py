@@ -83,7 +83,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
     all_word_probabilities = []
     decoded_sentences = []
-
+    counter = 0
     for idx, text in enumerate(texts):
         num_copies = copies[idx]
         if sentence_copies_memorized[num_copies]:
@@ -98,7 +98,12 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
+        if memorized:
+            counter += 1
+            print("Sentence is memorized! Counter: ", counter)
+
         if not memorized:
+            counter = 0
         #     continue
         # else:
             transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
@@ -130,7 +135,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
 
 # Load JSON files and parse them
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15, 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,25,25,25,25,25,25,25,25,25,25,25,25,25,25, 30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10,10,10,10,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15, 20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25 30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
 # sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
