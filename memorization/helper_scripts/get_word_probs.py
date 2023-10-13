@@ -87,7 +87,9 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
     for idx, text in enumerate(texts):
         num_copies = copies[idx]
-        if sentence_copies_memorized[num_copies]:
+        if num_copies not in sentence_copies_memorized:
+            sentence_copies_memorized[num_copies] = 0
+        if [num_copies]:
             continue
 
         text = "<|endoftext|> " + text
