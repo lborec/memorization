@@ -133,7 +133,6 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
                 # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
             # test sth new
-            import pdb; pdb.set_trace()
             tokens = tokens[:len(probs)]
             decoded_sentences.append(tokenizer.decode(tokens))
             # import pdb; pdb.set_trace()
@@ -181,6 +180,7 @@ for model_name in model_names:
         word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
 
         # Visualize word probabilities
+        import pdb; pdb.set_trace()
         visualize_word_probabilities(word_probabilities, [1,5,15,25], output_filename)
 
         # Save word probabilities to a pickle file
