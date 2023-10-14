@@ -190,7 +190,7 @@ for model_name in model_names:
 
         # Visualize word probabilities
         # import pdb; pdb.set_trace()
-        visualize_word_probabilities(word_probabilities, [1,5], output_filename)
+        visualize_word_probabilities(word_probabilities, [1,5,15], output_filename)
 
         # Save word probabilities to a pickle file
         with open(f"{model_name}_word_probabilities_{top_p}.pkl", "wb") as f:
