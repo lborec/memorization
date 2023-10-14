@@ -41,7 +41,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         if not word_probs:  # Skip empty lists
             continue
         x = list(range(1, len(word_probs) + 1))
-        y = [p for _, p in word_probs]
+        y = word_probs
 
         # Compute rolling mean of y-values
         window = 10
@@ -128,9 +128,9 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
                 # | token | token string | logits | probability
                 probs.append(np.exp(score.detach().numpy()))
-                print("np.exp", np.exp(score.detach().numpy()))
-                print("score item", score.item())
-                print()
+                # print("np.exp", np.exp(score.detach().numpy()))
+                # print("score item", score.item())
+                # print()
                 # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
 
             for tok, score in zip(generated_tokens[0], transition_scores[0]):
@@ -142,6 +142,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             tokens = tokens[:len(probs)]
             decoded_sentences.append(tokenizer.decode(tokens))
             # import pdb; pdb.set_trace()
+            print("top10:", sorted(probs, reverse=True)[:10])
             all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
