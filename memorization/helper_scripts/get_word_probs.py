@@ -110,7 +110,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             counter += 1
             print("Sentence is memorized! Counter: ", counter)
 
-        if not memorized:
+        else:
             # reset the counter
             counter = 0
             print(f"Nonmemorized file discovered with {num_copies} num copies.")
