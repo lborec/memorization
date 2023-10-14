@@ -141,7 +141,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             # test sth new
             tokens = tokens[:len(probs)]
             decoded_sentences.append(tokenizer.decode(tokens))
-            # import pdb; pdb.set_trace()
+            import pdb; pdb.set_trace()
             all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
