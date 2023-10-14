@@ -100,7 +100,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         with torch.no_grad():
             outputs = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             input_outputs = model(input_ids)
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
@@ -118,20 +118,23 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             sentence_copies_memorized[num_copies] = True
 
             # Get logits of the input sequence
-            input_logits = input_outputs.logits[0]
-            input_probabilities = input_logits
-            input_generated_tokens = outputs.sequences[:, :input_context_length]
+            logits = input_outputs.logits[0]
+            probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)
+
+            # input_generated_tokens = outputs.sequences[:, :input_context_length]
 
             # Get logits of the generated sequence
             transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
             input_length = 1 if model.config.is_encoder_decoder else input_context_length
             generated_tokens = outputs.sequences[:, input_length:]
 
-            # Get probabilities of the input sequence
-            for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
-                # | token | token string | logits | probability
-                probs.append(np.exp(score.detach().numpy()))
-                # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
+            # # Get probabilities of the input sequence
+            for i, token in enumerate(tokens[:input_context_length]):
+                probs.append(probabilities[i,token])
+            # for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
+            #     # | token | token string | logits | probability
+            #     probs.append(np.exp(score.detach().numpy()))
+            #     # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
 
             # Get probabilities of the generated sequence
             for tok, score in zip(generated_tokens[0], transition_scores[0]):
