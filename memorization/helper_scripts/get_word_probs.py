@@ -136,7 +136,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
                 # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
             decoded_sentences.append(tokenizer.decode(tokens))
-            print("top10:", sorted(probs, reverse=True)[:25])
+            probs = [ 1 if p > 1 else p for p in probs]
             all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
