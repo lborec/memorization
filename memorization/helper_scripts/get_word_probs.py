@@ -87,6 +87,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
     counter = 0
 
     for idx, text in enumerate(texts):
+        print(text[:100])
         # Check if the sentence with this num of copies has already been memorized
         num_copies = copies[idx]
         if num_copies not in sentence_copies_memorized:
@@ -100,6 +101,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         with torch.no_grad():
             outputs = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
+            # import pdb; pdb.set_trace()
             input_outputs = model(input_ids)
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
