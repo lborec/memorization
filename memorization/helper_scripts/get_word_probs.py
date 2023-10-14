@@ -180,7 +180,7 @@ for model_name in model_names:
         word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
 
         # Visualize word probabilities
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         visualize_word_probabilities(word_probabilities, [1,5,15,25], output_filename)
 
         # Save word probabilities to a pickle file
