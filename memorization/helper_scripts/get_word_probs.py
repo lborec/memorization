@@ -130,7 +130,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
             # # Get probabilities of the input sequence
             for i, token in enumerate(tokens[:input_context_length]):
-                probs.append(probabilities[i,token])
+                probs.append(probabilities[i,token].item())
             # for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
             #     # | token | token string | logits | probability
             #     probs.append(np.exp(score.detach().numpy()))
