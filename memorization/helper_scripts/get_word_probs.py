@@ -40,7 +40,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     for i, word_probs in enumerate(word_probabilities):
         if not word_probs:  # Skip empty lists
             continue
-        x = list(range(1, len(word_probs) + 1))  # original x values
+        x = list(range(1, len(word_probs) + 1))
         y = [p for _, p in word_probs]
 
         # Compute rolling mean of y-values
@@ -49,7 +49,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         y_smooth = np.convolve(y, weights, 'valid')
 
         # Adjust x-values to match smoothed y-values
-        x_smooth = x[window // 2 : len(x) - (window // 2)]  # adjusted slicing here
+        x_smooth = x[(window // 2) - 1: -(window // 2) -1]  # Corrected here
 
         # Plot the smoothed line
         ax.plot(x_smooth, y_smooth, label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
@@ -69,6 +69,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     plt.close(fig)
 
     return
+
 
 def check_if_memorized(gold_tokens, output_tokens):
     return torch.equal(gold_tokens, output_tokens)
