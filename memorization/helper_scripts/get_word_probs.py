@@ -133,6 +133,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
                 # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
             # test sth new
+            import pdb; pdb.set_trace()
             tokens = tokens[:len(probs)]
             decoded_sentences.append(tokenizer.decode(tokens))
             # import pdb; pdb.set_trace()
