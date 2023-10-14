@@ -103,6 +103,8 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
+        probs = []
+
         if memorized:
             counter += 1
             print("Sentence is memorized! Counter: ", counter)
@@ -123,14 +125,9 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             input_length = 1 if model.config.is_encoder_decoder else input_context_length
             generated_tokens = outputs.sequences[:, input_length:]
 
-            probs = []
-
             for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
                 # | token | token string | logits | probability
                 probs.append(np.exp(score.detach().numpy()))
-                # print("np.exp", np.exp(score.detach().numpy()))
-                # print("score item", score.item())
-                # print()
                 # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
 
             for tok, score in zip(generated_tokens[0], transition_scores[0]):
@@ -138,11 +135,8 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
                 probs.append(np.exp(score.numpy()))
                 # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
-            # test sth new
-            tokens = tokens[:len(probs)]
             decoded_sentences.append(tokenizer.decode(tokens))
-            # import pdb; pdb.set_trace()
-            print("top10:", sorted(probs, reverse=True)[:10])
+            print("top10:", sorted(probs, reverse=True)[:25])
             all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
