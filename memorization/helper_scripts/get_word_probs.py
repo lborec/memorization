@@ -127,7 +127,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
             for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
                 # | token | token string | logits | probability
-                probs.append((tok, np.exp(score.detach().numpy())))
+                probs.append(np.exp(score.detach().numpy()))
                 print("np.exp", np.exp(score.detach().numpy()))
                 print("score item", score.item())
                 print()
@@ -135,13 +135,13 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
             for tok, score in zip(generated_tokens[0], transition_scores[0]):
                 # | token | token string | logits | probability
-                probs.append((tok, np.exp(score.numpy())))
+                probs.append(np.exp(score.numpy()))
                 # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
             # test sth new
             tokens = tokens[:len(probs)]
             decoded_sentences.append(tokenizer.decode(tokens))
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
