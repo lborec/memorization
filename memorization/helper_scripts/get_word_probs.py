@@ -40,7 +40,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     for i, word_probs in enumerate(word_probabilities):
         if not word_probs:  # Skip empty lists
             continue
-        x = list(range(1, len(word_probs)))
+        x = list(range(1, len(word_probs),1))
         y = [p for _, p in word_probs]
 
         # Compute rolling mean of y-values
@@ -133,7 +133,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
                 # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
 
             # test sth new
-            tokens = tokens[:len(probs)-1]
+            tokens = tokens[:len(probs)]
             decoded_sentences.append(tokenizer.decode(tokens))
             # import pdb; pdb.set_trace()
             all_word_probabilities.append(probs)
