@@ -40,7 +40,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     for i, word_probs in enumerate(word_probabilities):
         if not word_probs:  # Skip empty lists
             continue
-        x = list(range(1, len(word_probs) + 1))
+        x = list(range(1, len(word_probs)))
         y = [p for _, p in word_probs]
 
         # Compute rolling mean of y-values
