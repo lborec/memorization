@@ -49,7 +49,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         y_smooth = np.convolve(y, weights, 'valid')
 
         # Adjust x-values to match smoothed y-values
-        x_smooth = x[window // 2:-(window // 2) or None]
+        x_smooth = x[(window // 2) - 1:-(window // 2)]
 
         # Plot the smoothed line
         ax.plot(x_smooth, y_smooth, label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
