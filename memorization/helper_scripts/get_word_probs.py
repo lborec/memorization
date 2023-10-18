@@ -157,12 +157,10 @@ sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/dup
 sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
 
 # define top_p values
-# top_p_values = [0.2, 0.4, 0.6, 0.8]
-top_p_values = [0.8]
+top_p_values = [0.2, 0.4, 0.6, 0.8]
 
 # define model names
-# model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
-model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s"]
+model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
 
 all_files = []
 
