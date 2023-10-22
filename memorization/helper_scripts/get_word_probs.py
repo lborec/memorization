@@ -109,21 +109,26 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             print(f"Nonmemorized file discovered with {num_copies} num copies.")
             sentence_copies_memorized[num_copies] = True
 
-        # Get logits for the input sequence
-        input_logits = model(input_ids)[0]
+        # Forward pass to get logits for input sequence
+        input_logits = model(input_ids).logits
+
+        # Get probabilities from logits for input
         input_probs = torch.softmax(input_logits, dim=-1)
         input_actual_probs = [input_probs[0, i, token].item() for i, token in enumerate(input_ids[0])]
 
-        # Get logits for the generated sequence
-        output_ids = outputs.sequences.squeeze(0)
-        output_logits = model(output_ids.unsqueeze(0))[0]
-        output_probs = torch.softmax(output_logits, dim=-1)
-        output_actual_probs = [output_probs[0, i, token].item() for i, token in enumerate(output_ids)]
+        # Forward pass to get logits for generated sequence
+        output_logits = model(outputs.sequences).logits
 
-        # Combine the probabilities
+        # Since the generated sequence also contains the input, we slice it to get only the output part
+        output_logits = output_logits[:, len(input_ids[0]):]
+
+        # Get probabilities from logits for output
+        output_probs = torch.softmax(output_logits, dim=-1)
+        output_actual_probs = [output_probs[0, i, token].item() for i, token in enumerate(outputs.sequences[0, len(input_ids[0]):])]
+
+        # Combine
         all_actual_probs = input_actual_probs + output_actual_probs
         print(all_actual_probs)
-        all_word_probabilities.append(all_actual_probs)
 
         decoded_sentences.append(tokenizer.decode(tokens))
 
