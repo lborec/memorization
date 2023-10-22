@@ -135,12 +135,12 @@ model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350
 all_files = []
 
 # Load file content from the parsed JSON files
-for f in sampled_nonduplicate + sampled_duplicates:
-    filepath = f["file_path"]
-    with open(filepath, "r") as file:
-        all_files.append(file.read())
-num_copies_list = [1] + [entry["num_copies"] for entry in sampled_duplicates]
-
+# for f in sampled_nonduplicate + sampled_duplicates:
+#     filepath = f["file_path"]
+#     with open(filepath, "r") as file:
+#         all_files.append(file.read())
+# num_copies_list = [1] + [entry["num_copies"] for entry in sampled_duplicates]
+num_copies_list = [30]
 # Load the tokenizer
 tokenizer = load_tokenizer()
 
