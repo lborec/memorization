@@ -114,8 +114,8 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             softmaxed_logits = torch.softmax(all_token_logits, dim=-1)
             all_tokens = all_tokens.numpy()[0]
             probs = [softmaxed_logits[0][i-1][t].item() for i, t in list(enumerate(all_tokens))[:-1]]
-            import pdb; pdb.set_trace()
-            all_word_probabilities.append(probs)
+            # import pdb; pdb.set_trace()
+            all_word_probabilities.append(probs[1:])
 
     return all_word_probabilities, decoded_sentences
 

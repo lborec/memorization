@@ -24,7 +24,7 @@ def visualize_side_by_side(pickle_dir):
             for fname in os.listdir(pickle_dir):
                 if re.fullmatch(pattern, fname):
                     with open(os.path.join(pickle_dir, fname), 'rb') as f:
-                        import pdb; pdb.set_trace()
+                        # import pdb; pdb.set_trace()
                         word_probabilities = pickle.load(f)
                         num_copies_list = [1,5,15,25]
 
