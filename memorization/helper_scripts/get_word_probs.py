@@ -94,7 +94,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         if sentence_copies_done[num_copies]:
             continue
 
-        # text = "<|endoftext|> " + text
+        text = "<|endoftext|> " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
         input_ids = torch.tensor([tokens[:input_context_length]])
 
