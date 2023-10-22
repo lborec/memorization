@@ -78,8 +78,6 @@ def check_if_memorized(gold_tokens, output_tokens):
 def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=250):
     print("top_p", top_p)
     sentence_copies_done = {}
-    vocab = tokenizer.get_vocab()
-    vocab = {v: k for k, v in vocab.items()}
     model.config.pad_token_id = tokenizer.pad_token_id
 
     all_word_probabilities = []
@@ -108,12 +106,13 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             print("Sentence is memorized! Counter: ", counter)
         else:
             sentence_copies_done[num_copies] = True
-            print("Sentence is not memorized!")
+            print(f"Sentence with {num_copies} copies is not memorized!")
             all_tokens = outputs['sequences']
             all_token_logits = model(all_tokens)['logits']
             softmaxed_logits = torch.softmax(all_token_logits, dim=-1)
             all_tokens = all_tokens.numpy()[0]
             probs = [softmaxed_logits[0][i][t].item() for i, t in enumerate(all_tokens)]
+            import pdb; pdb.set_trace()
             all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
