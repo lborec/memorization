@@ -49,7 +49,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         y_smooth = np.convolve(y, weights, 'valid')
 
         # Adjust x-values to match smoothed y-values
-        x_smooth = x[(window // 2) - 1: -(window // 2) -1]  # Corrected here
+        x_smooth = x[(window // 2) - 1: -(window // 2) -1]
 
         # Plot the smoothed line
         ax.plot(x_smooth, y_smooth[:-1], label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
@@ -79,7 +79,6 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
     print("top_p", top_p)
     sentence_copies_memorized = {}
     vocab = tokenizer.get_vocab()
-    vocab = {v: k for k, v in vocab.items()}
     model.config.pad_token_id = tokenizer.pad_token_id
 
     all_word_probabilities = []
@@ -100,7 +99,6 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         with torch.no_grad():
             outputs = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
-            # import pdb; pdb.set_trace()
             input_outputs = model(input_ids)
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
@@ -120,31 +118,44 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             # Get logits of the input sequence
             logits = input_outputs.logits[0]
             # probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)
-            probabilities = logits
-
-            # input_generated_tokens = outputs.sequences[:, :input_context_length]
 
             # Get logits of the generated sequence
             transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
             input_length = 1 if model.config.is_encoder_decoder else input_context_length
             generated_tokens = outputs.sequences[:, input_length:]
 
-            # # Get probabilities of the input sequence
-            for i, token in enumerate(tokens[:input_context_length]):
-                probs.append(np.exp(probabilities[i,token].item()))
-            # for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
+            # # # Get probabilities of the input sequence
+            # for i, token in enumerate(tokens[:input_context_length]):
+            #     probs.append(np.exp(logits[i,token].item()))
+            # # for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
+            # #     # | token | token string | logits | probability
+            # #     probs.append(np.exp(score.detach().numpy()))
+            # #     # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
+            #
+            # # Get probabilities of the generated sequence
+            # for tok, score in zip(generated_tokens[0], transition_scores[0]):
             #     # | token | token string | logits | probability
-            #     probs.append(np.exp(score.detach().numpy()))
-            #     # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
+            #     probs.append(np.exp(score.numpy()))
+            #     # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
+            #
+            # decoded_sentences.append(tokenizer.decode(tokens))
+            # probs = [ 1 if p > 1 else p for p in probs]
+            # all_word_probabilities.append(probs)
 
-            # Get probabilities of the generated sequence
-            for tok, score in zip(generated_tokens[0], transition_scores[0]):
-                # | token | token string | logits | probability
-                probs.append(np.exp(score.numpy()))
-                # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
+            # For input tokens
+            logits_input = input_outputs.logits[0]
+            softmaxed_input = torch.softmax(logits_input, dim=-1)
+            probs_input = [softmaxed_input[i, token].item() for i, token in enumerate(tokens[:input_context_length])]
 
-            decoded_sentences.append(tokenizer.decode(tokens))
-            probs = [ 1 if p > 1 else p for p in probs]
+            # For generated tokens
+            logits_output = [score for score in transition_scores[0]]
+            softmaxed_output = torch.softmax(torch.tensor(logits_output), dim=-1)
+            probs_output = softmaxed_output.numpy().tolist()
+
+            # Combine them
+            probs = probs_input + probs_output
+            probs = [min(1, max(0, p)) for p in probs]  # Clamp between 0 and 1
+
             all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
