@@ -122,7 +122,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         for i, logit in enumerate(all_logits):
             softmaxed_logit = torch.softmax(logit, dim=-1)
             token = all_tokens[i]
-            prob = softmaxed_logit[0, token].item()
+            prob = softmaxed_logit[token].item()  # Changed from softmaxed_logit[0, token].item()
             actual_probs.append(prob)
 
         # Clamp and save probabilities
