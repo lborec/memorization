@@ -101,8 +101,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         with torch.no_grad():
             import pdb; pdb.set_trace()
             outputs = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
-            # import pdb; pdb.set_trace()
-            input_outputs = model(input_ids)
+
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
@@ -111,41 +110,46 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         if memorized:
             counter += 1
             print("Sentence is memorized! Counter: ", counter)
-
         else:
-            # reset the counter
-            counter = 0
-            print(f"Nonmemorized file discovered with {num_copies} num copies.")
-            sentence_copies_memorized[num_copies] = True
-
-            # Get logits of the input sequence
-            logits = input_outputs.logits[0]
-            # probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)
-            probabilities = logits
-
-            # input_generated_tokens = outputs.sequences[:, :input_context_length]
-
-            # Get logits of the generated sequence
-            transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
-            input_length = 1 if model.config.is_encoder_decoder else input_context_length
-            generated_tokens = outputs.sequences[:, input_length:]
-
-            # # Get probabilities of the input sequence
-            for i, token in enumerate(tokens[:input_context_length]):
-                probs.append(np.exp(probabilities[i,token].item()))
-            # for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
-            #     # | token | token string | logits | probability
-            #     probs.append(np.exp(score.detach().numpy()))
-            #     # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
-
-            # Get probabilities of the generated sequence
-            for tok, score in zip(generated_tokens[0], transition_scores[0]):
-                # | token | token string | logits | probability
-                probs.append(np.exp(score.numpy()))
-                # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
-
-            decoded_sentences.append(tokenizer.decode(tokens))
-            probs = [ 1 if p > 1 else p for p in probs]
+            all_tokens = outputs['sequences']
+            all_token_logits = model(all_tokens)['logits']
+            softmaxed_logits = torch.softmax(all_token_logits, dim=-1).squeeze(0)
+            probs = [softmaxed_logits[i][t] for i, t in enumerate(tokens.squeeze(0))]
+            import pdb;pdb.set_trace()
+        # else:
+        #     # reset the counter
+        #     counter = 0
+        #     print(f"Nonmemorized file discovered with {num_copies} num copies.")
+        #     sentence_copies_memorized[num_copies] = True
+        #
+        #     # Get logits of the input sequence
+        #     logits = input_outputs.logits[0]
+        #     # probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)
+        #     probabilities = logits
+        #
+        #     # input_generated_tokens = outputs.sequences[:, :input_context_length]
+        #
+        #     # Get logits of the generated sequence
+        #     transition_scores = model.compute_transition_scores(outputs.sequences, outputs.scores, normalize_logits=True)
+        #     input_length = 1 if model.config.is_encoder_decoder else input_context_length
+        #     generated_tokens = outputs.sequences[:, input_length:]
+        #
+        #     # # Get probabilities of the input sequence
+        #     for i, token in enumerate(tokens[:input_context_length]):
+        #         probs.append(np.exp(probabilities[i,token].item()))
+        #     # for tok, score in zip(input_generated_tokens[0], input_probabilities[0]):
+        #     #     # | token | token string | logits | probability
+        #     #     probs.append(np.exp(score.detach().numpy()))
+        #     #     # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.detach().numpy():.3f} | {np.exp(score.detach().numpy()):.2%}")
+        #
+        #     # Get probabilities of the generated sequence
+        #     for tok, score in zip(generated_tokens[0], transition_scores[0]):
+        #         # | token | token string | logits | probability
+        #         probs.append(np.exp(score.numpy()))
+        #         # print(f"| {tok:5d} | {tokenizer.decode(tok):8s} | {score.numpy():.3f} | {np.exp(score.numpy()):.2%}")
+        #
+        #     decoded_sentences.append(tokenizer.decode(tokens))
+        #     probs = [ 1 if p > 1 else p for p in probs]
             all_word_probabilities.append(probs)
 
     return all_word_probabilities, decoded_sentences
