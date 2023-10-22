@@ -110,10 +110,11 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             print("Sentence is memorized! Counter: ", counter)
         else:
             all_tokens = outputs['sequences']
+            import pdb;pdb.set_trace()
             all_token_logits = model(all_tokens)['logits']
             softmaxed_logits = torch.softmax(all_token_logits, dim=-1)
             probs = [softmaxed_logits[0][i][t].item() for i, t in enumerate(all_tokens)]
-            import pdb;pdb.set_trace()
+
         # else:
         #     # reset the counter
         #     counter = 0
