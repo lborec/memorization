@@ -122,6 +122,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         # Combine the probabilities
         all_actual_probs = input_actual_probs + output_actual_probs
+        print(all_actual_probs)
         all_word_probabilities.append(all_actual_probs)
 
         decoded_sentences.append(tokenizer.decode(tokens))
