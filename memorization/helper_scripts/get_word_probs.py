@@ -125,7 +125,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 # sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [5,5,5,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25])#25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25])
 sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
 # sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
-
+sampled_nonduplicate=[]
 # define top_p values
 top_p_values = [0.2, 0.4, 0.6, 0.8]
 
@@ -135,10 +135,10 @@ model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350
 all_files = []
 
 # Load file content from the parsed JSON files
-# for f in sampled_nonduplicate + sampled_duplicates:
-#     filepath = f["file_path"]
-#     with open(filepath, "r") as file:
-#         all_files.append(file.read())
+for f in sampled_nonduplicate + sampled_duplicates:
+    filepath = f["file_path"]
+    with open(filepath, "r") as file:
+        all_files.append(file.read())
 # num_copies_list = [1] + [entry["num_copies"] for entry in sampled_duplicates]
 num_copies_list = [30]
 # Load the tokenizer
