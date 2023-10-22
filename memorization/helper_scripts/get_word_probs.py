@@ -77,7 +77,7 @@ def check_if_memorized(gold_tokens, output_tokens):
 
 def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=250):
     print("top_p", top_p)
-    sentence_copies_memorized = {}
+    sentence_copies_done = {}
     vocab = tokenizer.get_vocab()
     vocab = {v: k for k, v in vocab.items()}
     model.config.pad_token_id = tokenizer.pad_token_id
@@ -89,9 +89,9 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
     for idx, text in enumerate(texts):
         # Check if the sentence with this num of copies has already been memorized
         num_copies = copies[idx]
-        if num_copies not in sentence_copies_memorized:
-            sentence_copies_memorized[num_copies] = False
-        if sentence_copies_memorized[num_copies]:
+        if num_copies not in sentence_copies_done:
+            sentence_copies_done[num_copies] = False
+        if sentence_copies_done[num_copies]:
             continue
 
         text = "<|endoftext|> " + text
@@ -107,16 +107,12 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             counter += 1
             print("Sentence is memorized! Counter: ", counter)
         else:
+            sentence_copies_done[num_copies] = True
             print("Sentence is not memorized!")
-            print("Getting all tokens...")
             all_tokens = outputs['sequences']
-            print("Getting all token logits...")
             all_token_logits = model(all_tokens)['logits']
-            print("Softmaxing all token logits...")
             softmaxed_logits = torch.softmax(all_token_logits, dim=-1)
-            print("Getting all tokens...")
             all_tokens = all_tokens.numpy()[0]
-            print("Getting all token probabilities...")
             probs = [softmaxed_logits[0][i][t].item() for i, t in enumerate(all_tokens)]
             all_word_probabilities.append(probs)
 
