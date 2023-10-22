@@ -99,9 +99,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         input_ids = torch.tensor([tokens[:input_context_length]])
 
         with torch.no_grad():
-            import pdb; pdb.set_trace()
             outputs = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
-
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
@@ -114,7 +112,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             all_tokens = outputs['sequences']
             all_token_logits = model(all_tokens)['logits']
             softmaxed_logits = torch.softmax(all_token_logits, dim=-1).squeeze(0)
-            probs = [softmaxed_logits[i][t] for i, t in enumerate(tokens.squeeze(0))]
+            probs = [softmaxed_logits[i][t] for i, t in enumerate(tokens)]
             import pdb;pdb.set_trace()
         # else:
         #     # reset the counter
