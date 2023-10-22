@@ -103,7 +103,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
-        if memorized or not memorized:
+        if memorized:
             counter += 1
             print("Sentence is memorized! Counter: ", counter)
         else:
