@@ -118,7 +118,12 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         # Extract probabilities corresponding to the actual tokens
         all_tokens = outputs.sequences[0]
-        actual_probs = [softmaxed_logits[i, token].item() for i, token in enumerate(all_tokens)]
+        actual_probs = []
+        for i, logit in enumerate(all_logits):
+            softmaxed_logit = torch.softmax(logit, dim=-1)
+            token = all_tokens[i]
+            prob = softmaxed_logit[0, token].item()
+            actual_probs.append(prob)
 
         # Clamp and save probabilities
         actual_probs = [min(1, max(0, p)) for p in actual_probs]
