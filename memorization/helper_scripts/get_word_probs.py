@@ -113,7 +113,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             all_token_logits = model(all_tokens)['logits']
             softmaxed_logits = torch.softmax(all_token_logits, dim=-1)
             all_tokens = all_tokens.numpy()[0]
-            probs = [softmaxed_logits[0][i][t+1].item() for i, t in enumerate(all_tokens)]
+            probs = [softmaxed_logits[0][i][t-1].item() for i, t in enumerate(all_tokens)[1:]]
             import pdb; pdb.set_trace()
             all_word_probabilities.append(probs)
 
