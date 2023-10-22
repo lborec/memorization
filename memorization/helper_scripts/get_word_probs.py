@@ -77,6 +77,8 @@ def check_if_memorized(gold_tokens, output_tokens):
 
 def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=250):
     print("top_p", top_p)
+    vocab = tokenizer.get_vocab()
+    vocab = {v: k for k, v in vocab.items()}
     sentence_copies_done = {}
     model.config.pad_token_id = tokenizer.pad_token_id
 
@@ -92,7 +94,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         if sentence_copies_done[num_copies]:
             continue
 
-        text = "<|endoftext|> " + text
+        # text = "<|endoftext|> " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
         input_ids = torch.tensor([tokens[:input_context_length]])
 
