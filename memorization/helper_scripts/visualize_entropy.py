@@ -32,10 +32,8 @@ def calculate_entropy(pickle_dir):
                     token_entropies = []
 
                     for token_dist in scores:
-                        entropy = 0
-                        for p in token_dist.numpy()[0]:
-                            if p > 0:
-                                entropy -= p * np.log2(p)
+                        normalized_probs = token_dist.numpy()[0] / np.sum(token_dist.numpy()[0])
+                        entropy = -np.sum(normalized_probs * np.where(normalized_probs != 0, np.log2(normalized_probs), 0))
                         token_entropies.append(entropy)
 
                     average_entropy = sum(token_entropies) / len(token_entropies)
@@ -51,15 +49,13 @@ def calculate_entropy(pickle_dir):
 # Call the function
 df = calculate_entropy("/project/memorization/trained/")
 
-# Plotting
-plt.figure(figsize=(10, 6))
-sns.lineplot(data=df, x='top_p', y='average_entropy', hue='num_copies', style='model_size', markers=True, palette='viridis')
-
-plt.title('Effect of top_p on Average Entropy for Different Number of Copies')
+# Assuming df is your dataframe
+plt.figure(figsize=(12, 8))
+sns.lineplot(data=df, x='top_p', y='average_entropy', hue='num_copies', style='model_size', marker='o', palette='viridis')
+plt.title('Effect of top_p on Average Entropy for Different Number of Copies and Model Sizes')
 plt.xlabel('top_p Value')
 plt.ylabel('Average Entropy')
-plt.legend(title='Number of Copies', loc='upper right')
+plt.legend(title='Legend', loc='upper right')
 plt.grid(True, which='both', linestyle='--', linewidth=0.5)
 plt.tight_layout()
-plt.savefig('entropy.png')
 plt.show()
