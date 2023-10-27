@@ -20,7 +20,7 @@ def calculate_entropy(pickle_dir):
 
     for i, top_p in enumerate(top_p_values):
         for j, model_size in enumerate(model_sizes):
-            pattern = f"gpt-neo-{model_size}.*_word_probabilities_{top_p}.pkl"
+            pattern = f"gpt-neo-{model_size}.*sentence_probabilities_{top_p}.pkl"
             for k, fname in enumerate(sorted(os.listdir(pickle_dir))):
                 if re.fullmatch(pattern, fname):
                     with open(os.path.join(pickle_dir, fname), 'rb') as f:
