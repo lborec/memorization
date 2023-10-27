@@ -8,9 +8,10 @@ import seaborn as sns
 
 epsilon = 1e-10  # small threshold for logs
 
-def softmax(logits):
+def softmax(logits, epsilon=1e-10):
     e_logits = np.exp(logits - np.max(logits)) # Subtract max for numerical stability
-    return e_logits / e_logits.sum(axis=-1, keepdims=True)
+    probs = e_logits / e_logits.sum(axis=-1, keepdims=True)
+    return np.clip(probs, epsilon, 1 - epsilon)
 
 def calculate_entropy(pickle_dir):
     top_p_values = [0.8, 0.6, 0.4, 0.2]
@@ -39,7 +40,7 @@ def calculate_entropy(pickle_dir):
 
                     for token_dist in scores:
                         probs = softmax(token_dist.numpy()[0])
-                        entropy = -np.sum(probs * np.where(probs > epsilon, np.log2(probs), 0))
+                        entropy = -np.sum(probs * np.log2(probs))
                         token_entropies.append(entropy)
 
                     average_entropy = sum(token_entropies) / len(token_entropies)
