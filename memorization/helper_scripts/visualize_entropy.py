@@ -23,7 +23,7 @@ def calculate_entropy(pickle_dir):
             pattern = f"gpt-neo-{model_size}.*sentence_probabilities_{top_p}.pkl"
             matching_files = sorted([f for f in os.listdir(pickle_dir) if re.fullmatch(pattern, f)])
 
-            for k, fname in enumerate(matching_files):  # Now k is the index within the matched files
+            for k, fname in enumerate(matching_files):
                 with open(os.path.join(pickle_dir, fname), 'rb') as f:
                     word_probabilities = pickle.load(f)
 
@@ -38,7 +38,7 @@ def calculate_entropy(pickle_dir):
                         entropy = 0
                         for p in token_dist.numpy()[0]:  # Convert tensor to numpy array for easy iteration
                             if p > 0:
-                                entropy -= p * np.log2(p)
+                                entropy += p * np.log2(p)
                         token_entropies.append(entropy)
 
                     all_entropies.extend(token_entropies)
@@ -47,15 +47,17 @@ def calculate_entropy(pickle_dir):
                     average_entropy = sum(all_entropies) / len(all_entropies)
                     data['model_size'].append(model_size)
                     data['top_p'].append(top_p)
-                    data['num_copies'].append(num_copies_list[k])
+                    data['num_copies'].append(num_copies_list[k])  # Assign num_copies based on the file position
                     data['average_entropy'].append(average_entropy)
-        pd.to_pickle(data, 'entropy.pkl')
-    return print(pd.DataFrame(data))
 
-    # Call the function
+    df = pd.DataFrame(data)
+    df.to_pickle('entropy.pkl')
+    return df
+
 # Call the function
-# df = calculate_entropy("/Users/luka.borec/Downloads/Archive")
 df = calculate_entropy("/project/memorization/trained/")
+print(df.head())
+
 # Plotting
 plt.figure(figsize=(10, 6))
 sns.lineplot(data=df, x='top_p', y='average_entropy', hue='num_copies', marker='o', palette='viridis')
