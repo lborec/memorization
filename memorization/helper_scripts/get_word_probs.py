@@ -75,7 +75,7 @@ def check_if_memorized(gold_tokens, output_tokens):
     return torch.equal(gold_tokens, output_tokens)
 
 
-def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=250):
+def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=250, entropy=False):
     print("top_p", top_p)
     vocab = tokenizer.get_vocab()
     vocab = {v: k for k, v in vocab.items()}
@@ -101,6 +101,9 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
 
         with torch.no_grad():
             outputs = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
+
+        if entropy:
+            import pdb;pdb.set_trace()
 
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
@@ -157,7 +160,7 @@ for model_name in model_names:
         output_filename = f"{model_name}_sentence_probabilities_{top_p}.png"
 
         # Get word probabilities and decoded sentences for all files
-        word_probabilities, decoded_sentences, sentence_probabilities = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
+        word_probabilities, decoded_sentences, sentence_probabilities = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p, entropy=True)
 
         # Visualize word probabilities
         visualize_word_probabilities(word_probabilities, [1,5,15,25], output_filename)
