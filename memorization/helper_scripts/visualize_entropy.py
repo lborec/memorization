@@ -6,6 +6,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+def softmax(logits):
+    e_logits = np.exp(logits - np.max(logits)) # Subtract max for numerical stability
+    return e_logits / e_logits.sum(axis=-1, keepdims=True)
+
 def calculate_entropy(pickle_dir):
     top_p_values = [0.8, 0.6, 0.4, 0.2]
     model_sizes = ['125M', '350M']
@@ -32,14 +37,9 @@ def calculate_entropy(pickle_dir):
                     token_entropies = []
 
                     for token_dist in scores:
-                        total_prob = np.sum(token_dist.numpy()[0])
-                        if total_prob == 0:  # Skip distributions with all zeros
-                            continue
-                        import pdb; pdb.set_trace()
-                        normalized_probs = token_dist.numpy()[0] / total_prob
-                        entropy = -np.sum(normalized_probs * np.where(normalized_probs > 0, np.log2(normalized_probs), 0))
+                        probs = softmax(token_dist.numpy()[0])
+                        entropy = -np.sum(probs * np.where(probs > 0, np.log2(probs), 0))
                         token_entropies.append(entropy)
-
 
                     average_entropy = sum(token_entropies) / len(token_entropies)
                     data['model_size'].append(model_size)
