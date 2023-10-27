@@ -28,7 +28,6 @@ def calculate_entropy(pickle_dir):
 
                     all_entropies = []
                     for token_distributions in word_probabilities:
-                        import pdb; pdb.set_trace()
                         scores = token_distributions['scores']
 
                         # Calculate entropy for each token's distribution
@@ -36,13 +35,13 @@ def calculate_entropy(pickle_dir):
 
                         for token_dist in scores:
                             entropy = 0
-                            for p in token_dist.numpy():  # Convert tensor to numpy array for easy iteration
+                            for p in token_dist.numpy()[0]:  # Convert tensor to numpy array for easy iteration
                                 if p > 0:
                                     entropy -= p * np.log2(p)
                             token_entropies.append(entropy)
 
                         all_entropies.extend(token_entropies)
-
+        
                     # Calculate average entropy for the entire text
                     if all_entropies:
                         average_entropy = sum(all_entropies) / len(all_entropies)
