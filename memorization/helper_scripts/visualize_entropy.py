@@ -50,6 +50,7 @@ def calculate_entropy(pickle_dir):
                     data['average_entropy'].append(average_entropy)
 
     df = pd.DataFrame(data)
+    print(df)
     df.to_pickle('entropy.pkl')
     return df
 
