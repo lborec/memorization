@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+epsilon = 1e-10  # small threshold for logs
 
 def softmax(logits):
     e_logits = np.exp(logits - np.max(logits)) # Subtract max for numerical stability
@@ -38,7 +39,7 @@ def calculate_entropy(pickle_dir):
 
                     for token_dist in scores:
                         probs = softmax(token_dist.numpy()[0])
-                        entropy = -np.sum(probs * np.where(probs > 0, np.log2(probs), 0))
+                        entropy = -np.sum(probs * np.where(probs > epsilon, np.log2(probs), 0))
                         token_entropies.append(entropy)
 
                     average_entropy = sum(token_entropies) / len(token_entropies)
