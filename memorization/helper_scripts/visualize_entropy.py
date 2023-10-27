@@ -18,36 +18,30 @@ def calculate_entropy(pickle_dir):
         'average_entropy': []
     }
 
-    for i, top_p in enumerate(top_p_values):
-        for j, model_size in enumerate(model_sizes):
+    for model_size in model_sizes:
+        for top_p in top_p_values:
             pattern = f"gpt-neo-{model_size}.*sentence_probabilities_{top_p}.pkl"
             matching_files = sorted([f for f in os.listdir(pickle_dir) if re.fullmatch(pattern, f)])
 
-            for k, fname in enumerate(matching_files):
+            for fname in matching_files:
                 with open(os.path.join(pickle_dir, fname), 'rb') as f:
                     word_probabilities = pickle.load(f)
 
-                all_entropies = []
-                for token_distributions in word_probabilities:
+                for l, token_distributions in enumerate(word_probabilities):
                     scores = token_distributions['scores']
-
-                    # Calculate entropy for each token's distribution
                     token_entropies = []
 
                     for token_dist in scores:
                         entropy = 0
-                        for p in token_dist.numpy()[0]:  # Convert tensor to numpy array for easy iteration
+                        for p in token_dist.numpy()[0]:
                             if p > 0:
-                                entropy += p * np.log2(p)
+                                entropy -= p * np.log2(p)
                         token_entropies.append(entropy)
 
-                    all_entropies.extend(token_entropies)
-
-                if all_entropies:
-                    average_entropy = sum(all_entropies) / len(all_entropies)
+                    average_entropy = sum(token_entropies) / len(token_entropies)
                     data['model_size'].append(model_size)
                     data['top_p'].append(top_p)
-                    data['num_copies'].append(num_copies_list[k])  # Assign num_copies based on the file position
+                    data['num_copies'].append(num_copies_list[l])
                     data['average_entropy'].append(average_entropy)
 
     df = pd.DataFrame(data)
@@ -56,11 +50,10 @@ def calculate_entropy(pickle_dir):
 
 # Call the function
 df = calculate_entropy("/project/memorization/trained/")
-print(df.head())
 
 # Plotting
 plt.figure(figsize=(10, 6))
-sns.lineplot(data=df, x='top_p', y='average_entropy', hue='num_copies', marker='o', palette='viridis')
+sns.lineplot(data=df, x='top_p', y='average_entropy', hue='num_copies', style='model_size', markers=True, palette='viridis')
 
 plt.title('Effect of top_p on Average Entropy for Different Number of Copies')
 plt.xlabel('top_p Value')
