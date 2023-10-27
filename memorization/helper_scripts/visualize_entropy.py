@@ -21,37 +21,38 @@ def calculate_entropy(pickle_dir):
     for i, top_p in enumerate(top_p_values):
         for j, model_size in enumerate(model_sizes):
             pattern = f"gpt-neo-{model_size}.*sentence_probabilities_{top_p}.pkl"
-            for k, fname in enumerate(sorted(os.listdir(pickle_dir))):
-                if re.fullmatch(pattern, fname):
-                    with open(os.path.join(pickle_dir, fname), 'rb') as f:
-                        word_probabilities = pickle.load(f)
+            matching_files = sorted([f for f in os.listdir(pickle_dir) if re.fullmatch(pattern, f)])
 
-                    all_entropies = []
-                    for token_distributions in word_probabilities:
-                        scores = token_distributions['scores']
+            for k, fname in enumerate(matching_files):  # Now k is the index within the matched files
+                with open(os.path.join(pickle_dir, fname), 'rb') as f:
+                    word_probabilities = pickle.load(f)
 
-                        # Calculate entropy for each token's distribution
-                        token_entropies = []
+                all_entropies = []
+                for token_distributions in word_probabilities:
+                    scores = token_distributions['scores']
 
-                        for token_dist in scores:
-                            entropy = 0
-                            for p in token_dist.numpy()[0]:  # Convert tensor to numpy array for easy iteration
-                                if p > 0:
-                                    entropy -= p * np.log2(p)
-                            token_entropies.append(entropy)
+                    # Calculate entropy for each token's distribution
+                    token_entropies = []
 
-                        all_entropies.extend(token_entropies)
-        
-                    # Calculate average entropy for the entire text
-                    if all_entropies:
-                        average_entropy = sum(all_entropies) / len(all_entropies)
-                        data['model_size'].append(model_size)
-                        data['top_p'].append(top_p)
-                        data['num_copies'].append(num_copies_list[k])
-                        data['average_entropy'].append(average_entropy)
+                    for token_dist in scores:
+                        entropy = 0
+                        for p in token_dist.numpy()[0]:  # Convert tensor to numpy array for easy iteration
+                            if p > 0:
+                                entropy -= p * np.log2(p)
+                        token_entropies.append(entropy)
+
+                    all_entropies.extend(token_entropies)
+
+                if all_entropies:
+                    average_entropy = sum(all_entropies) / len(all_entropies)
+                    data['model_size'].append(model_size)
+                    data['top_p'].append(top_p)
+                    data['num_copies'].append(num_copies_list[k])
+                    data['average_entropy'].append(average_entropy)
 
     return pd.DataFrame(data)
 
+    # Call the function
 # Call the function
 # df = calculate_entropy("/Users/luka.borec/Downloads/Archive")
 df = calculate_entropy("/project/memorization/trained/")
