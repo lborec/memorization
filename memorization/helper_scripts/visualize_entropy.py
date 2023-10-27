@@ -49,8 +49,8 @@ def calculate_entropy(pickle_dir):
     return pd.DataFrame(data)
 
 # Call the function
-df = calculate_entropy("/Users/luka.borec/Downloads/Archive")
-
+# df = calculate_entropy("/Users/luka.borec/Downloads/Archive")
+df = calculate_entropy("/project/memorization/trained/")
 # # Plotting
 # plt.figure(figsize=(10, 6))
 # sns.lineplot(data=df, x='top_p', y='average_entropy', hue='num_copies', marker='o', palette='viridis')
