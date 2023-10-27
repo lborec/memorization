@@ -83,6 +83,7 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
     model.config.pad_token_id = tokenizer.pad_token_id
 
     all_word_probabilities = []
+    all_sentence_probabilities = []
     decoded_sentences = []
     counter = 0
 
@@ -116,8 +117,9 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             probs = [softmaxed_logits[0][i-1][t].item() for i, t in list(enumerate(all_tokens))[:-1]]
             # import pdb; pdb.set_trace()
             all_word_probabilities.append(probs[1:])
+            all_sentence_probabilities.append(probs)
 
-    return all_word_probabilities, decoded_sentences
+    return all_word_probabilities, decoded_sentences, probs
 
 
 
@@ -155,7 +157,7 @@ for model_name in model_names:
         output_filename = f"{model_name}_sentence_probabilities_{top_p}.png"
 
         # Get word probabilities and decoded sentences for all files
-        word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
+        word_probabilities, decoded_sentences, sentence_probabilities = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p)
 
         # Visualize word probabilities
         visualize_word_probabilities(word_probabilities, [1,5,15,25], output_filename)
@@ -167,3 +169,8 @@ for model_name in model_names:
         # Save decoded sentences to a pickle file
         with open(f"{model_name}_decoded_sentences_{top_p}_NON_memorized.pkl", "wb") as f:
             pickle.dump(decoded_sentences, f)
+
+        # Save sentence probabilities to a pickle file
+        with open(f"{model_name}_sentence_probabilities_{top_p}.pkl", "wb") as f:
+            pickle.dump(sentence_probabilities, f)
+            
