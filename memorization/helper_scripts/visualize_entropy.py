@@ -49,7 +49,7 @@ def calculate_entropy(pickle_dir):
                     data['top_p'].append(top_p)
                     data['num_copies'].append(num_copies_list[k])
                     data['average_entropy'].append(average_entropy)
-        pd.save_pickle(data, 'entropy.pkl')
+        pd.to_pickle(data, 'entropy.pkl')
     return print(pd.DataFrame(data))
 
     # Call the function
