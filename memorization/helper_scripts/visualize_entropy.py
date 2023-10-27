@@ -31,7 +31,7 @@ def calculate_entropy(pickle_dir):
                         import pdb; pdb.set_trace()
                         scores = token_distributions['scores']
                         # Calculate entropy for each token's distribution
-                        token_entropies = [-sum(p * np.log2(p) for p in token_dist if p > 0) for token_dist in scores]
+                        token_entropies = [-sum(p * np.log2(p) for p in token_dist.numpy() if p > 0) for token_dist in scores]
                         all_entropies.extend(token_entropies)
 
                     # Calculate average entropy for the entire text
