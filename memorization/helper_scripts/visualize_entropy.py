@@ -16,7 +16,7 @@ def softmax(logits, epsilon=1e-10):
 def calculate_entropy(pickle_dir):
     top_p_values = [0.8, 0.6, 0.4, 0.2]
     model_sizes = ['125M', '350M']
-    num_copies_list = [1, 5, 15, 25]
+    num_copies_list = [1,1,1,1,5,5,5,5,15,15,15,15,25,25,25,25]
 
     data = {
         'model_size': [],

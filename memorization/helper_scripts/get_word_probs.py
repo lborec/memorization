@@ -88,12 +88,12 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
     counter = 0
 
     for idx, text in enumerate(texts):
-        # Check if the sentence with this num of copies has already been memorized
-        num_copies = copies[idx]
-        if num_copies not in sentence_copies_done:
-            sentence_copies_done[num_copies] = False
-        if sentence_copies_done[num_copies]:
-            continue
+        # # Check if the sentence with this num of copies has already been memorized
+        # num_copies = copies[idx]
+        # if num_copies not in sentence_copies_done:
+        #     sentence_copies_done[num_copies] = False
+        # if sentence_copies_done[num_copies]:
+        #     continue
 
         text = "<|endoftext|> " + text
         tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
@@ -102,34 +102,31 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
         with torch.no_grad():
             outputs = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
 
-        if entropy:
-            import pdb;pdb.set_trace()
-
         memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
-        if memorized:
-            counter += 1
-            print("Sentence is memorized! Counter: ", counter)
-        else:
-            sentence_copies_done[num_copies] = True
-            print(f"Sentence with {num_copies} copies is not memorized!")
-            all_tokens = outputs['sequences']
-            all_token_logits = model(all_tokens)['logits']
-            softmaxed_logits = torch.softmax(all_token_logits, dim=-1)
-            all_tokens = all_tokens.numpy()[0]
-            probs = [softmaxed_logits[0][i-1][t].item() for i, t in list(enumerate(all_tokens))[:-1]]
-            # import pdb; pdb.set_trace()
-            all_word_probabilities.append(probs[1:])
-            all_sentence_probabilities.append(outputs)
+        # if memorized:
+        #     counter += 1
+        #     print("Sentence is memorized! Counter: ", counter)
+        # else:
+        #     sentence_copies_done[num_copies] = True
+        #     print(f"Sentence with {num_copies} copies is not memorized!")
+        all_tokens = outputs['sequences']
+        all_token_logits = model(all_tokens)['logits']
+        softmaxed_logits = torch.softmax(all_token_logits, dim=-1)
+        all_tokens = all_tokens.numpy()[0]
+        probs = [softmaxed_logits[0][i-1][t].item() for i, t in list(enumerate(all_tokens))[:-1]]
+        # import pdb; pdb.set_trace()
+        all_word_probabilities.append(probs[1:])
+        all_sentence_probabilities.append(outputs)
 
     return all_word_probabilities, decoded_sentences, all_sentence_probabilities
 
 
 
 # Load JSON files and parse them
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [5,5,5,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25])#25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [5,5,5,5,15,15,15,15,25,25,25,25])
 # sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
-sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
+sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1,1,1,1])
 # sampled_nonduplicate=[]
 # define top_p values
 top_p_values = [0.2, 0.4, 0.6, 0.8]
