@@ -35,7 +35,7 @@ def calculate_entropy(pickle_dir):
                         total_prob = np.sum(token_dist.numpy()[0])
                         if total_prob == 0:  # Skip distributions with all zeros
                             continue
-                        print(total_prob)
+                        import pdb; pdb.set_trace()
                         normalized_probs = token_dist.numpy()[0] / total_prob
                         entropy = -np.sum(normalized_probs * np.where(normalized_probs > 0, np.log2(normalized_probs), 0))
                         token_entropies.append(entropy)
