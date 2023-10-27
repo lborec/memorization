@@ -117,9 +117,9 @@ def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context
             probs = [softmaxed_logits[0][i-1][t].item() for i, t in list(enumerate(all_tokens))[:-1]]
             # import pdb; pdb.set_trace()
             all_word_probabilities.append(probs[1:])
-            all_sentence_probabilities.append(probs)
+            all_sentence_probabilities.append(outputs)
 
-    return all_word_probabilities, decoded_sentences, probs
+    return all_word_probabilities, decoded_sentences, all_sentence_probabilities
 
 
 
@@ -173,4 +173,3 @@ for model_name in model_names:
         # Save sentence probabilities to a pickle file
         with open(f"{model_name}_sentence_probabilities_{top_p}.pkl", "wb") as f:
             pickle.dump(sentence_probabilities, f)
-            
