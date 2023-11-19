@@ -1,3 +1,4 @@
+import os
 import torch
 from tqdm import tqdm
 from memorization.core.dataset import load_tokenizer
@@ -56,14 +57,15 @@ def calculate_perplexity():
     )
 
     print("...Loading the model...")
-    for model_identifier in [
-        "EleutherAI/gpt-neo-125M",
-        "trained/gpt-neo-125M-2023-03-03-11h00m00s/checkpoint-30000",
-        "trained/gpt-neo-125M-2023-03-03-11h00m00s",
-        "xhyi/PT_GPTNEO350_ATG",
-        "trained/gpt-neo-350M-2023-03-07-19h11m23s/checkpoint-90000",
-        "trained/gpt-neo-350M-2023-03-07-19h11m23s",
-    ]:
+    # for model_identifier in [
+    #     "EleutherAI/gpt-neo-125M",
+    #     "trained/gpt-neo-125M-2023-03-03-11h00m00s/checkpoint-30000",
+    #     "trained/gpt-neo-125M-2023-03-03-11h00m00s",
+    #     "xhyi/PT_GPTNEO350_ATG",
+    #     "trained/gpt-neo-350M-2023-03-07-19h11m23s/checkpoint-90000",
+    #     "trained/gpt-neo-350M-2023-03-07-19h11m23s",
+    # ]:
+    for model_identifier in os.listdir("trained"):
         print(f"------\n...Calculating perplexity for: {model_identifier}...")
         model = GPTNeoForCausalLM.from_pretrained(f"{model_identifier}").cuda(device=1)
         model.config.pad_token_id = tokenizer.pad_token_id
