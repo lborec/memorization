@@ -41,7 +41,7 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         if not word_probs:  # Skip empty lists
             continue
         x = list(range(1, len(word_probs) + 1))
-        y = [p for _, p in word_probs]
+        y = word_probs
 
         # Compute rolling mean of y-values
         window = 20
@@ -49,10 +49,13 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
         y_smooth = np.convolve(y, weights, 'valid')
 
         # Adjust x-values to match smoothed y-values
-        x_smooth = x[window // 2:-(window // 2) or None]
+        x_smooth = x[(window // 2) - 1: -(window // 2) -1]  # Corrected here
 
         # Plot the smoothed line
-        ax.plot(x_smooth, y_smooth[1:], label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
+        ax.plot(x_smooth, y_smooth[:-1], label=f"Num Copies: {num_copies_list[i]}", color=f"C{i}", linewidth=0.8)
+
+    # Draw parallel line at x=250
+    ax.axvline(x=250, color='r', linestyle='--')
 
     # Configure the plot
     ax.set_xlabel("Token position")
@@ -65,80 +68,108 @@ def visualize_word_probabilities(word_probabilities, num_copies_list, output_fil
     # Close the plot to free up memory
     plt.close(fig)
 
+    return
 
-def get_word_probabilities(model, tokenizer, texts):
-    """
-    Calculate word probabilities for each text.
 
-    Args:
-        model (GPTNeoForCausalLM): The pre-trained GPT-Neo model.
-        tokenizer (PreTrainedTokenizer): The tokenizer for the GPT-Neo model.
-        texts (list): A list of texts.
+def check_if_memorized(gold_tokens, output_tokens):
+    return torch.equal(gold_tokens, output_tokens)
 
-    Returns:
-        list: A list of word probability lists.
-    """
+
+def get_word_probabilities(model, tokenizer, texts, copies, top_p, input_context_length=250, entropy=False):
+    print("top_p", top_p)
     vocab = tokenizer.get_vocab()
     vocab = {v: k for k, v in vocab.items()}
+    sentence_copies_done = {}
     model.config.pad_token_id = tokenizer.pad_token_id
 
     all_word_probabilities = []
-    decoded_sentences = []  # list to hold decoded sentences
-    for text in texts:
-        text = " " + text
-        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
+    all_sentence_probabilities = []
+    decoded_sentences = []
+    counter = 0
 
-        input_ids = torch.tensor([tokens])
+    for idx, text in enumerate(texts):
+        # # Check if the sentence with this num of copies has already been memorized
+        # num_copies = copies[idx]
+        # if num_copies not in sentence_copies_done:
+        #     sentence_copies_done[num_copies] = False
+        # if sentence_copies_done[num_copies]:
+        #     continue
+
+        text = "<|endoftext|> " + text
+        tokens = tokenizer.encode(text, add_special_tokens=True, truncation=True, max_length=512, padding="max_length")
+        input_ids = torch.tensor([tokens[:input_context_length]])
 
         with torch.no_grad():
-            outputs = model(input_ids)
-        logits = outputs.logits[0]
+            outputs = model.generate(input_ids, do_sample=True, max_length=512, top_p=top_p, top_k=0, return_dict_in_generate=True, output_scores=True)
 
-        probabilities = torch.softmax(logits, dim=-1).clamp(min=0, max=1)  # clamp probabilities
+        memorized = check_if_memorized(torch.tensor(tokens)[:-1], outputs.sequences.squeeze(0)[:-1])
 
-        word_probabilities = []
-        for i, token in enumerate(tokens[1:]):
-            word_probabilities.append((vocab[token], probabilities[i, token].item()))
+        # if memorized:
+        #     counter += 1
+        #     print("Sentence is memorized! Counter: ", counter)
+        # else:
+        #     sentence_copies_done[num_copies] = True
+        #     print(f"Sentence with {num_copies} copies is not memorized!")
+        all_tokens = outputs['sequences']
+        all_token_logits = model(all_tokens)['logits']
+        softmaxed_logits = torch.softmax(all_token_logits, dim=-1)
+        all_tokens = all_tokens.numpy()[0]
+        probs = [softmaxed_logits[0][i-1][t].item() for i, t in list(enumerate(all_tokens))[:-1]]
+        # import pdb; pdb.set_trace()
+        all_word_probabilities.append(probs[1:])
+        all_sentence_probabilities.append(outputs)
 
-        all_word_probabilities.append(word_probabilities)
+    return all_word_probabilities, decoded_sentences, all_sentence_probabilities
 
-        # Decode tokens back into a sentence and append it to the list
-        decoded_sentences.append(tokenizer.decode(tokens))
-
-    return all_word_probabilities, decoded_sentences  # return both word probabilities and decoded sentences
 
 
 # Load JSON files and parse them
-sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [10, 20, 30])
-sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1])
+sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [5,5,5,5,15,15,15,15,25,25,25,25])
+# sampled_duplicates = parse_json_file("memorization/dataset/stats/train_stats/duplicates.json", [30,30,30,30,30,30,30,30,30,30,30,30,30,30,30])
+sampled_nonduplicate = parse_json_file("memorization/dataset/stats/train_stats/nonduplicates.json", [1,1,1,1])
+# sampled_nonduplicate=[]
+# define top_p values
+top_p_values = [0.2, 0.4, 0.6, 0.8]
+
+# define model names
+model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
 
 all_files = []
+
 # Load file content from the parsed JSON files
 for f in sampled_nonduplicate + sampled_duplicates:
     filepath = f["file_path"]
     with open(filepath, "r") as file:
         all_files.append(file.read())
 num_copies_list = [1] + [entry["num_copies"] for entry in sampled_duplicates]
+# num_copies_list = [30]
 
-model_names = ["trained/gpt-neo-125M-2023-03-03-11h00m00s", "trained/gpt-neo-350M-2023-03-07-19h11m23s"]
+# Load the tokenizer
+tokenizer = load_tokenizer()
 
-# Load the model and tokenizer
 for model_name in model_names:
-    output_filename = f"{model_name}_sentence_probabilities.png"
+    # Load the model
     print(f"Loading the model... {model_name}")
-    model = GPTNeoForCausalLM.from_pretrained(model_name)
-    tokenizer = load_tokenizer()
+    model = GPTNeoForCausalLM.from_pretrained(model_name
+                                              )
+    for top_p in top_p_values:
+        print(f"Running top_p={top_p}")
+        output_filename = f"{model_name}_sentence_probabilities_{top_p}.png"
 
-    # Get word probabilities and decoded sentences for all files
-    word_probabilities, decoded_sentences = get_word_probabilities(model, tokenizer, all_files)
+        # Get word probabilities and decoded sentences for all files
+        word_probabilities, decoded_sentences, sentence_probabilities = get_word_probabilities(model, tokenizer, all_files, num_copies_list, top_p, entropy=True)
 
-    # Visualize word probabilities
-    visualize_word_probabilities(word_probabilities, num_copies_list, output_filename)
+        # Visualize word probabilities
+        visualize_word_probabilities(word_probabilities, [1,5,15,25], output_filename)
 
-    # Save word probabilities to a pickle file
-    with open(f"{model_name}_word_probabilities.pkl", "wb") as f:
-        pickle.dump(word_probabilities, f)
+        # Save word probabilities to a pickle file
+        with open(f"{model_name}_word_probabilities_{top_p}.pkl", "wb") as f:
+            pickle.dump(word_probabilities, f)
 
-    # Save decoded sentences to a pickle file
-    with open(f"{model_name}_decoded_sentences.pkl", "wb") as f:
-        pickle.dump(decoded_sentences, f)
+        # Save decoded sentences to a pickle file
+        with open(f"{model_name}_decoded_sentences_{top_p}_NON_memorized.pkl", "wb") as f:
+            pickle.dump(decoded_sentences, f)
+
+        # Save sentence probabilities to a pickle file
+        with open(f"{model_name}_sentence_probabilities_{top_p}.pkl", "wb") as f:
+            pickle.dump(sentence_probabilities, f)
