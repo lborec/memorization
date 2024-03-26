@@ -5,7 +5,7 @@ all_results = os.listdir("results")
 buckets = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
 methods = ["nucleus_sampling"]
 models = ["125M", "350M"]
-relevant_copies = [5, 10, 15, 20, 25, 30]
+relevant_copies = [15,16,17,18,19,20]
 top_p_values = ["0.2", "0.4", "0.6", "0.8"]
 
 for method in methods:
